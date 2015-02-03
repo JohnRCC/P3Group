@@ -5,7 +5,7 @@
 
 using namespace std;
 
-//function prototype
+//function prototypes
 float potential(float x,float y,float r);
 float cf(float matind,float min,float ds);
 
