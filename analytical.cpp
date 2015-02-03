@@ -7,6 +7,8 @@ using namespace std;
 
 //function prototype
 float potential(float x,float y,float r);
+float cf(float matind,float min,float ds);
+
 
 int main(int argc, char* argv[])
 {
@@ -38,7 +40,27 @@ for(int row=0;row<matsize;row++) {
   }
 }
 
+datafile.open("Analytic.dat")
 
+for(row=0;row<matsize;row++) {
+	for(column=o;column<matsize;column++) {
+    //cout<<"File Iter: "<<row<<"\r";
+    if(index==0){
+      //gradient test. see function 'grad' for more info.
+      datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column][2]<<"\n";
+    }
+    else if(index==1){
+      //actual values of potential (for plotting etc.)
+      datafile<<row<<" "<<column<<" "<<vals[row][column][((i%2)==0)?0:1]<<"\n";
+    }
+    else if(index==2){
+      //display values in terminal
+      cout<<vals[row][column][((i%2)==0)?0:1]<<" ";
+    }
+  }
+  //cout<<"\n";
+  datafile<<"\n";
+}
 
   return 0;
 
@@ -46,18 +68,27 @@ for(int row=0;row<matsize;row++) {
 
 float potential(float x, float y, float r)
 {
-  float v=0;
-  float e0=8.85*pow(10,-12); // permitivity of free space
+  float v=0, Plate_Vdiff=2, Plate_separation=r*pow(10,2);
+  //float e0=8.85*pow(10,-12); // permitivity of free space
 
-  /*I am not sure how to deal with the sigma, the charge density. The electric
- field of an infinite plate is independent of how far away we are, so it should  be a constant/factor in the equation. Can we just make it equal to 1?
- ASK LARS */
 
-  float sigma=1;
-  float field=sigma/e0; // electric field between two plates
+  // E = sigma/e0
+  // float sigma=1;
+  // float field=sigma/e0; // electric field between two plates
 
+/* A "good" value for d, the separation of the plates will be calculated, either from the 
+	derivation of the analtic solution, or by trying a number of values */
+
+// E = DV/d (Volage difference of plates(2V) / separation of plates (xmax-xmin) )
+  float field = Plate_Vdiff/Plate_separation;
   //calculating the analytical solution
   v=(-1)*field*x*(1-((r*r*r)/(pow((x*x)+(y*y),1.5))));
 
   return v;
+}
+
+//CoordiFy converts the matrix location of a point into its physical coordinate
+float cf(float matind,float min,float ds){
+  //matind = index of value in array, min = min true coord value, ds = coord division
+  return min + (ds*matind);
 }
