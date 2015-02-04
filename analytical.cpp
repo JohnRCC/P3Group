@@ -7,11 +7,17 @@ using namespace std;
 
 //function prototypes
 float potential(float x,float y,float r);
-float cf(float matind,float min,float ds);
+float cf(float matind,float min,float ds); 
 
 
 int main(int argc, char* argv[])
 {
+	
+if(argc<6) {
+  cout<<"Usage: "<<argv[0]<<" [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius][No. Iterations][Output type]\n";
+return 1;
+}
+
 float smin=strtod(argv[1],NULL);
 float smax=strtod(argv[2],NULL);
 float ds=strtod(argv[3],NULL);
@@ -23,11 +29,32 @@ int index=strtod(argv[6],NULL);
 int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
 
 //initalise matrix
+float mid = (matsize/2.0) - (fmod(matsize,2.0));
 double valsA[matsize][matsize]; 
 	      
 //generate matrix
 for(int row=0;row<matsize;row++) {
   for(int column=0;column<matsize;column++) {
+    float x=cf(row,smin,ds);
+    float y=cf(column,smin,ds);
+        if(column==0) {
+      vals[row][column][0]=vals[row][column][1]=1;
+      }
+      else if(column==matsize-1) {
+	vals[row][column][0]=vals[row][column][1]=-1;
+      }
+      else if( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) < pow(r,2.0) ) {
+	vals[row][column][0]=vals[row][column][1]=0;
+      }
+      else {
+      	// Only values that differ from main
+	vals[row][column][0]=vals[row][column][1]=potential(x,y,r);
+      }
+	
+  }
+}
+
+/*	PREVIOUS CAST OF MATRIX, CHANGED IT FOR SAME AS MAIN
     float x=row*ds;
     float y=column*ds;
     //setting V inside the sphere to be zero 
@@ -40,27 +67,32 @@ for(int row=0;row<matsize;row++) {
   }
 }
 
+*/
+
+
 datafile.open("Analytic.dat")
 
 for(row=0;row<matsize;row++) {
-	for(column=o;column<matsize;column++) {
+	for(column=0;column<matsize;column++) {
     //cout<<"File Iter: "<<row<<"\r";
     if(index==0){
       //gradient test. see function 'grad' for more info.
-      datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column][2]<<"\n";
+      datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column]<<"\n";
     }
     else if(index==1){
       //actual values of potential (for plotting etc.)
-      datafile<<row<<" "<<column<<" "<<vals[row][column][((i%2)==0)?0:1]<<"\n";
+      datafile<<row<<" "<<column<<" "<<vals[row][column]<<"\n";
     }
     else if(index==2){
       //display values in terminal
-      cout<<vals[row][column][((i%2)==0)?0:1]<<" ";
+      cout<<vals[row][column]<<" ";
     }
   }
   //cout<<"\n";
   datafile<<"\n";
 }
+
+datafile.close();
 
   return 0;
 
