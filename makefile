@@ -16,6 +16,12 @@ EasyBMP.o: $(BMP).cpp $(BMP).h
 main.o: main.cpp funcs.h timer.h $(SUB).h $(BMP).h
 	g++ -o main.o -c main.cpp
 
+analytical: analytical.o
+	g++ -o analytical analytical.o
+
+analytical.o: analytical.cpp
+	g++ -o analytical.o -c analytical.cpp
+
 # removes all object files and backup files
 clean:
 	rm -f *.o $(FLD).o *~
