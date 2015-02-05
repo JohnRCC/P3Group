@@ -14,4 +14,4 @@ main.o: main.cpp funcs.h timer.h $(SUB).h
 
 # removes all object files and backup files
 clean:
-	rm *.o $(FLD).o *~
+	rm -f *.o $(FLD).o *~

@@ -15,6 +15,9 @@ float grad(float right,float left,float up,float down,float ds);
 
 int main(int argc, char* argv[]) {
 
+//commence timer
+double start = timerstart();
+
 if(argc<6) {
   cout<<"Usage: "<<argv[0]<<" [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius][No. Iterations][Output type]\n";
 return 1;
@@ -155,8 +158,8 @@ for(row=0;row<matsize;row++) {
 
 datafile.close(); 
 
-timer(1);
 
+timerend(start,1);
 
 return 0;
 
