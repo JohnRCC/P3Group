@@ -12,6 +12,12 @@ fieldline.o: $(FLD).cpp $(FLD).h funcs.h
 main.o: main.cpp funcs.h timer.h $(SUB).h
 	g++ -o main.o -c main.cpp
 
+analytical: analytical.o
+	g++ -o analytical analytical.o
+
+analytical.o: analytical.cpp
+	g++ -o analytical.o -c analytical.cpp
+
 # removes all object files and backup files
 clean:
 	rm *.o $(FLD).o *~
