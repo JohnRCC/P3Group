@@ -52,6 +52,9 @@ if(argc==4) //case for numerical solution
   cout<<"Getting image dimensions... ";
   rowsize = Image.TellHeight();
   columnsize = Image.TellWidth();
+  
+  //setting ds to 1 since not defined by image
+  ds = 1;
   cout<<"Done."<<endl;
 
   //Get index val
@@ -236,44 +239,38 @@ for(i=0;i<errtol;i++)
 }
 cout<<"Done."<<endl;
 
-
-// Converting every value from 3d matrix to 2d one
-// This is stupid and inefficient but if you can manage to pass one layer
-// of the matrix to the fldline function then be my guest
-double **fldmat = new double*[rowsize];
-
-for(row=0;row<rowsize;row++)
-{
-  fldmat[row] = new double[columnsize];
-}
-
-for(row=0;row<rowsize;row++)
-{
-  for(column=0;column<columnsize;column++)
-  {
-    fldmat[row][column]=vals[row][column][-(i%2)+1];
-  }
-}
-
-// get fieldline data for completed matrix
-fldline(rowsize,columnsize,fldmat,ds,ds);
-
 datafile.open("mat_test.dat");
 
 for(row=0;row<rowsize;row++) {
   for(column=0;column<columnsize;column++) {
     //cout<<"File Iter: "<<row<<"\r";
-    if(index==0){
+    if(index==1||index==3||index==5||index==7){
       //gradient test. see function 'grad' for more info.
       datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column][2]<<"\n";
     }
-    else if(index==1){
+    else if(index==2||index==3||index==6||index==7){
       //actual values of potential (for plotting etc.)
       datafile<<row<<" "<<column<<" "<<vals[row][column][((i%2)==0)?0:1]<<"\n";
     }
-    else if(index==2){
-      //display values in terminal
-      cout<<vals[row][column][((i%2)==0)?0:1]<<" ";
+    else if(index==4||index==5||index==6||index==7){
+      //get fieldlines
+      double **fldmat = new double*[rowsize];
+
+      for(row=0;row<rowsize;row++)
+      {
+	fldmat[row] = new double[columnsize];
+      }
+
+      for(row=0;row<rowsize;row++)
+      {
+	for(column=0;column<columnsize;column++)
+	{
+	  fldmat[row][column]=vals[row][column][-(i%2)+1];
+	}
+      }
+
+      // get fieldline data for completed matrix
+      fldline(rowsize,columnsize,fldmat,ds,ds);
     }
   }
   //cout<<"\n";
