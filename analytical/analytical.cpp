@@ -22,16 +22,29 @@ int row,column,i;
  *		 	- Plates of opposite polarities at either side horiz.
  *		 	- Ground, circular plate positioned at middle
  */
+ 
+ 	// Matrix size separation in terms of r-d relation
+ // 	Plate separation: 1.5 is the minimum. larger values of d should be tested 
+// float d = pow(r,2);
+// int matsize = d/ds - (fmod(d,ds));
+// smin = -d/2.0;
+// smax = d/2.0;
 
 // Initalise matrix
-int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
+	
+	// Matrix size in terms of min and max values
+	/**/
+	  float d = abs(smax-smin) - 2*ds;
+	  int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
+	 
+	 if(d < pow(r,2)) {
+		cout << " WARNING! - Analytic function might give an erroneous answer. d < r^2\n";
+	 }
+	 
+
 float mid = (matsize/2.0) - (fmod(matsize,2.0));
 double valsA[matsize][matsize]; 
 
-// Useful quantities
-//
-// 	Plate separation: (system span) - 2(matrix cell size)
-float d=(smax-smin)-2*ds;
 
 // Cast values
 for(row=0;row<matsize;row++) {
@@ -57,22 +70,6 @@ for(row=0;row<matsize;row++) {
   }
 }
 
-/*	PREVIOUS CAST OF MATRIX, CHANGED IT FOR SAME AS MAIN
-    float x=row*ds;
-    float y=column*ds;
-    //setting V inside the sphere to be zero 
-    if(pow(((x*x)+(y*y)),0.5) <= r){
-	valsA[row][column]=0;
-    }
-    else {
-      valsA[row][column]=potential(x,y,r); 
-    }
-  }
-}
-
-*/
-
-
 /*
  *	Writing data to file
  */
@@ -95,16 +92,14 @@ return 0;
 
 }
 
+
+/*
+ *	FUNCTIONS
+ */
+
 float potential(float x, float y, float r,float Plate_separation) {
   float v=0, Plate_Vdiff=2; //Plate_separation=r*pow(10,2);
-  //float e0=8.85*pow(10,-12); // permitivity of free space
 
-  // E = sigma/e0
-  // float sigma=1;
-  // float field=sigma/e0; // electric field between two plates
-
-/* A "good" value for d, the separation of the plates will be calculated, either from the 
-	derivation of the analtic solution, or by trying a number of values */
 
 // E = DV/d (Volage difference of plates(2V) / separation of plates (xmax-xmin) )
   float field = Plate_Vdiff/Plate_separation;
