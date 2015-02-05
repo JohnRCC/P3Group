@@ -25,19 +25,21 @@ int row,column,i;
  
  	// Matrix size separation in terms of r-d relation
  // 	Plate separation: 1.5 is the minimum. larger values of d should be tested 
-float d = pow(r,2);
-int matsize = d/ds - (fmod(d,ds));
- smin = -d/2.0;
- smax = d/2.0;
+// float d = pow(r,2);
+// int matsize = d/ds - (fmod(d,ds));
+// smin = -d/2.0;
+// smax = d/2.0;
 
 // Initalise matrix
 	
 	// Matrix size in terms of min and max values
-	/*
-	 * float d = abs(smax-smin) - 2*ds;
-	 * int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
-	 *
-	 */
+	/**/
+	  float d = abs(smax-smin) - 2*ds;
+	  int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
+	 
+	 if(d < pow(r,2)) {
+		cout << " WARNING! - Analytic function might give an erroneous answer. d < r^2\n";
+	 }
 	 
 
 float mid = (matsize/2.0) - (fmod(matsize,2.0));
