@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <cmath>
+#include <vector>
 #include "./sublayer/sublayer.h"
 #include "funcs.h"
 #include "timer.h"
@@ -80,17 +81,18 @@ else if(argc==7)
   cout<<"Defining matrix... ";
   //double vals[rowsize][columnsize][3];
 
-  double*** vals;
-  vals=new double**[rowsize];
+  vector<vector<vector<double> > > vals;
 
+  vals.resize(rowsize);
   for(row=0;row<rowsize;row++)
   {
-    vals[row] = new double*[columnsize];
+    vals[row].resize(columnsize);
     for(column=0;column<columnsize;column++)
     {
-      vals[row][column] = new double[3];
+      vals[row][column].resize(3);
     }
   }
+
   cout<<"Done."<<endl;
 
 if(argc==4)
@@ -131,7 +133,7 @@ if(argc==4)
 }
 else if(argc==7) // case for analytical solution
 {  
-  cout<<"Filling analytic matrix... ";
+    cout<<"Filling analytic matrix... ";
   //generate initial matrix from definite values
   for(row=0;row<matsize;row++)
   {
@@ -156,31 +158,28 @@ else if(argc==7) // case for analytical solution
       }	
     }
   }
-  cout<<"Done"
+  cout<<"Done"<<endl;
 }
 
-  
 //open file to write data to
 ofstream datafile;
 
 //DEBUG: output initial matrix to file
+cout<<"Attempting to print matrix to file for testing... ";
 datafile.open("mat_test.dat");
-for(row=0;row<rowsize;row++);
+for(row=0;row<rowsize;row++)
 {
   for(column=0;column<columnsize;column++)
   {
     datafile<<row<<" "<<column<<" "<<vals[row][column][1]<<endl;
   }
-  datafile<<"\n";
+  datafile<<endl;
 }
-
-return 0;
-
-//run algorithm to get average of values
-cout<<"Running algorithm... ";
-float left, right, up, down;
-for(i=0;i<errtol;i++) {  
-//cout<<"iter: "<<errtol<<"\r";
+cout<<"Done."<<endl;
+//cout<<"Running algorithm... ";
+double left, right, up, down;
+for(i=0;i<errtol;i++) 
+{  
   for(row=0;row<rowsize;row++)
   {
     for(column=0;column<columnsize;column++)
@@ -256,15 +255,13 @@ for(row=0;row<rowsize;row++)
 
 // get fieldline data for completed matrix
 fldline(rowsize,columnsize,fldmat,ds,ds);
-  
-datafile.open("the_datafile.dat");
 
 for(row=0;row<rowsize;row++) {
   for(column=0;column<columnsize;column++) {
     //cout<<"File Iter: "<<row<<"\r";
     if(index==0){
       //gradient test. see function 'grad' for more info.
-      //datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column][2]<<"\n";
+      datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column][2]<<"\n";
     }
     else if(index==1){
       //actual values of potential (for plotting etc.)
