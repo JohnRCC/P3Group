@@ -11,7 +11,6 @@
 using namespace std;
 
 //function prototypes
-float cf(float matind,float min,float ds);
 float grad(float right,float left,float up,float down,float ds);
 
 int main(int argc, char* argv[]) {
@@ -79,9 +78,9 @@ else if(argc==7)
 
 //Define matrix
   cout<<"Defining matrix... ";
-  //double vals[rowsize][columnsize][3];
+  double vals[rowsize][columnsize][3];
 
-  vector<vector<vector<double> > > vals;
+  /*vector<vector<vector<double> > > vals;
 
   vals.resize(rowsize);
   for(row=0;row<rowsize;row++)
@@ -91,7 +90,7 @@ else if(argc==7)
     {
       vals[row][column].resize(3);
     }
-  }
+  }*/
 
   cout<<"Done."<<endl;
 
@@ -159,13 +158,16 @@ else if(argc==7) // case for analytical solution
     }
   }
   cout<<"Done"<<endl;
+
+  //Get analytical solution
+  analytic(smin,ds,smax,r);
 }
 
 //open file to write data to
 ofstream datafile;
 
 //DEBUG: output initial matrix to file
-cout<<"Attempting to print matrix to file for testing... ";
+/*cout<<"Attempting to print matrix to file for testing... ";
 datafile.open("mat_test.dat");
 for(row=0;row<rowsize;row++)
 {
@@ -175,8 +177,8 @@ for(row=0;row<rowsize;row++)
   }
   datafile<<endl;
 }
-cout<<"Done."<<endl;
-//cout<<"Running algorithm... ";
+cout<<"Done."<<endl;*/
+cout<<"Running algorithm... ";
 double left, right, up, down;
 for(i=0;i<errtol;i++) 
 {  
@@ -255,6 +257,8 @@ for(row=0;row<rowsize;row++)
 
 // get fieldline data for completed matrix
 fldline(rowsize,columnsize,fldmat,ds,ds);
+
+datafile.open("mat_test.dat");
 
 for(row=0;row<rowsize;row++) {
   for(column=0;column<columnsize;column++) {

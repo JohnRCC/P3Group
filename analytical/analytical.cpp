@@ -2,32 +2,16 @@
 #include <stdlib.h>
 #include <fstream>
 #include <cmath>
+#include "../funcs.h"
 
 using namespace std;
 
 //function prototypes
 float potential(float x,float y,float r,float Plate_separation);
-float cf(float matind,float min,float ds); 
 
-
-int main(int argc, char* argv[])
+int analytic(float smin,float ds,float smax,float r)
 {
-	
-/*
- * 	Verifying and casting correct amount of commandline arguments
- */	
-if(argc<6) {
-  cout<<"Usage: "<<argv[0]<<" [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius][No. Iterations][Output type]\n";
-return 1;
-}
-
-float smin=strtod(argv[1],NULL);
-float smax=strtod(argv[2],NULL);
-float ds=strtod(argv[3],NULL);
-float r=strtod(argv[4],NULL);
-int iter=strtod(argv[5],NULL);
-int index=strtod(argv[6],NULL);
-  
+ 
 int row,column,i;
       
 /*
@@ -52,7 +36,7 @@ float d=(smax-smin)-2*ds;
 // Cast values
 for(row=0;row<matsize;row++) {
   for(column=0;column<matsize;column++) {
-	// Sets "true" cordinets for x and y
+	// Sets "true" coordinates for x and y
     float x=cf(row,smin,ds);
     float y=cf(column,smin,ds);
 
@@ -93,32 +77,21 @@ for(row=0;row<matsize;row++) {
  *	Writing data to file
  */
 
-ofstream datafile;
-datafile.open("analytical.dat");
+ofstream analyticfile;
+analyticfile.open("analytical.dat");
 
-for(row=0;row<matsize;row++) {
-	for(column=0;column<matsize;column++) {
-    //cout<<"File Iter: "<<row<<"\r";
-    if(index==0){
-      //gradient test. see function 'grad' for more info.
-      datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<valsA[row][column]<<"\n";
-    }
-    else if(index==1){
-      //actual values of potential (for plotting etc.)
-      datafile<<row<<" "<<column<<" "<<valsA[row][column]<<"\n";
-    }
-    else if(index==2){
-      //display values in terminal
-      cout<<valsA[row][column]<<" ";
-    }
+for(row=0;row<matsize;row++)
+{
+  for(column=0;column<matsize;column++)
+  {
+    analyticfile<<row<<" "<<column<<" "<<valsA[row][column]<<"\n";
   }
-  //cout<<"\n";
-  datafile<<"\n";
+  analyticfile<<"\n";
 }
 
-datafile.close();
+analyticfile.close();
 
-  return 0;
+return 0;
 
 }
 
@@ -139,10 +112,4 @@ float potential(float x, float y, float r,float Plate_separation) {
   v=(-1)*field*x*(1-((r*r*r)/(pow((x*x)+(y*y),1.5))));
 
   return v;
-}
-
-//CoordiFy converts the matrix location of a point into its physical coordinate
-float cf(float matind,float min,float ds){
-  //matind = index of value in array, min = min true coord value, ds = coord division
-  return min + (ds*matind);
 }
