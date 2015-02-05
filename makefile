@@ -3,6 +3,7 @@
 FLD = ./fieldline/fieldline
 SUB = ./sublayer/sublayer
 BMP = ./easybmp/EasyBMP
+ANA = ./analytical/analytical
 
 all: main.o $(FLD).o EasyBMP.o
 	g++ -o main main.o $(FLD).o $(BMP).o
@@ -16,11 +17,11 @@ EasyBMP.o: $(BMP).cpp $(BMP).h
 main.o: main.cpp funcs.h timer.h $(SUB).h $(BMP).h
 	g++ -o main.o -c main.cpp
 
-analytical: analytical.o
-	g++ -o analytical analytical.o
+analytical: $(ANA).o
+	g++ -o $(ANA) $(ANA).o
 
-analytical.o: analytical.cpp
-	g++ -o analytical.o -c analytical.cpp
+analytical.o: $(ANA).cpp
+	g++ -o $(ANA).o -c $(ANA).cpp
 
 # removes all object files and backup files
 clean:
