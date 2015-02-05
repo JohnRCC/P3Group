@@ -10,8 +10,8 @@
 // Starts the timer. Needs to be assigned to a variable, e.g.
 // double start = timerstart()
 double timerstart(void)
-<<<<<<< HEAD
-=======
+//<<<<<<< HEAD
+//=======
 {
   struct timeval t1;
   gettimeofday(&t1, NULL);
