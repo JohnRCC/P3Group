@@ -1,9 +1,25 @@
 #!/bin/bash
 
+#####################################################################
+# bash script to compile the following into one .dat file           #
+# A) colums 1 and 2 from file analytical_data.dat                   #
+# (these are the x and y coordinates of each value in the matrix)   #
+# B) colum 3 from file analytical_data.dat                          #
+# (this is the value of the Analytical solution for the             #
+# corresponding matrix position)                                    #
+# C) colum 3 from mat_test.dat                                      #
+#####################################################################
+
+# NB analytic_data.dat and mat_test.dat MUST BE THE SAME SIZE OF FILE!
+
+
 paste analytic_data.dat mat_test.dat  | awk '{print $1,$2,$3,$6}' >> mergedAandN.dat
 
-./percentdif.pg
+./percentdif.pg 	# calculates and plots (in Gnuplot) the 
+			# percentage difference between the analytical 
+			# and the numerical solution 
 
-#rm mergedfile.dat
+#rm mergedAandN.dat   	# removes redundant mergerd file
 
-gv errorplot.pdf
+gv errorplot.pdf	# displays (via GhostView) heat map of 
+			# percentage difference
