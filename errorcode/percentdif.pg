@@ -1,0 +1,12 @@
+#!/usr/bin/gnuplot
+
+set view map
+set dgrid3d
+splot "mergedAandN.dat" using 1:2:3 with pm3d
+#(abs($3-$4))/abs($3)*100 with pm3d
+
+set term pdf
+set output "errorplot.pdf"
+replot
+
+quit 

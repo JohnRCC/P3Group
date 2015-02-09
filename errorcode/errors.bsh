@@ -1,0 +1,9 @@
+#!/bin/bash
+
+paste analytic_data.dat mat_test.dat  | awk '{print $1,$2,$3,$6}' >> mergedAandN.dat
+
+./percentdif.pg
+
+#rm mergedfile.dat
+
+gv errorplot.pdf
