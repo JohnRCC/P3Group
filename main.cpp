@@ -419,6 +419,8 @@ int main(int argc, char* argv[]) {
 		  fldline(rowsize,columnsize,fldmat,ds,ds);
 		}
 	    }
+
+	  datafile << endl;
 	  
 	  // Display percentage completion
 	  if (row > (count*percent))
@@ -450,6 +452,8 @@ int main(int argc, char* argv[]) {
 			   << " " << vals[row][column][2] << endl;
 		}
 	    }
+
+	  datafile << endl;
 
 	  // Display percentage completion
 	  if (row > (count*percent))
@@ -501,6 +505,8 @@ int main(int argc, char* argv[]) {
 	      }
 	  }
 	
+	datafile << endl;
+
 	// Display percentage completion
 	if (row > (count*percent))
 	  {
@@ -514,7 +520,6 @@ int main(int argc, char* argv[]) {
 	}
     }
   
-  datafile << "\n";
   datafile.close();
   cout << "done. (" << timerend(time) << "s)" << endl;
     
