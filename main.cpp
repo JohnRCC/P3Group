@@ -116,11 +116,12 @@ else if(argc==7)
 if(argc==4 || argc==5)
 {
   //Generate matrix from image file
-  cout<<"Filling image matrix... ";
+  cout<<"Filling image matrix... " << endl;
   for (row=0; row<rowsize; row++) 
   {
     for (column=0; column<columnsize; column++) 
     {
+      //cout << "\r" << "Row " << row << ", column " << column;
       if (Image(column,row)->Red == 255 && Image(column,row)->Green == 0 && Image(column,row)->Blue == 0) // Red = +1V
       {
 	vals[row][column][0] = 1;
@@ -147,7 +148,7 @@ if(argc==4 || argc==5)
       }
     }
   }
-  cout<<"Done."<<endl;
+  //cout << endl << "Done." << endl;
 }
 
 else if(argc==7) // case for analytical solution
@@ -181,10 +182,12 @@ else if(argc==7) // case for analytical solution
 
   //Get analytical solution
   analytic(smin,ds,smax,r);
-}
+ }
 
 //open file to write data to
+cout << "Opening datafile... ";
 ofstream datafile;
+cout << "Open." << endl;
 
 //DEBUG: output initial matrix to file
 /*cout<<"Attempting to print matrix to file for testing... ";
@@ -198,18 +201,25 @@ for(row=0;row<rowsize;row++)
   datafile<<endl;
 }
 cout<<"Done."<<endl;*/
-cout<<"Running algorithm... ";
-double left, right, up, down;
+
+cout << "Running algorithm... " << flush;
+double left, right, up, down, percent, count;
+count = 0;
+percent = errtol / 100.0;
 for(i=0;i<errtol;i++) 
 {  
   for(row=0;row<rowsize;row++)
   {
     for(column=0;column<columnsize;column++)
     {
-      left = vals[row][column-1][(i%2)];
-      right = vals[row][column+1][(i%2)];
-      up = vals[row+1][column][(i%2)];
-      down = vals[row-1][column][(i%2)];
+      if (column != 0 ) {
+	left = vals[row][column-1][(i%2)]; }
+      if (column != columnsize-1) {
+	right = vals[row][column+1][(i%2)]; }
+      if (row != rowsize-1) {
+	up = vals[row+1][column][(i%2)]; }
+      if (row != 0) {
+	down = vals[row-1][column][(i%2)]; }
 
       if(vals[row][column][2] != 2)
       {
@@ -253,13 +263,22 @@ for(i=0;i<errtol;i++)
       }          
     }
   }
+  if (i > (count*percent) )
+    {
+      if (count < 10 ) {
+	cout << count << "%\b\b" << flush; }
+      else {
+	cout << count << "%\b\b\b" << flush; }
+      count++;
+    }
 }
-cout<<"Done."<<endl;
+cout << "Done." << endl;
 
 // Ensure the first layer always contains the final matrix
 // Chose first layer rather than zeroth because the matrix will end up in
 // the first layer anyway for even numbers of iterations, which is what we'll
 // normally use
+cout << "Normalising matrix... " << flush;
  if ((-(i%2)+1) == 1 ) {
    for(row=0; row<rowsize; row++) {
      for(column=0; column<columnsize; column++) {
@@ -267,14 +286,21 @@ cout<<"Done."<<endl;
      }
    }
  }
+cout << "Done." << endl;
 
  // Apply meshing to the numerical solution
+cout << "Defining mesh arrays... " << flush;
  Sublayer** mesh;
  double** output;
- if ( argc == 4 )
+cout << "Done." << endl;
+ if (argc == 4 || argc == 5)
    {
+     cout << "Creating sublayer mesh... " << flush;
      mesh = meshing(vals, rowsize, columnsize, smooth);
+     cout << "Done." << endl;
+     cout << "Creating output matrix... " << flush;
      output = printmeshalt(vals, mesh, rowsize, columnsize, 9);
+     cout << "Done." << endl;
    }
 
 datafile.open("mat_test.dat");
@@ -340,7 +366,7 @@ if (argc==7) {
 	 //get fieldlines
 	 double **fldmat = new double*[rdim];
 	 
-	 for(row=0;row<rowsize;row++)
+	 for(row=0;row<rdim;row++)
 	   {
 	     fldmat[row] = new double[cdim];
 	   }

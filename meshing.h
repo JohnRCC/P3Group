@@ -7,7 +7,7 @@
 // which is then returned.
 
 // Example of use:
-// Sublayer** example = meshing(toplayer, 5, 5);
+// Sublayer** example = meshing(toplayer, 5);
 
 
 // Function prototype
@@ -130,14 +130,14 @@ int printmesh(double*** toplayer, int size, Sublayer mesh)
 double** printmeshalt(double*** toplayer, Sublayer** mesh,
 		      int rowsize, int columnsize, int maxres)
 {
-  int rowdim = rowsize * maxres;
-  int coldim = columnsize * maxres;
+  int rdim = rowsize * maxres;
+  int cdim = columnsize * maxres;
 
   // Create a super-array
-  double** output = new double*[rowdim];
-  for (int r = 0; r < rowdim; r++)
+  double** output = new double*[rdim];
+  for (int r = 0; r < rdim; r++)
     {
-      output[r] = new double[coldim];
+      output[r] = new double[cdim];
     }
 
   // Loop through the top-level matrix
