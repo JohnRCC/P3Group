@@ -18,7 +18,7 @@ float grad(float right,float left,float up,float down,float ds);
 int main(int argc, char* argv[]) {
   
   // Commence timer
-  cout << "Commence timer..." << flush;
+  cout << "Commence timer... " << flush;
   double start = timerstart();
   cout << "done." << endl;
   
