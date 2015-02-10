@@ -1,0 +1,17 @@
+#!/usr/bin/gnuplot
+
+
+###################################################################
+# Gnuplot script to plot percentage difference between collums    #
+# 3 and 4 in file mergedAandN.dat (see errors.bsh for details)    #
+###################################################################
+
+set view map
+set dgrid3d
+splot "mergedAandN.dat" using 1:2:(abs($3-$4))/abs($3)*100 with pm3d
+
+set term pdf
+set output "errorplot.pdf"
+replot
+
+quit 
