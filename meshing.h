@@ -16,8 +16,8 @@ double mod(double);
 
 // The meshing function. Takes as input the top-level array, its size,
 // and optionally whether to smooth edges (for use with circles)
-Sublayer** meshing(double*** toplayer,
-		   int rowsize, int columnsize, int smoothing = 0)
+Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
+		   int smoothing = 0)
 {
   // Establish a maximum gradient
   double maxgrad = 0;
@@ -207,6 +207,44 @@ double** printmeshalt(double*** toplayer, Sublayer** mesh,
       cout << endl;
     }
   */
+  return output;
+}
+
+
+
+double** nomeshing(double*** toplayer, int rowsize, int columnsize, int maxres)
+{
+  int rdim = rowsize * maxres;
+  int cdim = columnsize * maxres;
+
+  // Create a super-array
+  double** output = new double*[rdim];
+  for (int r = 0; r < rdim; r++)
+    {
+      output[r] = new double[cdim];
+    }
+
+  // Loop through the top-level matrix
+  for (int r = 0; r < rowsize; r++)
+    {
+      for (int c = 0; c < columnsize; c++)
+	{
+	  // The top-layer value is assigned to all the supermatrix points
+	  for (int y = 0; y < maxres; y++)
+	    {
+	      for (int x = 0; x < maxres; x++)
+		{
+		  {
+		    output[(r*maxres) +y]
+		      [(c*maxres) +x] =
+		      toplayer[r][c][1];
+		  }
+		}
+	    }
+	  
+	}
+    }
+  
   return output;
 }
       
