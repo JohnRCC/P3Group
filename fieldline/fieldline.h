@@ -43,8 +43,8 @@ Fieldline::Fieldline(int x,int y,double t,double b,double l,double r,double dx,d
   double deey = (b-t)/(2.0*dy);
 
   // Put values into array
-  fieldvals[0] = -50*deex;
-  fieldvals[1] = -50*deey;
+  fieldvals[0] = -1*deex;
+  fieldvals[1] = -1*deey;
 }
 
 
