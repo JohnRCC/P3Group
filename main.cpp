@@ -3,7 +3,8 @@
 #include <fstream>
 #include <cmath>
 #include <vector>
-#include "./sublayer/sublayer.h"
+#include "sublayer.h"
+#include "meshing.h"
 #include "funcs.h"
 #include "timer.h"
 #include "./easybmp/EasyBMP.h"
@@ -29,18 +30,18 @@ cout<<"Checking arguments...";
 if(argc<4 || argc>7) {
   cout<<"Usage: "<<endl;
   cout<<"    Analytical: "<<argv[0]<<" [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius][Error Tolerance][Output type]\n";
-  cout<<"    Numerical:  "<<argv[0]<<" [BMP Filename][Error Tolerance][Output Type]"<<endl;
+  cout<<"    Numerical:  "<<argv[0]<<" [BMP Filename][Error Tolerance][Output Type][Optional Smoothing]"<<endl;
 return 1;
 }
 cout<<"Done."<<endl;
 //Initialise variables (used in both cases)
 cout<<"Initialising variables... ";
-int row,column,i,rowsize,columnsize,errtol,matsize,index;
+ int row,column,i,rowsize,columnsize,errtol,matsize,index,smooth;
 float smin,smax,ds,r,mid;
 BMP Image;
 cout<<"Done"<<endl;
 
-if(argc==4) //case for numerical solution
+if(argc==4 || argc==5) //case for numerical solution
 {
   cout<<"Bitmap detected. Entering image mode..."<<endl;
   cout<<"Opening bitmap image... ";
@@ -62,7 +63,14 @@ if(argc==4) //case for numerical solution
   index=strtod(argv[3],NULL);
   errtol=strtod(argv[2],NULL);
   cout<<"Done."<<endl;
+
+  // Check for smoothing
+  if (argc==5) {
+    smooth = strtod(argv[4],NULL); }
+  else {
+    smooth = 0; }
 }
+
 else if(argc==7)
 {
   cout<<"Input variables detected. Entering analytic mode..."<<endl;
@@ -81,7 +89,15 @@ else if(argc==7)
 
 //Define matrix
   cout<<"Defining matrix... ";
-  double vals[rowsize][columnsize][3];
+  double*** vals = new double**[rowsize];
+  for (int r = 0; r < rowsize; r++)
+    {
+      vals[r] = new double*[columnsize];
+      for (int s = 0; s < columnsize; s++) {
+	vals[r][s] = new double[3];
+      }
+    }
+  
 
   /*vector<vector<vector<double> > > vals;
 
@@ -97,7 +113,7 @@ else if(argc==7)
 
   cout<<"Done."<<endl;
 
-if(argc==4)
+if(argc==4 || argc==5)
 {
   //Generate matrix from image file
   cout<<"Filling image matrix... ";
@@ -133,6 +149,7 @@ if(argc==4)
   }
   cout<<"Done."<<endl;
 }
+
 else if(argc==7) // case for analytical solution
 {  
     cout<<"Filling analytic matrix... ";
@@ -239,45 +256,114 @@ for(i=0;i<errtol;i++)
 }
 cout<<"Done."<<endl;
 
+// Ensure the first layer always contains the final matrix
+// Chose first layer rather than zeroth because the matrix will end up in
+// the first layer anyway for even numbers of iterations, which is what we'll
+// normally use
+ if ((-(i%2)+1) == 1 ) {
+   for(row=0; row<rowsize; row++) {
+     for(column=0; column<columnsize; column++) {
+       vals[row][column][1] = vals[row][column][0];
+     }
+   }
+ }
+
+ // Apply meshing to the numerical solution
+ Sublayer** mesh;
+ double** output;
+ if ( argc == 4 )
+   {
+     mesh = meshing(vals, rowsize, columnsize, smooth);
+     output = printmeshalt(vals, mesh, rowsize, columnsize, 9);
+   }
+
 datafile.open("mat_test.dat");
 
-for(row=0;row<rowsize;row++) {
-  for(column=0;column<columnsize;column++) {
-    //cout<<"File Iter: "<<row<<"\r";
-    if(index==1||index==3||index==5||index==7){
-      //gradient test. see function 'grad' for more info.
-      datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column][2]<<"\n";
-    }
-    else if(index==2||index==3||index==6||index==7){
-      //actual values of potential (for plotting etc.)
-      datafile<<row<<" "<<column<<" "<<vals[row][column][((i%2)==0)?0:1]<<"\n";
-    }
-    else if(index==4||index==5||index==6||index==7){
-      //get fieldlines
-      double **fldmat = new double*[rowsize];
-
-      for(row=0;row<rowsize;row++)
-      {
-	fldmat[row] = new double[columnsize];
+if (argc==7) {
+  for(row=0;row<rowsize;row++) {
+    for(column=0;column<columnsize;column++) {
+      //cout<<"File Iter: "<<row<<"\r";
+      if(index==1||index==3||index==5||index==7){
+	//gradient test. see function 'grad' for more info.
+	datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column][2]<<"\n";
       }
-
-      for(row=0;row<rowsize;row++)
-      {
-	for(column=0;column<columnsize;column++)
-	{
-	  fldmat[row][column]=vals[row][column][-(i%2)+1];
-	}
+      else if(index==2||index==3||index==6||index==7){
+	//actual values of potential (for plotting etc.)
+	datafile<<row<<" "<<column<<" "<<vals[row][column][((i%2)==0)?0:1]<<"\n";
       }
-
-      // get fieldline data for completed matrix
-      fldline(rowsize,columnsize,fldmat,ds,ds);
+      else if(index==4||index==5||index==6||index==7){
+	//get fieldlines
+	double **fldmat = new double*[rowsize];
+	
+	for(row=0;row<rowsize;row++)
+	  {
+	    fldmat[row] = new double[columnsize];
+	  }
+	
+	for(row=0;row<rowsize;row++)
+	  {
+	    for(column=0;column<columnsize;column++)
+	      {
+		fldmat[row][column]=vals[row][column][-(i%2)+1];
+	      }
+	  }
+	
+	// get fieldline data for completed matrix
+	fldline(rowsize,columnsize,fldmat,ds,ds);
+      }
     }
   }
-  //cout<<"\n";
-  datafile<<"\n";
-}
+ }
 
+ else {
+   for(row=0;row<rowsize;row++) {
+     for(column=0;column<columnsize;column++) {
+       //cout<<"File Iter: "<<row<<"\r";
+       if(index==1||index==3||index==5||index==7){
+	 //gradient test. see function 'grad' for more info.
+	 datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column][2]<<"\n";
+       }
+     }
+   }
 
+   int rdim = rowsize * 9;
+   int cdim = columnsize * 9;
+   
+   for(row=0;row<rdim;row++) {
+     for(column=0;column<cdim;column++) {
+       //cout<<"File Iter: "<<row<<"\r";
+       if(index==2||index==3||index==6||index==7){
+	 //actual values of potential (for plotting etc.)
+	 datafile << row << " " << column << " " << output[row][column] << "\n";
+       }
+       else if(index==4||index==5||index==6||index==7){
+	 //get fieldlines
+	 double **fldmat = new double*[rdim];
+	 
+	 for(row=0;row<rowsize;row++)
+	   {
+	     fldmat[row] = new double[cdim];
+	   }
+	 
+	 for(row=0;row<rdim;row++)
+	   {
+	     for(column=0;column<cdim;column++)
+	       {
+		 fldmat[row][column] = output[row][column];
+	       }
+	   }
+	 
+	 // get fieldline data for completed matrix
+	 fldline(rdim,cdim,fldmat,ds,ds);
+       }
+     }
+   }
+ }
+
+//cout<<"\n";
+datafile<<"\n";
+
+ 
 datafile.close(); 
 
 

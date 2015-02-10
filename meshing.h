@@ -7,7 +7,7 @@
 // which is then returned.
 
 // Example of use:
-// Sublayer** example = meshing(toplayer, 5);
+// Sublayer** example = meshing(toplayer, 5, 5);
 
 
 // Function prototype
@@ -16,15 +16,16 @@ double mod(double);
 
 // The meshing function. Takes as input the top-level array, its size,
 // and optionally whether to smooth edges (for use with circles)
-Sublayer** meshing(double*** toplayer, int size, int smoothing = 0)
+Sublayer** meshing(double*** toplayer,
+		   int rowsize, int columnsize, int smoothing = 0)
 {
   // Establish a maximum gradient
   double maxgrad = 0;
 
    // Loop through the matrix, checking the gradient of each point
-  for ( int r = 0; r < size; r++ )
+  for ( int r = 0; r < rowsize; r++ )
     {
-      for ( int c = 0; c < size; c++)
+      for ( int c = 0; c < columnsize; c++)
 	{
 	  double g = toplayer[r][c][2];
 
@@ -41,16 +42,16 @@ Sublayer** meshing(double*** toplayer, int size, int smoothing = 0)
   int lim3 = maxgrad / 3.0;
 
   // Create an array to store the pointers
-  Sublayer** pointers = new Sublayer*[size];
-  for (int r = 0; r < size; r++)
+  Sublayer** pointers = new Sublayer*[rowsize];
+  for (int r = 0; r < rowsize; r++)
     {
-      pointers[r] = new Sublayer[size];
+      pointers[r] = new Sublayer[columnsize];
     }
 
   // Create the sublayers where necessary
-  for ( int r = 1; r < size-1; r++ )
+  for ( int r = 1; r < rowsize-1; r++ )
     {
-      for ( int c = 1; c < size-1; c++ )
+      for ( int c = 1; c < columnsize-1; c++ )
 	{
 	  // Maximum sublayer size
 	  if ( mod(toplayer[r][c][2]) > lim9 )
@@ -126,21 +127,23 @@ int printmesh(double*** toplayer, int size, Sublayer mesh)
 */
 
 // An alternative way to print the matrix
-double** printmeshalt(double*** toplayer, Sublayer** mesh, int size, int maxres)
+double** printmeshalt(double*** toplayer, Sublayer** mesh,
+		      int rowsize, int columnsize, int maxres)
 {
-  int dim = size * maxres;
+  int rowdim = rowsize * maxres;
+  int coldim = columnsize * maxres;
 
   // Create a super-array
-  double** output = new double*[dim];
-  for (int r = 0; r < dim; r++)
+  double** output = new double*[rowdim];
+  for (int r = 0; r < rowdim; r++)
     {
-      output[r] = new double[dim];
+      output[r] = new double[coldim];
     }
 
   // Loop through the top-level matrix
-  for (int r = 0; r < size; r++)
+  for (int r = 0; r < rowsize; r++)
     {
-      for (int c = 0; c < size; c++)
+      for (int c = 0; c < columnsize; c++)
 	{
 
 	  // In the case of there being a sublayer

@@ -1,7 +1,7 @@
 #makefile
 
 FLD = ./fieldline/fieldline
-SUB = ./sublayer/sublayer
+SUB = ./sublayer
 BMP = ./easybmp/EasyBMP
 ANA = ./analytical/analytical
 
@@ -14,7 +14,7 @@ fieldline.o: $(FLD).cpp $(FLD).h funcs.h
 EasyBMP.o: $(BMP).cpp $(BMP).h
 	g++ -o $(BMP).o -c $(BMP).cpp
 
-main.o: main.cpp funcs.h timer.h $(SUB).h $(BMP).h
+main.o: main.cpp funcs.h timer.h $(SUB).h $(BMP).h meshing.h
 	g++ -o main.o -c main.cpp
 
 analytical.o: $(ANA).cpp funcs.h
