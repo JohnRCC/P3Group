@@ -5,8 +5,9 @@ SUB = ./sublayer
 BMP = ./easybmp/EasyBMP
 ANA = ./analytical/analytical
 
-all: main.o $(FLD).o $(BMP).o $(ANA).o
+all: main.o mainsilent.o $(FLD).o $(BMP).o $(ANA).o
 	g++ -o main main.o $(FLD).o $(BMP).o $(ANA).o
+	g++ -o mainsilent mainsilent.o $(FLD).o $(BMP).o $(ANA).o
 
 fieldline.o: $(FLD).cpp $(FLD).h funcs.h
 	g++ -o $(FLD).o -c $(FLD).cpp
@@ -16,6 +17,9 @@ EasyBMP.o: $(BMP).cpp $(BMP).h
 
 main.o: main.cpp funcs.h timer.h $(SUB).h $(BMP).h meshing.h
 	g++ -o main.o -c main.cpp
+
+mainsilent.o: mainsilent.cpp funcs.h timer.h $(SUB).h $(BMP).h meshing.h
+	g++ -o mainsilent.o -c mainsilent.cpp
 
 analytical.o: $(ANA).cpp funcs.h
 	g++ -o $(ANA).o -c $(ANA).cpp
