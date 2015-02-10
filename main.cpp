@@ -367,6 +367,9 @@ int main(int argc, char* argv[]) {
      cout << "done. (" << timerend(time) << "s)" << endl;
    }
 
+  // A high-res matrix with values taken entriely from the top-level matrix
+  // without any sublayers
+  double** comparison = nomeshing(vals, rowsize, columnsize, 9);
   
   datafile.open("mat_test.dat");
   
