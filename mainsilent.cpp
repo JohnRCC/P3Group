@@ -15,7 +15,7 @@ using namespace std;
 float grad(float right,float left,float up,float down,float ds);
 
 // The main flunction
-double main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
   
   // Commence timer
   double start = timerstart();
@@ -410,8 +410,10 @@ double main(int argc, char* argv[]) {
   
   datafile << "\n";
   datafile.close();
+
+  timerend(start, 1);
   
-  return timerend(start);
+  return 0;
 }
 
 

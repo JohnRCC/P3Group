@@ -15,7 +15,7 @@ using namespace std;
 float grad(float right,float left,float up,float down,float ds);
 
 // The main flunction
-double main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
   
   // Commence timer
   cout << "Commence timer... " << flush;
@@ -518,9 +518,9 @@ double main(int argc, char* argv[]) {
   datafile.close();
   cout << "done. (" << timerend(time) << "s)" << endl;
     
-  double total = timerend(start,1);
+  timerend(start,1);
   
-  return total;
+  return 0;
 }
 
 
