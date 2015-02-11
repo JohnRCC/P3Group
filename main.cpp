@@ -486,22 +486,27 @@ int main(int argc, char* argv[]) {
 	    else if (index == 4 || index == 5 || index == 6 || index == 7)
 	      {
 		// Get fieldlines
-		double **fldmat = new double*[rdim];
-		for (row = 0; row < rdim; row++)
+		// The way the fieldlines are calculated, doing it for the 9x sized matrix is no good.
+		// Instead, it just does the field line on the first iteration then skips it after that.
+		if (row==0 && column==0)
 		  {
-		    fldmat[row] = new double[cdim];
-		  }
-		
-		for (row = 0; row < rdim; row++)
-		  {
-		    for (column = 0; column < cdim; column++)
+		    double **fldmat = new double*[rowsize];
+		    for (row = 0; row < rowsize; row++)
 		      {
-			fldmat[row][column] = output[row][column];
+			fldmat[row] = new double[columnsize];
 		      }
-		  }
 		
-		// Get fieldline data for completed matrix
-		fldline(rdim,cdim,fldmat,ds,ds);
+		    for (row = 0; row < rowsize; row++)
+		      {
+			for (column = 0; column < columnsize; column++)
+			  {
+			    fldmat[row][column] = vals[row][column][1];
+			  }
+		      }
+		 
+		    // Get fieldline data for completed matrix
+		    fldline(rowsize,columnsize,fldmat,ds,ds);
+		  }
 	      }
 	  }
 	
