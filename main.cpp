@@ -526,55 +526,42 @@ if (index == 4 || index == 5 || index == 6 || index == 7)
 {
 	if (silence == 0) {
     	time = timerstart();
-    	cout << "Printing field lines to file... " << flush;
-    	}
+    	cout << "Printing field lines to file... " << flush; }
     	//datafile << "Field lines" << endl << endl;		
 	count = 0;
       percent = rowsize / 100.0;
-      for (row = 0; row < rowsize; row++)
+	// Get fieldlines
+	 double **fldmat = new double*[rowsize];
+	 for(row = 0; row < rowsize; row++)
+	 {
+	 fldmat[row] = new double[columnsize];
+	 }
+		  
+	for(row = 0; row < rowsize; row++)
 	{
-	  for (column = 0; column < columnsize; column++)
-	    {	
-		  // Get fieldlines
-		  double **fldmat = new double*[rowsize];
-		  for(row = 0; row < rowsize; row++)
-		    {
-		      fldmat[row] = new double[columnsize];
-		    }
-		  
-		  for(row = 0; row < rowsize; row++)
-		    {
-		      for(column = 0;column < columnsize; column++)
-			{
-			  fldmat[row][column] = vals[row][column][1];
-			}
-		    }
-		  
-		  // Get fieldline data for completed matrix
-		  fldline(rowsize,columnsize,fldmat,ds,ds);
+		for(column = 0;column < columnsize; column++)
+		{
+			fldmat[row][column] = vals[row][column][1];
 		}
-		
-	    
-
-	  datafile << endl;
-	  
-	  // Display percentage completion
-	  if (row > (count*percent) && silence == 0)
-	    {
-	      if (count < 10) {
-		cout << count << "%\b\b" << flush; }
-	      else {
-		cout << count << "%\b\b\b" << flush; }
-	      count++;
-	    }
-	  
+		// Display percentage completion
+		 if (row > (count*percent) && silence == 0)
+		 {
+		 if (count < 10) {
+			cout << count << "%\b\b" << flush; }
+		 else {
+			cout << count << "%\b\b\b" << flush; }
+		 count++;
+		 }
 	}
-	datafile << endl;
+		  
+	// Get fieldline data for completed matrix
+	fldline(rowsize,columnsize,fldmat,ds,ds);
 	
 	if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
-    }
-  
+}
+}
+
   // Output results for the numerical case
   else
     { 
@@ -613,8 +600,7 @@ if (index == 4 || index == 5 || index == 6 || index == 7)
 	
 	if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
-	} 
-    }
+	}
 
 // Print potential to file	
 if (index == 2 || index == 3 || index == 6 || index == 7)
@@ -653,54 +639,47 @@ if (index == 2 || index == 3 || index == 6 || index == 7)
 	
 	if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
-	} 
-    }		
+	}
 		  
 // Print field lines to file		  
 if (index == 4 || index == 5 || index == 6 || index == 7)
 {
-		    // Get fieldlines
-		    // The way the fieldlines are calculated, doing it for the
-		    // 9x sized matrix is no good.
-		    // Instead, it just does the field line on the first
-		    // iteration then skips it after that.
-
-			double **fldmat = new double*[rowsize];
-			for (int y = 0; y < rowsize; y++)
-			  {
-			    fldmat[y] = new double[columnsize];
-			  }
-			
-			for (row = 0; row < rowsize; row++)
-			  {
-			    for (column = 0; column < columnsize; column++)
-			      {
-				fldmat[row][column] = vals[row][column][1];
-			      }
-			  }
-			
-			// Get fieldline data for completed matrix
-			fldline(rowsize,columnsize,fldmat,ds,ds);
-		      } 
-		
-	datafile << endl;
-	  
-	  // Display percentage completion
-	  if (row > (count*percent) && silence == 0)
-	    {
-	      if (count < 10) {
-		cout << count << "%\b\b" << flush; }
-	      else {
-		cout << count << "%\b\b\b" << flush; }
-	      count++;
-	    }
-	  
+	// Get fieldlines
+	if (silence == 0) {
+    	time = timerstart();
+    	cout << "Printing field lines to file... " << flush;
+    	}
+    	//datafile << "Field lines" << endl << endl;
+	double **fldmat = new double*[rowsize];
+	for (int y = 0; y < rowsize; y++)
+	{
+		fldmat[y] = new double[columnsize];
 	}
-	datafile << endl;
-	
+			
+	for (row = 0; row < rowsize; row++)
+	{
+		for (column = 0; column < columnsize; column++)
+		{
+			fldmat[row][column] = vals[row][column][1];
+		}
+	 	// Display percentage completion
+	  	if (row > (count*percent) && silence == 0)
+	    	{
+	      		if (count < 10) {
+			cout << count << "%\b\b" << flush; }
+	      		else {
+			cout << count << "%\b\b\b" << flush; }
+	      		count++;
+		}
+			
+	// Get fieldline data for completed matrix
+	fldline(rowsize,columnsize,fldmat,ds,ds);
+	} 
+		
 	if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
-    }
+}
+}
   
   datafile.close();
   
