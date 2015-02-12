@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <fstream>
 #include <cmath>
-#include <vector>
 #include "sublayer.h"
 #include "meshing.h"
 #include "funcs.h"
@@ -16,85 +15,110 @@ float grad(float right,float left,float up,float down,float ds);
 
 // The main flunction
 int main(int argc, char* argv[]) {
+
+  int silence = 0;
+  if (argc == 6)
+  {
+  	silence = strtod(argv[5],NULL);
+  }
+  if (argc == 8)
+  {
+  	silence = strtod(argv[7],NULL);
+  }
   
   // Commence timer
-  cout << "Commence timer... " << flush;
+  if (silence == 0) {
+  cout << "Commence timer... " << flush; }
   double start = timerstart();
-  cout << "done." << endl;
+  if (silence == 0) {
+  cout << "done." << endl; }
   
   //generic mode:
   //  ./main [type][args][
   
   // Check on arguments (needs updating)
-  cout << "Checking arguments... " << flush;
+  if (silence == 0) {
+  cout << "Checking arguments... " << flush; }
   
-  if (argc < 4 || argc > 7) {
+  if (argc < 4 || argc > 8) {
     cout << "Usage: " << endl;
     cout << "    Analytical: " << argv[0]
 	 << " [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius]"
-	 << "[Error Tolerance][Output type]" << endl;;
+	 << "[Error Tolerance][Output type][Terminal output]" << endl;;
     cout << "    Numerical:  " << argv[0]
 	 << " [BMP Filename][Error Tolerance][Output Type]"
-	 << "[Optional Smoothing]" << endl;
+	 << "[Smoothing][Terminal Output]" << endl;
     return 1;
   }
   
-  cout << "done." << endl;
+  if (silence == 0) {
+  cout << "done." << endl; }
   
   // Initialise variables (used in both cases)
 
   double time = timerstart();
-  cout << "Initialising variables... " << flush;
+  if (silence == 0) {
+  cout << "Initialising variables... " << flush; }
   int row, column, i, rowsize, columnsize, errtol,
     matsize, index, smooth, count;
   float smin, smax, ds, r, mid, percent;
   BMP Image;
   Sublayer** mesh;
   double** output;
-  cout << "done. (" << timerend(time) << "s)" << endl;
+  if (silence == 0) {
+  cout << "done. (" << timerend(time) << "s)" << endl; }
   
   if (argc==4 || argc==5) // Case for numerical solution
     {
-      cout << "Bitmap detected. Entering image mode." << endl;
+    	if (silence == 0) {
+      cout << "Bitmap detected. Entering image mode." << endl; 
       time = timerstart();
-      cout << "Opening bitmap image... " << flush;
+      cout << "Opening bitmap image... " << flush; }
   
       // Read in image from bitmap
       Image.ReadFromFile(argv[1]);
-      cout << "done. (" << timerend(time) << "s)" << endl;
+      if (silence == 0) {
+      cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Get dimensions
+      if (silence == 0) {
       time = timerstart();
-      cout << "Getting image dimensions... " << flush;
+      cout << "Getting image dimensions... " << flush; }
       rowsize = Image.TellHeight();
       columnsize = Image.TellWidth();
       
       // Set ds to 1 since not defined by image
       ds = 1;
-      cout << "done. (" << timerend(time) << "s)" << endl;
+      if (silence == 0) {
+      cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Get index and error tolerance values
+      if (silence == 0) {
       time = timerstart();
-      cout << "Getting index value... " << flush;
+      cout << "Getting index value... " << flush; }
       index = strtod(argv[3],NULL);
       errtol = strtod(argv[2],NULL);
-      cout << "done. (" << timerend(time) << "s)" << endl;
+      if (silence == 0) {
+      cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Check for smoothing
+      if (silence == 0) {
       time = timerstart();
-      cout << "Checking for smoothing... " << flush;
+      cout << "Checking for smoothing... " << flush;}
       if (argc==5) {
 	smooth = strtod(argv[4],NULL); }
       else {
 	smooth = 0; }
-      cout << "done. (" << timerend(time) << "s)" << endl;
+	if (silence == 0) {
+      cout << "done. (" << timerend(time) << "s)" << endl; }
     }
   
   else if (argc == 7) // Case for the analytical solution
     {
+    	if (silence == 0) {
       cout << "Input variables detected. Entering analytic mode." << endl;
       time = timerstart();
-      cout << "Defining variables... " << flush;
+      cout << "Defining variables... " << flush; }
 
       // Convert input arguments to variables
       smin = strtod(argv[1],NULL); // Minimum x/y value
@@ -109,12 +133,16 @@ int main(int argc, char* argv[]) {
       rowsize = columnsize = matsize;
       
       mid = (matsize/2.0) - (fmod(matsize,2.0));
-      cout << "done. (" << timerend(time) << "s)" << endl;
+      
+      if (silence == 0) {
+      cout << "done. (" << timerend(time) << "s)" << endl; }
     }
   
   // Define the matrix
+  if (silence == 0) {
   time = timerstart();
-  cout << "Defining matrix... " << flush;
+  cout << "Defining matrix... " << flush; }
+  
   double*** vals = new double**[rowsize];
   for (int r = 0; r < rowsize; r++)
     {
@@ -123,25 +151,16 @@ int main(int argc, char* argv[]) {
 	vals[r][s] = new double[3];
       }
     }
-  cout << "done. (" << timerend(time) << "s)" << endl;
-
-  /*vector<vector<vector<double> > > vals;
-
-  vals.resize(rowsize);
-  for(row=0;row<rowsize;row++)
-  {
-    vals[row].resize(columnsize);
-    for(column=0;column<columnsize;column++)
-    {
-      vals[row][column].resize(3);
-    }
-  }*/
+    
+    if (silence == 0) {
+  cout << "done. (" << timerend(time) << "s)" << endl; }
 
   if (argc == 4 || argc == 5) // For the numerical case
     {
       // Generate matrix from image file
+      if (silence == 0) {
       time = timerstart();
-      cout << "Filling image matrix... " << flush;
+      cout << "Filling image matrix... " << flush; }
       count = 0;
       percent = rowsize / 100.0;
       for (row = 0; row < rowsize; row++) 
@@ -181,7 +200,7 @@ int main(int argc, char* argv[]) {
 	    }
 
 	  // Display percentage completion
-	  if (r > (count*percent))
+	  if (r > (count*percent) && silence == 0)
 	    {
 	      if (count < 10) {
 		cout << count << "%\b\b" << flush; }
@@ -191,14 +210,16 @@ int main(int argc, char* argv[]) {
 	    }
 
 	}
-      cout << "done. (" << timerend(time) << "s)" << endl;
+	if (silence == 0) {
+      cout << "done. (" << timerend(time) << "s)" << endl; }
     }
   
   else if (argc == 7) // For the analytical case
     {  
       // Generate initial matrix from definite values
+      if (silence == 0) {
       time = timerstart();
-      cout << "Filling analytic matrix... " << flush;
+      cout << "Filling analytic matrix... " << flush; }
       for(row = 0; row < matsize; row++)
 	{
 	  for(column = 0; column < matsize; column++)
@@ -230,17 +251,20 @@ int main(int argc, char* argv[]) {
 		}	
 	    }
 	}
-      cout << "done. (" << timerend(time) << "s)" << endl;
+	if (silence == 0) {
+      cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Get analytical solution
       analytic(smin,ds,smax,r);
     }
   
   // Open file to write data to
+  if (silence == 0) {
   time = timerstart();
-  cout << "Opening datafile... " << flush;
+  cout << "Opening datafile... " << flush; }
   ofstream datafile;
-  cout << "done. (" << timerend(time) << "s)" << endl;
+  if (silence == 0) {
+  cout << "done. (" << timerend(time) << "s)" << endl; }
  
   //DEBUG: output initial matrix to file
   /*cout<<"Attempting to print matrix to file for testing... ";
@@ -256,8 +280,9 @@ int main(int argc, char* argv[]) {
     cout<<"Done."<<endl;*/
   
   // Run the algorithm which calculates the potential at each point
+  if (silence == 0) {
   time = timerstart();
-  cout << "Running algorithm... " << flush;
+  cout << "Running algorithm... " << flush; }
   double left, right, up, down;
   count = 0;
   percent = errtol / 100.0;
@@ -324,7 +349,7 @@ int main(int argc, char* argv[]) {
 	}
       
       // Display percentage completion
-      if (i > (count*percent))
+      if (i > (count*percent) && silence == 0)
 	{
 	  if (count < 10 ) {
 	    cout << count << "%\b\b" << flush; }
@@ -333,14 +358,16 @@ int main(int argc, char* argv[]) {
 	  count++;
 	}
     }
-  cout << "done. (" << timerend(time) << "s)" << endl;
+    if (silence == 0) {
+  cout << "done. (" << timerend(time) << "s)" << endl; }
 
   // Ensure the first layer always contains the final matrix
   // Chose first layer rather than zeroth because the matrix will end up in
   // the first layer anyway for even numbers of iterations, which is what we'll
   // normally use
+  if (silence == 0) {
   time = timerstart();
-  cout << "Normalising matrix... " << flush;
+  cout << "Normalising matrix... " << flush; }
   if ((-(i%2)+1) == 1 )
     {
       for (row = 0; row < rowsize; row++)
@@ -351,19 +378,23 @@ int main(int argc, char* argv[]) {
 	    }
 	}
     }
-  cout << "done. (" << timerend(time) << "s)" << endl;
+    if (silence == 0) {
+  cout << "done. (" << timerend(time) << "s)" << endl; }
 
   // Apply meshing to the numerical solution
   if (argc == 4 || argc == 5)
    {
+   	if (silence == 0) {
      time = timerstart();
-     cout << "Creating sublayer mesh... " << flush;
+     cout << "Creating sublayer mesh... " << flush; }
      mesh = meshing(vals, rowsize, columnsize, smooth);
+     if (silence == 0) {
      cout << "done. (" << timerend(time) << "s)" << endl;
      time = timerstart();
-     cout << "Creating output matrix... " << flush;
+     cout << "Creating output matrix... " << flush; }
      output = printmeshalt(vals, mesh, rowsize, columnsize, 9);
-     cout << "done. (" << timerend(time) << "s)" << endl;
+     if (silence == 0) {
+     cout << "done. (" << timerend(time) << "s)" << endl; }
    }
 
   // A high-res matrix with values taken entriely from the top-level matrix
@@ -372,8 +403,9 @@ int main(int argc, char* argv[]) {
   
   datafile.open("pot.dat");
   
+  if (silence == 0) {
   time = timerstart();
-  cout << "Delivering final output... " << flush;
+  cout << "Delivering final output... " << flush; }
 
   // Output results for the analytical case
   if (argc == 7)
@@ -422,7 +454,7 @@ int main(int argc, char* argv[]) {
 	  datafile << endl;
 	  
 	  // Display percentage completion
-	  if (row > (count*percent))
+	  if (row > (count*percent) && silence == 0)
 	    {
 	      if (count < 10) {
 		cout << count << "%\b\b" << flush; }
@@ -519,7 +551,7 @@ int main(int argc, char* argv[]) {
 	    datafile << endl;
 	    
 	    // Display percentage completion
-	    if (row > (count*percent))
+	    if (row > (count*percent) && silence == 0)
 	      {
 		if (count < 10) {
 		  cout << count << "%\b\b" << flush; }
@@ -532,9 +564,11 @@ int main(int argc, char* argv[]) {
     }
   
   datafile.close();
-  cout << "done. (" << timerend(time) << "s)" << endl;
+  if (silence == 0) {
+  cout << "done. (" << timerend(time) << "s)" << endl; }
   
-  timerend(start,1);
+  if (silence == 0) {
+  timerend(start,1); }
       
   return 0;
 }
