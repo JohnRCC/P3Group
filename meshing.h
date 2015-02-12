@@ -38,8 +38,8 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
     }
 
   // Set the boundary conditions for sublayer size
-  int lim9 = maxgrad / 5.0;
-  int lim3 = maxgrad / 10.0;
+  int lim9 = maxgrad * 0.75;
+  int lim3 = maxgrad * 0.5;
 
   // Create an array to store the pointers
   Sublayer** pointers = new Sublayer*[rowsize];
@@ -56,13 +56,13 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 	  // Maximum sublayer size
 	  if ( mod(toplayer[r][c][2]) > lim9 )
 	    {
-	      pointers[r][c] = sublayer(c, r, toplayer, 9, 50, smoothing);
+	      pointers[r][c] = sublayer(c, r, toplayer, 9, 100, smoothing);
 	      //pointers[r][c] = sublayer(c, r, toplayer, 9, 15, smoothing);
 	    }
 	  // Moderate sublayer size
 	  else if ( mod(toplayer[r][c][2]) > lim3 )
 	    {
-	      pointers[r][c] = sublayer(c, r, toplayer, 3, 50, smoothing);
+	      pointers[r][c] = sublayer(c, r, toplayer, 3, 100, smoothing);
 	      //pointers[r][c] = sublayer(c, r, toplayer, 3, 3, smoothing);
 	    }
 	  // Else there is no sublayer
