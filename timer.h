@@ -41,7 +41,7 @@ double timerend(double start, int output = 0)
 // The previous version of the timer.
 // Apparently measures 'CPU time' since the start of the program,
 // which is usually a lot less than observed time. Not recommended.
-/*
+
 double timer(int output = 0)
 {
   double time = clock() / (double)CLOCKS_PER_SEC;
@@ -49,11 +49,11 @@ double timer(int output = 0)
   if ( output == 1 )
     {
       using namespace std;
-      cout << "Time elapsed: " << time << " seconds" << endl;
+      cout << "CPU time used: " << time << " seconds" << endl;
     }
 
   return time;
 }
-*/
+
 
 #endif
