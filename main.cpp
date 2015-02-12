@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
   else if (argc == 7) // Case for the analytical solution
     {
     	if (silence == 0) {
-      cout << "Input variables detected. Entering analytic mode." << endl;
+      cout << "Input variables detected. Solving for system A." << endl;
       time = timerstart();
       cout << "Defining variables... " << flush; }
 
