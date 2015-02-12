@@ -381,12 +381,21 @@ int main(int argc, char* argv[]) {
   cout << "done. (" << timerend(time) << "s)" << endl; }
 
 // Determine the gradient at each point
-for (row = 0; row < rowsize; row++)
+if (silence == 0) {
+ time = timerstart();
+ cout << "Calculating gradients... " << flush; }
+
+for (row = 1; row < rowsize-1; row++)
 {
-	for (column = 0; column < columnsize; column++)
+	for (column = 1; column < columnsize-1; column++)
 	{
 		vals[row][column][2] = grad(vals, row, column);
 	}
+}
+
+if (silence == 0) {
+time = timerstart();
+cout << "done. (" << timerend(time) << "s)" << endl; }
 }
 
   // Apply meshing to the numerical solution
