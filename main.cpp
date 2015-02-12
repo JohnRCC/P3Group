@@ -14,6 +14,8 @@ using namespace std;
 int main(int argc, char* argv[]) {
 
 // Determine if progress should be output to the terminal
+// If silence = 0, progress will be displayed; for any
+// other value, it will be supressed
   int silence = 0;
   if (argc == 6)
   {
