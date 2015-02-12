@@ -33,11 +33,29 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
   cout << "done." << endl; }
   
-  //IMAGE MODE:
-  //  ./main image.bmp [err_tol][index]
-  //
-  //ANALYTIC MODE:
-  //  ./main [minx][maxx][dx][rad][err_tol][index]
+  //generic mode:
+  //  ./main [type][args][
+  
+  // Check on arguments (needs updating)
+  // 	EXPLANATION:
+  // 		
+  // 		Min,Max x/y:	"Real" maximum, minimum coordinates of system
+  // 				Entries: float values	
+  // 		x/y divisions:	Granularity of Initial grid
+  // 				Entries: float value
+  // 		Circle Radius:	Radius of GND conducting circle at (0,0)
+  // 				Entries: float value
+  // 		Error tol:	CURRENT: number of iterations
+  // 				Entries: float value
+  // 		Output Type:	Index for plot type
+  // 				Entries: any sum of 1,2,4:
+  // 				 1 - gradient test (now obsolete)
+  // 				 2 - potential data
+  // 				 4 - fieldlines
+  // 				eg. 6 would give potential and fieldlines
+  // 				    3 would give gradient test and data 
+  // 		Terminal out:	Turn on or off printing program progress
+  // 				Entries: 0 (default) -off- or 1 -on-
   
   // Check on arguments (needs updating)
   if (silence == 0) {
@@ -118,7 +136,7 @@ int main(int argc, char* argv[]) {
   else if (argc > 6) // Case for the analytical solution
     {
     	if (silence == 0) {
-      cout << "Input variables detected. Entering analytic mode." << endl;
+      cout << "Input variables detected. Solving for system A." << endl;
       time = timerstart();
       cout << "Defining variables... " << flush; }
 
