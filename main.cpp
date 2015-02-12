@@ -2,174 +2,556 @@
 #include <stdlib.h>
 #include <fstream>
 #include <cmath>
-#include "./sublayer/sublayer.h"
+#include <vector>
+#include "sublayer.h"
+#include "meshing.h"
 #include "funcs.h"
 #include "timer.h"
-//#include "./fieldline/fieldline.h"
+#include "./easybmp/EasyBMP.h"
 
 using namespace std;
 
-//function prototypes
-float cf(float matind,float min,float ds);
+// Function prototypes
 float grad(float right,float left,float up,float down,float ds);
 
+// The main flunction
 int main(int argc, char* argv[]) {
-
-if(argc<6) {
-  cout<<"Usage: "<<argv[0]<<" [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius][No. Iterations][Output type]\n";
-return 1;
-}
   
-float smin=strtod(argv[1],NULL);
-float smax=strtod(argv[2],NULL);
-float ds=strtod(argv[3],NULL);
-float r=strtod(argv[4],NULL);
-int iter=strtod(argv[5],NULL);
-int index=strtod(argv[6],NULL);
+  // Commence timer
+  cout << "Commence timer... " << flush;
+  double start = timerstart();
+  cout << "done." << endl;
   
-//get matrix size
-int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1);  
-
-//get mindpoint of matrix for circle
-float mid = (matsize/2.0) - (fmod(matsize,2.0));
-double vals[matsize][matsize][3]; //made 3 for array of grad values
+  //IMAGE MODE:
+  //  ./main image.bmp [err_tol][index]
+  //
+  //ANALYTIC MODE:
+  //  ./main [minx][maxx][dx][rad][err_tol][index]
   
-int row,column,i;
+  // Check on arguments (needs updating)
+  cout << "Checking arguments... " << flush;
   
-//generate initial matrix
-for(row=0;row<matsize;row++) {
-  for(column=0;column<matsize;column++) {
-    if(column==0) {
-      vals[row][column][0]=vals[row][column][1]=1;
-      }
-      else if(column==matsize-1) {
-	vals[row][column][0]=vals[row][column][1]=-1;
-      }
-      else if( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) < pow(r,2.0) ) {
-	vals[row][column][0]=vals[row][column][1]=0;
-      }
-      else {
-	vals[row][column][0]=vals[row][column][1]=0;
-      }
-	
+  if (argc < 4 || argc > 7) {
+    cout << "Usage: " << endl;
+    cout << "    Analytical: " << argv[0]
+	 << " [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius]"
+	 << "[Error Tolerance][Output type]" << endl;;
+    cout << "    Numerical:  " << argv[0]
+	 << " [BMP Filename][Error Tolerance][Output Type]"
+	 << "[Optional Smoothing]" << endl;
+    return 1;
   }
-}
   
-//open file to write data to
-ofstream datafile;
-
-//define position values for ease of use
-float up,down,left,right;
-
-//run algorithm to get average of values
-for(i=0;i<iter;i++) {
-  for(row=0;row<matsize;row++) {
-    for(column=1;column<matsize-1;column++) {
-      //get position values for step
-      up    = vals[row-1][column][i%2];
-      down  = vals[row+1][column][i%2];
-      left  = vals[row][column-1][i%2];
-      right = vals[row][column+1][i%2];
-      //do check on gradient to see how it's changing
-      //if(row>0 && row<matsize-1){
-	//vals[row][column][2] = grad(right,left,up,down,ds);
-      //}
-      if(row==0) {
-	vals[row][column][-(i%2)+1] = (left+right+down)/3.00;
-	vals[row][column][2] = grad(right,left,0,down,ds);
-      }
-      else if(row==0 || row==matsize-1) {
-	vals[row][column][-(i%2)+1] = (left+right+up)/3.00;
-	vals[row][column][2] = grad(right,left,up,0,ds);
-      }
-      else if( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) < pow(r,2.0) ) {
-	vals[row][column][-(i%2)+1]=0;
-	vals[row][column][2] = grad(right,left,up,down,ds);
-      }
-      else {
-	vals[row][column][-(i%2)+1] = 0.25*(left+right+up+down);
-	vals[row][column][2] = grad(right,left,up,down,ds);
-      }		
-    }
-  }
-}
-
-
-// Converting every value from 3d matrix to 2d one
-// This is stupid and inefficient but if you can manage to pass one layer
-// of the matrix to the fldline function then be my guest
-double **fldmat = new double*[matsize];
-
-for(row=0;row<matsize;row++)
-{
-  fldmat[row] = new double[matsize];
-}
-
-for(row=0;row<matsize;row++)
-{
-  for(column=0;column<matsize;column++)
-  {
-    fldmat[row][column]=vals[row][column][-(i%2)+1];
-  }
-}
-
-
-// get fieldline data for completed matrix
-fldline(matsize,matsize,fldmat,ds,ds);
- /* ofstream field;
-  field.open("field.dat");
-  //Output coords and vals
-  for(r=1;r<matsize-1;r++)
-  {
-    for(int c=1;c<matsize-1;c++)
+  cout << "done." << endl;
+  
+  // Initialise variables (used in both cases)
+  double time = timerstart();
+  cout << "Initialising variables... " << flush;
+  int row, column, i, rowsize, columnsize, errtol,
+    matsize, index, smooth, count;
+  float smin, smax, ds, r, mid, percent;
+  BMP Image;
+  Sublayer** mesh;
+  double** output;
+  cout << "done. (" << timerend(time) << "s)" << endl;
+  
+  if (argc == 4 || argc == 5) // Case for numerical solution
     {
-      Fieldline Test = *fline(r,c,fldmat,ds,ds);
-      field<<Test.xcord<<" "<<Test.ycord<<" "<<Test.fieldvals[0]<<" "<<Test.fieldvals[1]<<"\n";
-    }
-    field<<"\n";
-  }
-  field.close();*/
+      cout << "Bitmap detected. Entering image mode." << endl;
+      time = timerstart();
+      cout << "Opening bitmap image... " << flush;
   
-datafile.open("the_datafile.dat");
+      // Read in image from bitmap
+      Image.ReadFromFile(argv[1]);
+      cout << "done. (" << timerend(time) << "s)" << endl;
+      
+      // Get dimensions
+      time = timerstart();
+      cout << "Getting image dimensions... " << flush;
+      rowsize = Image.TellHeight();
+      columnsize = Image.TellWidth();
+      
+      // Set ds to 1 since not defined by image
+      ds = 1;
+      cout << "done. (" << timerend(time) << "s)" << endl;
+      
+      // Get index and error tolerance values
+      time = timerstart();
+      cout << "Getting index value... " << flush;
+      index = strtod(argv[3],NULL);
+      errtol = strtod(argv[2],NULL);
+      cout << "done. (" << timerend(time) << "s)" << endl;
+      
+      // Check for smoothing
+      time = timerstart();
+      cout << "Checking for smoothing... " << flush;
+      if (argc==5) {
+	smooth = strtod(argv[4],NULL); }
+      else {
+	smooth = 0; }
+      cout << "done. (" << timerend(time) << "s)" << endl;
+    }
+  
+  else if (argc == 7) // Case for the analytical solution
+    {
+      cout << "Input variables detected. Entering analytic mode." << endl;
+      time = timerstart();
+      cout << "Defining variables... " << flush;
 
-for(row=0;row<matsize;row++) {
-  for(column=0;column<matsize;column++) {
-    //cout<<"File Iter: "<<row<<"\r";
-    if(index==0){
-      //gradient test. see function 'grad' for more info.
-      datafile<<cf(row,smin,ds)<<" "<<cf(column,smin,ds)<<" "<<vals[row][column][2]<<"\n";
+      // Convert input arguments to variables
+      smin = strtod(argv[1],NULL); // Minimum x/y value
+      smax = strtod(argv[2],NULL); // Maximum x/y value
+      ds = strtod(argv[3],NULL); // x/y divisions
+      r = strtod(argv[4],NULL); // Circle radius
+      errtol = strtod(argv[5],NULL); // Error tolerance
+      index = strtod(argv[6],NULL); // Output type
+      
+      // Define the size of the matrix
+      matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1);
+      rowsize = columnsize = matsize;
+      
+      mid = (matsize/2.0) - (fmod(matsize,2.0));
+      cout << "done. (" << timerend(time) << "s)" << endl;
     }
-    else if(index==1){
-      //actual values of potential (for plotting etc.)
-      datafile<<row<<" "<<column<<" "<<vals[row][column][((i%2)==0)?0:1]<<"\n";
+  
+  // Define the matrix
+  time = timerstart();
+  cout << "Defining matrix... " << flush;
+  double*** vals = new double**[rowsize];
+  for (int r = 0; r < rowsize; r++)
+    {
+      vals[r] = new double*[columnsize];
+      for (int s = 0; s < columnsize; s++) {
+	vals[r][s] = new double[3];
+      }
     }
-    else if(index==2){
-      //display values in terminal
-      cout<<vals[row][column][((i%2)==0)?0:1]<<" ";
+  cout << "done. (" << timerend(time) << "s)" << endl;
+
+  /*vector<vector<vector<double> > > vals;
+
+  vals.resize(rowsize);
+  for(row=0;row<rowsize;row++)
+  {
+    vals[row].resize(columnsize);
+    for(column=0;column<columnsize;column++)
+    {
+      vals[row][column].resize(3);
     }
-  }
-  //cout<<"\n";
-  datafile<<"\n";
+  }*/
+
+  if (argc == 4 || argc == 5) // For the numerical case
+    {
+      // Generate matrix from image file
+      time = timerstart();
+      cout << "Filling image matrix... " << flush;
+      count = 0;
+      percent = rowsize / 100.0;
+      for (row = 0; row < rowsize; row++) 
+	{
+	  for (column = 0; column < columnsize; column++) 
+	    {
+	      if ( Image(column,row)->Red == 255 &&
+		   Image(column,row)->Green == 0 &&
+		   Image(column,row)->Blue == 0 ) // Red = +1V
+		{
+		  vals[row][column][0] = 1;
+		  vals[row][column][1] = 1;
+		  vals[row][column][2] = 1;
+		}
+	      else if ( Image(column,row)->Red == 0 &&
+			Image(column,row)->Green == 0 &&
+			Image(column,row)->Blue == 255 ) // Blue = -1V
+		{
+		  vals[row][column][0] = -1;
+		  vals[row][column][1] = -1;
+		  vals[row][column][2] = -1;
+		}
+	      else if ( Image(column,row)->Red == 0 &&
+			Image(column,row)->Green == 0 &&
+			Image(column,row)->Blue == 0 ) // Black = 0V
+		{
+		  vals[row][column][0] = 0;
+		  vals[row][column][1] = 0;
+		  vals[row][column][2] = 0;
+		}
+	      else // Not source/sink, free to change
+		{
+		  vals[row][column][0] = 0;
+		  vals[row][column][1] = 0;
+		  vals[row][column][2] = 2;
+		}
+	    }
+
+	  // Display percentage completion
+	  if (r > (count*percent))
+	    {
+	      if (count < 10) {
+		cout << count << "%\b\b" << flush; }
+	      else {
+		cout << count << "%\b\b\b" << flush; }
+	      count++;
+	    }
+
+	}
+      cout << "done. (" << timerend(time) << "s)" << endl;
+    }
+  
+  else if (argc == 7) // For the analytical case
+    {  
+      // Generate initial matrix from definite values
+      time = timerstart();
+      cout << "Filling analytic matrix... " << flush;
+      for(row = 0; row < matsize; row++)
+	{
+	  for(column = 0; column < matsize; column++)
+	    {
+	      if (column == 0) // Left plate
+		{
+		  vals[row][column][0] =
+		    vals[row][column][1] =
+		    vals[row][column][2] = 1;
+		}
+	      else if(column == matsize-1) // Right plate
+		{
+		  vals[row][column][0] =
+		    vals[row][column][1] =
+		    vals[row][column][2] = -1;
+		}
+	      else if ( (pow( (cf(row,smin,ds) - cf(mid,smin,ds)), 2.0 )
+			 + pow( (cf(column,smin,ds) - cf(mid,smin,ds)), 2.0 ) )
+			< pow(r, 2.0) ) // Within the circle
+		{
+		  vals[row][column][0] =
+		    vals[row][column][1] =
+		    vals[row][column][2] = 0;
+		}
+	      else // not source/sink, free to change
+		{
+		  vals[row][column][0] = vals[row][column][1] = 0;
+		  vals[row][column][2] = 2;
+		}	
+	    }
+	}
+      cout << "done. (" << timerend(time) << "s)" << endl;
+      
+      // Get analytical solution
+      analytic(smin,ds,smax,r);
+    }
+  
+  // Open file to write data to
+  time = timerstart();
+  cout << "Opening datafile... " << flush;
+  ofstream datafile;
+  cout << "done. (" << timerend(time) << "s)" << endl;
+ 
+  //DEBUG: output initial matrix to file
+  /*cout<<"Attempting to print matrix to file for testing... ";
+    datafile.open("mat_test.dat");
+    for(row=0;row<rowsize;row++)
+    {
+    for(column=0;column<columnsize;column++)
+    {
+    datafile<<row<<" "<<column<<" "<<vals[row][column][1]<<endl;
+    }
+    datafile<<endl;
+    }
+    cout<<"Done."<<endl;*/
+  
+  // Run the algorithm which calculates the potential at each point
+  time = timerstart();
+  cout << "Running algorithm... " << flush;
+  double left, right, up, down;
+  count = 0;
+  percent = errtol / 100.0;
+  
+  // Run the algorithm for 'error tolerance' iterations
+  for(i = 0; i < errtol; i++) 
+    {  
+      for(row = 0; row < rowsize; row++)
+	{
+	  for(column = 0; column < columnsize; column++)
+	    {
+	      // Define adjacent points (up, down, left, right)
+	      if (column != 0 ) {
+		left = vals[row][column-1][(i%2)]; }
+	      if (column != columnsize-1) {
+		right = vals[row][column+1][(i%2)]; }
+	      if (row != rowsize-1) {
+		up = vals[row+1][column][(i%2)]; }
+	      if (row != 0) {
+		down = vals[row-1][column][(i%2)]; }
+	      
+	      // For any possible point, apply propogation
+	      if (vals[row][column][2] != 2)
+		{
+		  vals[row][column][-(i%2)+1] = vals[row][column][2];
+		}
+	      else if (row == 0 && column == 0)
+		{
+		  vals[row][column][-(i%2)+1] = (right+up)/2.00;
+		}
+	      else if (row == 0 && column == columnsize-1)
+		{
+		  vals[row][column][-(i%2)+1] = (left+up)/2.00;
+		}
+	      else if (row == rowsize-1 && column == 0)
+		{
+		  vals[row][column][-(i%2)+1] = (down+right)/2.00;
+		}
+	      else if (row == rowsize-1 && column == columnsize-1)
+		{
+		  vals[row][column][-(i%2)+1] = (left+down)/2.00;
+		}
+	      else if (column == 0)
+		{
+		  vals[row][column][-(i%2)+1] = (right+down+up)/3.00;
+		}
+	      else if (column == columnsize-1)
+		{
+		  vals[row][column][-(i%2)+1] = (left+down+up)/3.00;
+		}
+	      else if (row == 0)
+		{
+		  vals[row][column][-(i%2)+1] = (right+up+left)/3.00;
+		}
+	      else if (row == rowsize-1)
+		{
+		  vals[row][column][-(i%2)+1] = (right+left+down)/3.00;
+		}
+	      else
+		{
+		  vals[row][column][-(i%2)+1] = (up+down+right+left)/4.00;
+		}          
+	    }
+	}
+      
+      // Display percentage completion
+      if (i > (count*percent))
+	{
+	  if (count < 10 ) {
+	    cout << count << "%\b\b" << flush; }
+	  else {
+	    cout << count << "%\b\b\b" << flush; }
+	  count++;
+	}
+    }
+  cout << "done. (" << timerend(time) << "s)" << endl;
+
+  // Ensure the first layer always contains the final matrix
+  // Chose first layer rather than zeroth because the matrix will end up in
+  // the first layer anyway for even numbers of iterations, which is what we'll
+  // normally use
+  time = timerstart();
+  cout << "Normalising matrix... " << flush;
+  if ((-(i%2)+1) == 1 )
+    {
+      for (row = 0; row < rowsize; row++)
+	{
+	  for (column = 0; column < columnsize; column++)
+	    {
+	      vals[row][column][1] = vals[row][column][0];
+	    }
+	}
+    }
+  cout << "done. (" << timerend(time) << "s)" << endl;
+
+  // Apply meshing to the numerical solution
+  if (argc == 4 || argc == 5)
+   {
+     time = timerstart();
+     cout << "Creating sublayer mesh... " << flush;
+     mesh = meshing(vals, rowsize, columnsize, smooth);
+     cout << "done. (" << timerend(time) << "s)" << endl;
+     time = timerstart();
+     cout << "Creating output matrix... " << flush;
+     output = printmeshalt(vals, mesh, rowsize, columnsize, 9);
+     cout << "done. (" << timerend(time) << "s)" << endl;
+   }
+
+  // A high-res matrix with values taken entriely from the top-level matrix
+  // without any sublayers
+  double** comparison = nomeshing(vals, rowsize, columnsize, 9);
+  
+  datafile.open("pot.dat");
+  
+  time = timerstart();
+  cout << "Delivering final output... " << flush;
+
+  // Output results for the analytical case
+  if (argc == 7)
+    {
+      count = 0;
+      percent = rowsize / 100.0;
+      for (row = 0; row < rowsize; row++)
+	{
+	  for (column = 0; column < columnsize; column++)
+	    {
+	      //cout<<"File Iter: "<<row<<"\r";
+	      if (index == 1 || index == 3 || index == 5 || index == 7)
+		{
+		  // Gradient test. See function 'grad' for more info.
+		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
+			   << " " << vals[row][column][2] << endl;
+		}
+	      else if (index == 2 || index == 3 || index == 6 || index == 7)
+		{
+		  //actual values of potential (for plotting etc.)
+		  datafile << row << " " << column << " "
+			   << vals[row][column][1] << endl;
+		}
+	      else if (index == 4 || index == 5 || index == 6 || index == 7)
+		{
+		  // Get fieldlines
+		  double **fldmat = new double*[rowsize];
+		  for(row = 0; row < rowsize; row++)
+		    {
+		      fldmat[row] = new double[columnsize];
+		    }
+		  
+		  for(row = 0; row < rowsize; row++)
+		    {
+		      for(column = 0;column < columnsize; column++)
+			{
+			  fldmat[row][column] = vals[row][column][1];
+			}
+		    }
+		  
+		  // Get fieldline data for completed matrix
+		  fldline(rowsize,columnsize,fldmat,ds,ds);
+		}
+	    }
+
+	  datafile << endl;
+	  
+	  // Display percentage completion
+	  if (row > (count*percent))
+	    {
+	      if (count < 10) {
+		cout << count << "%\b\b" << flush; }
+	      else {
+		cout << count << "%\b\b\b" << flush; }
+	      count++;
+	    }
+	  
+	}
+    }
+  
+  // Output results for the numerical case
+  else
+    { 
+      count = 0;
+      percent = rowsize / 100.0;
+      if (index == 1 || index == 3 || index == 5 || index == 7)
+	{
+	  for (row = 0; row < rowsize; row++)
+	    {
+	      for (column = 0; column < columnsize; column++)
+		{
+		  //cout<<"File Iter: "<<row<<"\r";
+		  
+		  // Gradient test. see function 'grad' for more info.
+		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
+			   << " " << vals[row][column][2] << endl; 
+		}
+	      
+	      datafile << endl;
+	      
+	      // Display percentage completion
+	      if (row > (count*percent))
+		{
+		  if (count < 10) {
+		    cout << count << "%\b\b" << flush; }
+		  else {
+		    cout << count << "%\b\b\b" << flush; }
+		  count++;
+		}   
+	    }
+	} 
+      
+      if (index > 1) { 
+	
+	int rdim = rowsize * 9;
+	int cdim = columnsize * 9;
+	count = 0;
+	percent = rdim / 100.0;
+	
+	for (row = 0; row < rdim; row++)
+	  {
+	    for (column = 0; column < cdim; column++)
+	      {
+		//cout<<"File Iter: "<<row<<"\r";
+		
+		if (index == 2 || index == 3 || index == 6 || index == 7)
+		  { 
+		    // Actual values of potential (for plotting etc.)
+		    datafile << row << " " << column << " "
+			     << output[row][column] << endl;
+		  }
+		
+		else if (index == 4 || index == 5 || index == 6 || index == 7)
+		  {
+		    // Get fieldlines
+		    // The way the fieldlines are calculated, doing it for the
+		    // 9x sized matrix is no good.
+		    // Instead, it just does the field line on the first
+		    // iteration then skips it after that.
+		    if (row==0 && column==0)
+		      {
+			double **fldmat = new double*[rowsize];
+			for (int y = 0; y < rowsize; y++)
+			  {
+			    fldmat[y] = new double[columnsize];
+			  }
+			
+			for (int y = 0; row < rowsize; y++)
+			  {
+			    for (int x = 0; x < columnsize; x++)
+			      {
+				fldmat[y][x] = vals[y][x][1];
+			      }
+			  }
+			
+			// Get fieldline data for completed matrix
+			fldline(rowsize,columnsize,fldmat,ds,ds);
+		      } 
+		  } 
+	      }
+	    
+	    datafile << endl;
+	    
+	    // Display percentage completion
+	    if (row > (count*percent))
+	      {
+		if (count < 10) {
+		  cout << count << "%\b\b" << flush; }
+		else {
+		  cout << count << "%\b\b\b" << flush; }
+		count++;
+	      } 
+	  }  
+      }
+    }
+  
+  datafile.close();
+  cout << "done. (" << timerend(time) << "s)" << endl;
+  
+  timerend(start,1);
+      
+  return 0;
 }
 
-
-datafile.close(); 
-
-timer(1);
-
-
-return 0;
-
-}
 
 //CoordiFy converts the matrix location of a point into its physical coordinate
-float cf(float matind,float min,float ds){
-  //matind = index of value in array, min = min true coord value, ds = coord division
+float cf(float matind,float min,float ds) {
+  // matind = index of value in array, min = min true coord value,
+  // ds = coord division
   return min + (ds*matind);
 }
 
-//Check on gradient. Returns a value based on 4 surrounding points (needs some tweaking in order to calibrate tolerance)
-float grad(float right,float left,float up,float down,float ds){
+
+// Check on gradient. Returns a value based on 4 surrounding points
+// (needs some tweaking in order to calibrate tolerance)
+float grad(float right,float left,float up,float down,float ds) {
   float result = pow(pow((right-left)/ds,2.00)+pow((down-up)/ds,2.00),0.50);
   
   /*for now, return result to see values
@@ -180,10 +562,12 @@ float grad(float right,float left,float up,float down,float ds){
     return result;
   }*/
 
-  if (result>0.25){
+  if (result > 0.25) 
+    {
       return 1;
     }
-    else{
+  else
+    {
       return 1;
     }
   

@@ -1,0 +1,20 @@
+# Pseudocode for finite difference algorithm to solve electric field
+
+command line arguments:
+[X Min][dX][X Max][Y Min][dy][Y Max][Iterations][Conductor Read-in Filename]
+
+read in text file containing coordinates of conductors as follows:
+[X centre][Y centre][Radius][Potential]
+
+#Get size of matrix needed for algorithm
+xsize = (xmax-xmin)/dx - remainder of (xmax-xmin)/dx
+ysize = (ymax-ymin)/dy - remainder of (ymax-ymin)/dy
+
+#Create values matrix (needs to be 2 deep for algorithm iteration)
+MATRIX vals[xsize][ysize][2]
+
+use .fld ('field') file extension with specific syntax (@ denotes line end)
+
+SAMPLE: "example.fld"
+size x y @
+divs dx dy @
