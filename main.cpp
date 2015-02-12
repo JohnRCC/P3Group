@@ -10,9 +10,6 @@
 
 using namespace std;
 
-// Function prototypes
-float grad(float right,float left,float up,float down,float ds);
-
 // The main flunction
 int main(int argc, char* argv[]) {
 
@@ -383,6 +380,15 @@ int main(int argc, char* argv[]) {
     if (silence == 0) {
   cout << "done. (" << timerend(time) << "s)" << endl; }
 
+// Determine the gradient at each point
+for (row = 0; row < rowsize; row++)
+{
+	for (column = 0; column < columnsize; column++)
+	{
+		vals[row][column][2] = grad(vals, row, column);
+	}
+}
+
   // Apply meshing to the numerical solution
   if (argc == 4 || argc == 5)
    {
@@ -572,37 +578,4 @@ int main(int argc, char* argv[]) {
   timerend(start,1); }
       
   return 0;
-}
-
-
-//CoordiFy converts the matrix location of a point into its physical coordinate
-float cf(float matind,float min,float ds) {
-  // matind = index of value in array, min = min true coord value,
-  // ds = coord division
-  return min + (ds*matind);
-}
-
-
-// Check on gradient. Returns a value based on 4 surrounding points
-// (needs some tweaking in order to calibrate tolerance)
-float grad(float right,float left,float up,float down,float ds) {
-  float result = pow(pow((right-left)/ds,2.00)+pow((down-up)/ds,2.00),0.50);
-  
-  /*for now, return result to see values
-  if(result>100 || result<0.001){
-    return 0;
-  }
-  else{
-    return result;
-  }*/
-
-  if (result > 0.25) 
-    {
-      return 1;
-    }
-  else
-    {
-      return 1;
-    }
-  
 }
