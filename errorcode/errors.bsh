@@ -13,13 +13,41 @@
 # NB analytic_data.dat and mat_test.dat MUST BE THE SAME SIZE OF FILE!
 
 
-paste analytic_data.dat mat_test.dat  | awk '{print $1,$2,$3,$6}' >> mergedAandN.dat
 
-./percentdif.pg 	# calculates and plots (in Gnuplot) the 
+if [ -e ./mergedAandN.dat ]
+   then 
+      rm ./mergedAandN.dat   	# removes redundant mergerd file
+      echo "removed previous ./mergedAandN.dat"
+fi
+
+
+#paste analytical.dat mat_test1000.dat  | awk '{print $1,$2,$3,$6}' >> mergedAandN.dat
+
+awk_program=$(cat << 'EOF'
+
+function abs(value)
+{
+ return (value<0?-value:value);
+}
+
+{print $1,$2,((abs($3-$6))/abs($3))*100}
+EOF
+)
+
+paste analytical.dat mat_test1000.dat  | awk "$awk_program" >> mergedAandN.dat
+
+#function abs(value)
+#{
+# return (value<0?-value:value);
+#}
+
+
+#./percentdif.pg 	# calculates and plots (in Gnuplot) the 
 			# percentage difference between the analytical 
 			# and the numerical solution 
 
+
 #rm mergedAandN.dat   	# removes redundant mergerd file
 
-gv errorplot.pdf	# displays (via GhostView) heat map of 
+#gv errorplot.pdf	# displays (via GhostView) heat map of 
 			# percentage difference
