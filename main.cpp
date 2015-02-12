@@ -250,6 +250,16 @@ int main(int argc, char* argv[]) {
 		  vals[row][column][2] = 2;
 		}	
 	    }
+
+	// Display percentage completion
+	  if (r > (count*percent) && silence == 0)
+	    {
+	      if (count < 10) {
+		cout << count << "%\b\b" << flush; }
+	      else {
+		cout << count << "%\b\b\b" << flush; }
+	      count++;
+	    }
 	}
 	if (silence == 0) {
       cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -367,7 +377,7 @@ int main(int argc, char* argv[]) {
   // normally use
   if (silence == 0) {
   time = timerstart();
-  cout << "Normalising matrix... " << flush; }
+  cout << "Normalising matrix layers... " << flush; }
   if ((-(i%2)+1) == 1 )
     {
       for (row = 0; row < rowsize; row++)
@@ -392,6 +402,18 @@ for (row = 1; row < rowsize-1; row++)
 	{
 		vals[row][column][2] = grad(vals, row, column);
 	}
+}
+
+// Set edge gradients to zero
+for (row = 0; row < rowsize; row++)
+{
+	vals[row][0][2] = 0;
+	vals[row][columnsize-1] = 0;
+}
+for (column = 0; column < columnsize; column++)
+{
+	vals[0][column] = 0;
+	vals[rowsize-1][column] = 0;
 }
 
 if (silence == 0) {
@@ -420,35 +442,97 @@ cout << "done. (" << timerend(time) << "s)" << endl; }
   double** comparison = nomeshing(vals, rowsize, columnsize, 9);
   
   datafile.open("pot.dat");
-  
-  if (silence == 0) {
-  time = timerstart();
-  cout << "Delivering final output... " << flush; }
 
   // Output results for the analytical case
   if (argc > 6)
     {
+
+// Print gradient data    	
+if (index == 1 || index == 3 || index == 5 || index == 7)
+{
+	if (silence == 0) {
+    	time = timerstart();
+    	cout << "Printing gradient to file... " << flush;
+    	}
+    	//datafile << "Gradient" << endl << endl;
       count = 0;
       percent = rowsize / 100.0;
       for (row = 0; row < rowsize; row++)
 	{
 	  for (column = 0; column < columnsize; column++)
 	    {
-	      //cout<<"File Iter: "<<row<<"\r";
-	      if (index == 1 || index == 3 || index == 5 || index == 7)
-		{
 		  // Gradient test. See function 'grad' for more info.
 		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
 			   << " " << vals[row][column][2] << endl;
 		}
-	      else if (index == 2 || index == 3 || index == 6 || index == 7)
-		{
-		  //actual values of potential (for plotting etc.)
-		  datafile << row << " " << column << " "
+	datafile << endl;
+	  
+	  // Display percentage completion
+	  if (row > (count*percent) && silence == 0)
+	    {
+	      if (count < 10) {
+		cout << count << "%\b\b" << flush; }
+	      else {
+		cout << count << "%\b\b\b" << flush; }
+	      count++;
+	    }
+	}
+	datafile << endl;
+	
+	if (silence == 0) {
+	cout << "done. (" << timerend(time) << "s)" << endl; }
+}
+
+// Print potential data		
+if (index == 2 || index == 3 || index == 6 || index == 7)
+{
+	if (silence == 0) {
+    	time = timerstart();
+    	cout << "Printing potential to file... " << flush;
+    	}
+    	//datafile << "Potential" << endl << endl;	
+	count = 0;
+      percent = rowsize / 100.0;
+      for (row = 0; row < rowsize; row++)
+	{
+	  for (column = 0; column < columnsize; column++)
+	    {	
+		 //actual values of potential (for plotting etc.)
+		 datafile << row << " " << column << " "
 			   << vals[row][column][1] << endl;
 		}
-	      else if (index == 4 || index == 5 || index == 6 || index == 7)
-		{
+	datafile << endl;
+	  
+	  // Display percentage completion
+	  if (row > (count*percent) && silence == 0)
+	    {
+	      if (count < 10) {
+		cout << count << "%\b\b" << flush; }
+	      else {
+		cout << count << "%\b\b\b" << flush; }
+	      count++;
+	    }
+	}
+	datafile << endl;
+	
+	if (silence == 0) {
+	cout << "done. (" << timerend(time) << "s)" << endl; }
+}
+
+// Print field lines to file		
+if (index == 4 || index == 5 || index == 6 || index == 7)
+{
+	if (silence == 0) {
+    	time = timerstart();
+    	cout << "Printing field lines to file... " << flush;
+    	}
+    	//datafile << "Field lines" << endl << endl;		
+	count = 0;
+      percent = rowsize / 100.0;
+      for (row = 0; row < rowsize; row++)
+	{
+	  for (column = 0; column < columnsize; column++)
+	    {	
 		  // Get fieldlines
 		  double **fldmat = new double*[rowsize];
 		  for(row = 0; row < rowsize; row++)
@@ -467,7 +551,8 @@ cout << "done. (" << timerend(time) << "s)" << endl; }
 		  // Get fieldline data for completed matrix
 		  fldline(rowsize,columnsize,fldmat,ds,ds);
 		}
-	    }
+		
+	    
 
 	  datafile << endl;
 	  
@@ -482,21 +567,29 @@ cout << "done. (" << timerend(time) << "s)" << endl; }
 	    }
 	  
 	}
+	datafile << endl;
+	
+	if (silence == 0) {
+	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
   
   // Output results for the numerical case
   else
     { 
-      count = 0;
-      percent = rowsize / 100.0;
+    	// Print gradient to file
       if (index == 1 || index == 3 || index == 5 || index == 7)
 	{
+		if (silence == 0) {
+    	time = timerstart();
+    	cout << "Printing gradient to file... " << flush;
+    	}
+    	//datafile << "Gradient" << endl << endl;	
+	count = 0;
+      	percent = rowsize / 100.0;
 	  for (row = 0; row < rowsize; row++)
 	    {
 	      for (column = 0; column < columnsize; column++)
 		{
-		  //cout<<"File Iter: "<<row<<"\r";
-		  
 		  // Gradient test. see function 'grad' for more info.
 		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
 			   << " " << vals[row][column][2] << endl; 
@@ -514,10 +607,21 @@ cout << "done. (" << timerend(time) << "s)" << endl; }
 		  count++;
 		}   
 	    }
-	} 
-      
-      if (index > 1) { 
+	    datafile << endl;
 	
+	if (silence == 0) {
+	cout << "done. (" << timerend(time) << "s)" << endl; }
+	} 
+    }
+
+// Print potential to file	
+if (index == 2 || index == 3 || index == 6 || index == 7)
+	{ 
+	if (silence == 0) {
+    	time = timerstart();
+    	cout << "Printing potential to file... " << flush;
+    	}
+    	//datafile << "Potential" << endl << endl;
 	int rdim = rowsize * 9;
 	int cdim = columnsize * 9;
 	count = 0;
@@ -527,62 +631,76 @@ cout << "done. (" << timerend(time) << "s)" << endl; }
 	  {
 	    for (column = 0; column < cdim; column++)
 	      {
-		//cout<<"File Iter: "<<row<<"\r";
-		
-		if (index == 2 || index == 3 || index == 6 || index == 7)
-		  { 
 		    // Actual values of potential (for plotting etc.)
 		    datafile << row << " " << column << " "
 			     << output[row][column] << endl;
-		  }
-		
-		else if (index == 4 || index == 5 || index == 6 || index == 7)
-		  {
+		}
+	      datafile << endl;
+	      
+	      // Display percentage completion
+	      if (row > (count*percent))
+		{
+		  if (count < 10) {
+		    cout << count << "%\b\b" << flush; }
+		  else {
+		    cout << count << "%\b\b\b" << flush; }
+		  count++;
+		}  
+	  }
+	 datafile << endl;
+	
+	if (silence == 0) {
+	cout << "done. (" << timerend(time) << "s)" << endl; }
+	} 
+    }		
+		  
+// Print field lines to file		  
+if (index == 4 || index == 5 || index == 6 || index == 7)
+{
 		    // Get fieldlines
 		    // The way the fieldlines are calculated, doing it for the
 		    // 9x sized matrix is no good.
 		    // Instead, it just does the field line on the first
 		    // iteration then skips it after that.
-		    if (row==0 && column==0)
-		      {
+
 			double **fldmat = new double*[rowsize];
 			for (int y = 0; y < rowsize; y++)
 			  {
 			    fldmat[y] = new double[columnsize];
 			  }
 			
-			for (int y = 0; row < rowsize; y++)
+			for (row = 0; row < rowsize; row++)
 			  {
-			    for (int x = 0; x < columnsize; x++)
+			    for (column = 0; column < columnsize; column++)
 			      {
-				fldmat[y][x] = vals[y][x][1];
+				fldmat[row][column] = vals[row][column][1];
 			      }
 			  }
 			
 			// Get fieldline data for completed matrix
 			fldline(rowsize,columnsize,fldmat,ds,ds);
 		      } 
-		  } 
-	      }
-	    
-	    datafile << endl;
-	    
-	    // Display percentage completion
-	    if (row > (count*percent) && silence == 0)
-	      {
-		if (count < 10) {
-		  cout << count << "%\b\b" << flush; }
-		else {
-		  cout << count << "%\b\b\b" << flush; }
-		count++;
-	      } 
-	  }  
-      }
+		
+	datafile << endl;
+	  
+	  // Display percentage completion
+	  if (row > (count*percent) && silence == 0)
+	    {
+	      if (count < 10) {
+		cout << count << "%\b\b" << flush; }
+	      else {
+		cout << count << "%\b\b\b" << flush; }
+	      count++;
+	    }
+	  
+	}
+	datafile << endl;
+	
+	if (silence == 0) {
+	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
   
   datafile.close();
-  if (silence == 0) {
-  cout << "done. (" << timerend(time) << "s)" << endl; }
   
   if (silence == 0) {
   timerend(start,1); }
