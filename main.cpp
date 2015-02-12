@@ -48,8 +48,8 @@ int main(int argc, char* argv[]) {
   double time = timerstart();
   cout << "Initialising variables... " << flush;
   int row, column, i, rowsize, columnsize, errtol,
-    matsize, index, smooth, count, percent;
-  float smin, smax, ds, r, mid;
+    matsize, index, smooth, count;
+  float smin, smax, ds, r, mid, percent;
   BMP Image;
   Sublayer** mesh;
   double** output;
@@ -362,6 +362,7 @@ int main(int argc, char* argv[]) {
      cout << "Creating sublayer mesh... " << flush;
      mesh = meshing(vals, rowsize, columnsize, smooth);
      cout << "done. (" << timerend(time) << "s)" << endl;
+     time = timerstart();
      cout << "Creating output matrix... " << flush;
      output = printmeshalt(vals, mesh, rowsize, columnsize, 9);
      cout << "done. (" << timerend(time) << "s)" << endl;
@@ -371,7 +372,7 @@ int main(int argc, char* argv[]) {
   // without any sublayers
   double** comparison = nomeshing(vals, rowsize, columnsize, 9);
   
-  datafile.open("mat_test.dat");
+  datafile.open("pot.dat");
   
   time = timerstart();
   cout << "Delivering final output... " << flush;
@@ -437,99 +438,105 @@ int main(int argc, char* argv[]) {
   
   // Output results for the numerical case
   else
-    {
+    { 
       count = 0;
       percent = rowsize / 100.0;
-      for (row = 0; row < rowsize; row++)
+      if (index == 1 || index == 3 || index == 5 || index == 7)
 	{
-	  for (column = 0; column < columnsize; column++)
+	  for (row = 0; row < rowsize; row++)
 	    {
-	      //cout<<"File Iter: "<<row<<"\r";
-	      if (index == 1 || index == 3 || index == 5 || index == 7)
+	      for (column = 0; column < columnsize; column++)
 		{
+		  //cout<<"File Iter: "<<row<<"\r";
+		  
 		  // Gradient test. see function 'grad' for more info.
 		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
-			   << " " << vals[row][column][2] << endl;
+			   << " " << vals[row][column][2] << endl; 
 		}
+	      
+	      datafile << endl;
+	      
+	      // Display percentage completion
+	      if (row > (count*percent))
+		{
+		  if (count < 10) {
+		    cout << count << "%\b\b" << flush; }
+		  else {
+		    cout << count << "%\b\b\b" << flush; }
+		  count++;
+		}   
 	    }
-
-	  datafile << endl;
-
-	  // Display percentage completion
-	  if (row > (count*percent))
-	    {
-	      if (count < 10) {
-		cout << count << "%\b\b" << flush; }
-	      else {
-		cout << count << "%\b\b\b" << flush; }
-	      count++;
-	    }
-
-	}
+	} 
       
-      int rdim = rowsize * 9;
-      int cdim = columnsize * 9;
-      count = 0;
-      percent = rdim / 100.0;
-
-      for (row = 0; row < rdim; row++)
-	{
-	for (column = 0; column < cdim; column++)
+      if (index > 1) { 
+	
+	int rdim = rowsize * 9;
+	int cdim = columnsize * 9;
+	count = 0;
+	percent = rdim / 100.0;
+	
+	for (row = 0; row < rdim; row++)
 	  {
-	    //cout<<"File Iter: "<<row<<"\r";
-	    if (index == 2 || index == 3 || index == 6 || index == 7)
+	    for (column = 0; column < cdim; column++)
 	      {
-		// Actual values of potential (for plotting etc.)
-		datafile << row << " " << column << " "
-			 << output[row][column] << endl;
-	      }
-	    else if (index == 4 || index == 5 || index == 6 || index == 7)
-	      {
-		// Get fieldlines
-		// The way the fieldlines are calculated, doing it for the 9x sized matrix is no good.
-		// Instead, it just does the field line on the first iteration then skips it after that.
-		if (row==0 && column==0)
-		  {
-		    double **fldmat = new double*[rowsize];
-		    for (row = 0; row < rowsize; row++)
-		      {
-			fldmat[row] = new double[columnsize];
-		      }
+		//cout<<"File Iter: "<<row<<"\r";
 		
-		    for (row = 0; row < rowsize; row++)
-		      {
-			for (column = 0; column < columnsize; column++)
-			  {
-			    fldmat[row][column] = vals[row][column][1];
-			  }
-		      }
-		 
-		    // Get fieldline data for completed matrix
-		    fldline(rowsize,columnsize,fldmat,ds,ds);
+		if (index == 2 || index == 3 || index == 6 || index == 7)
+		  { 
+		    // Actual values of potential (for plotting etc.)
+		    datafile << row << " " << column << " "
+			     << output[row][column] << endl;
 		  }
+		
+		else if (index == 4 || index == 5 || index == 6 || index == 7)
+		  {
+		    // Get fieldlines
+		    // The way the fieldlines are calculated, doing it for the
+		    // 9x sized matrix is no good.
+		    // Instead, it just does the field line on the first
+		    // iteration then skips it after that.
+		    if (row==0 && column==0)
+		      {
+			double **fldmat = new double*[rowsize];
+			for (int y = 0; y < rowsize; y++)
+			  {
+			    fldmat[y] = new double[columnsize];
+			  }
+			
+			for (int y = 0; row < rowsize; y++)
+			  {
+			    for (int x = 0; x < columnsize; x++)
+			      {
+				fldmat[y][x] = vals[y][x][1];
+			      }
+			  }
+			
+			// Get fieldline data for completed matrix
+			fldline(rowsize,columnsize,fldmat,ds,ds);
+		      } 
+		  } 
 	      }
-	  }
-	
-	datafile << endl;
-
-	// Display percentage completion
-	if (row > (count*percent))
-	  {
-	    if (count < 10) {
-	      cout << count << "%\b\b" << flush; }
-	    else {
-	      cout << count << "%\b\b\b" << flush; }
-	    count++;
-	  }
-	
-	}
+	    
+	    datafile << endl;
+	    
+	    // Display percentage completion
+	    if (row > (count*percent))
+	      {
+		if (count < 10) {
+		  cout << count << "%\b\b" << flush; }
+		else {
+		  cout << count << "%\b\b\b" << flush; }
+		count++;
+	      } 
+	  }  
+      }
     }
   
   datafile.close();
   cout << "done. (" << timerend(time) << "s)" << endl;
-    
-  timerend(start,1);
   
+  timerend(start,1);
+      
   return 0;
 }
 
