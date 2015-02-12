@@ -1,0 +1,40 @@
+\title{}
+\author{}
+
+
+\documentclass{article}
+
+\begin{document}
+
+
+  \noindent\textbf{This is for obtaining the electric potential in a generic two-dimensional electrostatics system}
+
+  \vspace{5mm}
+
+	A bitmap (pixelated drawing) describing the components of he system is passed to the program. Each pixel is then 
+	 represented by a value, between 0 and 1, in a matrix based on the map. Values related to components (conductors 
+	 or charges) are static and the rest of space will vary as the prgram runs. \\
+	A numerical algorithm is run, "propagating" the field in the matrix, until the change in all values, is considered sufficiently
+	 small. This is defined by the requried uncertainty, $\epsilon$. \\
+	After the scheme is finished, the resulting matrix is then plotted using a plotting package where  a "heat-map" functionality
+	 is used to depict the potential. 
+
+\vspace{7.5mm}
+
+\noindent\textbf{The same as above separated into sections}
+
+\vspace{5mm}
+
+  \begin{tabular}{ l p{10cm} }
+	Input		&	A bitmap (pixelated drawing) describing the components of he system is passed to the program.
+				 Each pixel is then represented by a value, between 0 and 1, in a matrix based on the map. 
+				 Values related to components (conductors or charges) are static and the rest of space will vary
+				  as the prgram runs. \\
+	Algorithm	&	A numerical algorithm is run, "propagating" the field in the matrix, until the change in all values, 
+ 				  is considered sufficiently small. This is defined by the requried uncertainty, $\epsilon$. \\
+	Results	&	After the scheme is finished, the resulting matrix is then plotted using a plotting package where
+				  a "heat-map" functionality is used to depict the potential. 
+  \end{tabular}
+
+
+\end{document}
