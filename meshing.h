@@ -87,48 +87,8 @@ double mod(double val)
 #include <iostream>
 #include <iomanip>
 
-// The basic structure of a function to print the matrix, including
-// top-layer and sublayer data
-/*
-int printmesh(double*** toplayer, int size, Sublayer mesh)
-{
-  using namespace std;
-
-  // Largest sublayer size
-  maxsize = 9;
-  
-  // Loop through the entries in the top layer
-  for (int row = 0; row < size; row++)
-    {
-      // Break each row into a number of virtual sub-rows
-      for (int vr = 0; vr < maxsize; vr++)
-	{
-	  for (int column = 0; column < size; column++)
-	    {
-	      for (int vc = 0; vc < maxsize; vc++)
-		{
-		  // In the case of there being a sublayer
-		  if ( mesh[row][column].index == 0 )
-		    {
-		      // Check the scale of the sublayer
-		      int scale = maxsize / mesh[row][column].size;
-		      
-		      // Print the values from the sublayer
-		      // If the sublayer is at a lower resolution than the max,
-		      // values will be printed more than once
-		      for (int s = 0; s < scale; s++)
-			{
-			  cout << mesh[r][c].array[][];
-			}
-		    }
-		}
-	    }
-	}
-    }
-}
-*/
-
-// An alternative way to print the matrix
+// A function to transpose the top-layer matrix and its sublayers
+// onto a single unified matrix, which is then returned
 double** printmeshalt(double*** toplayer, Sublayer** mesh,
 		      int rowsize, int columnsize, int maxres)
 {
@@ -198,17 +158,6 @@ double** printmeshalt(double*** toplayer, Sublayer** mesh,
 	}
     }
 
-  // Print the supermatrix
-  /*
-  for (int r = 0; r < dim; r++)
-    {
-      for (int c = 0; c < dim; c++)
-	{
-	  cout << setprecision(4) << fixed << output[r][c] << " ";
-	}
-      cout << endl;
-    }
-  */
   return output;
 }
 
