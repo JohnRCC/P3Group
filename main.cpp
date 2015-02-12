@@ -22,11 +22,8 @@ int main(int argc, char* argv[]) {
   double start = timerstart();
   cout << "done." << endl;
   
-  //IMAGE MODE:
-  //  ./main image.bmp [err_tol][index]
-  //
-  //ANALYTIC MODE:
-  //  ./main [minx][maxx][dx][rad][err_tol][index]
+  //generic mode:
+  //  ./main [type][args][
   
   // Check on arguments (needs updating)
   cout << "Checking arguments... " << flush;
@@ -45,6 +42,7 @@ int main(int argc, char* argv[]) {
   cout << "done." << endl;
   
   // Initialise variables (used in both cases)
+
   double time = timerstart();
   cout << "Initialising variables... " << flush;
   int row, column, i, rowsize, columnsize, errtol,
@@ -55,7 +53,7 @@ int main(int argc, char* argv[]) {
   double** output;
   cout << "done. (" << timerend(time) << "s)" << endl;
   
-  if (argc == 4 || argc == 5) // Case for numerical solution
+  if (argc==4 || argc==5) // Case for numerical solution
     {
       cout << "Bitmap detected. Entering image mode." << endl;
       time = timerstart();
@@ -393,13 +391,13 @@ int main(int argc, char* argv[]) {
 		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
 			   << " " << vals[row][column][2] << endl;
 		}
-	      else if (index == 2 || index == 3 || index == 6 || index == 7)
+	      if (index == 2 || index == 3 || index == 6 || index == 7)
 		{
 		  //actual values of potential (for plotting etc.)
 		  datafile << row << " " << column << " "
 			   << vals[row][column][1] << endl;
 		}
-	      else if (index == 4 || index == 5 || index == 6 || index == 7)
+	      if (index == 4 || index == 5 || index == 6 || index == 7)
 		{
 		  // Get fieldlines
 		  double **fldmat = new double*[rowsize];
@@ -488,7 +486,7 @@ int main(int argc, char* argv[]) {
 			     << output[row][column] << endl;
 		  }
 		
-		else if (index == 4 || index == 5 || index == 6 || index == 7)
+		if (index == 4 || index == 5 || index == 6 || index == 7)
 		  {
 		    // Get fieldlines
 		    // The way the fieldlines are calculated, doing it for the
@@ -498,21 +496,22 @@ int main(int argc, char* argv[]) {
 		    if (row==0 && column==0)
 		      {
 			double **fldmat = new double*[rowsize];
-			for (int y = 0; y < rowsize; y++)
+			for (row = 0; row < rowsize; row++)
 			  {
-			    fldmat[y] = new double[columnsize];
+			    fldmat[row] = new double[columnsize];
 			  }
-			
-			for (int y = 0; row < rowsize; y++)
+			for (row = 0; row < rowsize; row++)
 			  {
-			    for (int x = 0; x < columnsize; x++)
+			    for (column = 0; column < columnsize; column++)
 			      {
-				fldmat[y][x] = vals[y][x][1];
+				fldmat[row][column] = vals[row][column][1];
 			      }
 			  }
-			
 			// Get fieldline data for completed matrix
 			fldline(rowsize,columnsize,fldmat,ds,ds);
+			//reset values of row & column so potential doesn't get confused
+			row=0;
+			column=0;
 		      } 
 		  } 
 	      }
