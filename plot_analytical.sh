@@ -10,7 +10,8 @@ set output "analytical_plot.eps"
 # set view 0,0,1
 unset surface
 set title ""
- set cntrparam levels 200
-splot "analytical.dat" using 2:1:3 with image notitle	# line for contour plot
+set cntrparam levels 200
+splot "analytical.dat" using 2:1:3 with lines notitle, \
+      "analytical.dat" using 2:1:3 with image notitle
 EOF
 
