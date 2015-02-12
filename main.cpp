@@ -13,6 +13,7 @@ using namespace std;
 // The main flunction
 int main(int argc, char* argv[]) {
 
+// Determine if progress should be output to the terminal
   int silence = 0;
   if (argc == 6)
   {
@@ -67,7 +68,7 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
   cout << "done. (" << timerend(time) << "s)" << endl; }
   
-  if (argc == 4 || argc == 5) // Case for numerical solution
+  if (argc < 7) // Case for numerical solution
     {
     	if (silence == 0) {
       cout << "Bitmap detected. Entering image mode." << endl; 
@@ -104,7 +105,7 @@ int main(int argc, char* argv[]) {
       if (silence == 0) {
       time = timerstart();
       cout << "Checking for smoothing... " << flush;}
-      if (argc==5) {
+      if (argc > 4) {
 	smooth = strtod(argv[4],NULL); }
       else {
 	smooth = 0; }
@@ -112,7 +113,7 @@ int main(int argc, char* argv[]) {
       cout << "done. (" << timerend(time) << "s)" << endl; }
     }
   
-  else if (argc == 7) // Case for the analytical solution
+  else if (argc > 6) // Case for the analytical solution
     {
     	if (silence == 0) {
       cout << "Input variables detected. Entering analytic mode." << endl;
@@ -154,7 +155,7 @@ int main(int argc, char* argv[]) {
     if (silence == 0) {
   cout << "done. (" << timerend(time) << "s)" << endl; }
 
-  if (argc == 4 || argc == 5) // For the numerical case
+  if (argc < 7) // For the numerical case
     {
       // Generate matrix from image file
       if (silence == 0) {
@@ -213,7 +214,7 @@ int main(int argc, char* argv[]) {
       cout << "done. (" << timerend(time) << "s)" << endl; }
     }
   
-  else if (argc == 7) // For the analytical case
+  else if (argc > 6) // For the analytical case
     {  
       // Generate initial matrix from definite values
       if (silence == 0) {
@@ -399,7 +400,7 @@ cout << "done. (" << timerend(time) << "s)" << endl; }
 }
 
   // Apply meshing to the numerical solution
-  if (argc == 4 || argc == 5)
+  if (argc < 7)
    {
    	if (silence == 0) {
      time = timerstart();
@@ -425,7 +426,7 @@ cout << "done. (" << timerend(time) << "s)" << endl; }
   cout << "Delivering final output... " << flush; }
 
   // Output results for the analytical case
-  if (argc == 7)
+  if (argc > 6)
     {
       count = 0;
       percent = rowsize / 100.0;
