@@ -1,0 +1,18 @@
+#!/usr/bin/gnuplot
+
+
+###################################################################
+#                      --plotheat.pg--				  #
+# Gnuplot script to plot three column .dat file to heat map       #
+# columns are x,v,[value], 				          #
+###################################################################
+
+set view map
+set dgrid3d
+splot "mergedAandN.dat" using 1:2:3 with pm3d
+
+set term pdf
+set output "heatmap.pdf"
+replot
+
+quit 
