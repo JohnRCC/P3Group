@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #####################################################################
+#                     --errors.bsh--                                #
 # bash script to compile the following into one .dat file           #
 # A) colums 1 and 2 from file analytical_data.dat                   #
 # (these are the x and y coordinates of each value in the matrix)   #
@@ -21,8 +22,9 @@ if [ -e ./mergedAandN.dat ]
 fi
 
 
-#paste analytical.dat mat_test1000.dat  | awk '{print $1,$2,$3,$6}' >> mergedAandN.dat
+	#(ignore!)paste analytical.dat mat_test1000.dat  | awk '{print $1,$2,$3,$6}' >> mergedAandN.dat
 
+## **declare awk function**
 awk_program=$(cat << 'EOF'
 
 function abs(value)
@@ -36,18 +38,12 @@ EOF
 
 paste analytical.dat mat_test1000.dat  | awk "$awk_program" >> mergedAandN.dat
 
-#function abs(value)
-#{
-# return (value<0?-value:value);
-#}
-
-
-#./percentdif.pg 	# calculates and plots (in Gnuplot) the 
+./plotheat.pg	 	# calculates and plots (in Gnuplot) the 
 			# percentage difference between the analytical 
 			# and the numerical solution 
 
 
 #rm mergedAandN.dat   	# removes redundant mergerd file
 
-#gv errorplot.pdf	# displays (via GhostView) heat map of 
+gv errorplot.pdf	# displays (via GhostView) heat map of 
 			# percentage difference
