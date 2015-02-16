@@ -45,5 +45,5 @@ paste analytical.dat mat_test1000.dat  | awk "$awk_program" >> mergedAandN.dat
 
 #rm mergedAandN.dat   	# removes redundant mergerd file
 
-gv errorplot.pdf	# displays (via GhostView) heat map of 
+gv plotheat.pdf		# displays (via GhostView) heat map of 
 			# percentage difference
