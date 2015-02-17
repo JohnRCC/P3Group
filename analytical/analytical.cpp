@@ -34,11 +34,11 @@ int row,column,i;
 	
 	// Matrix size in terms of min and max values
 	/**/
-	  float d = abs(smax-smin) - 2*ds;
+	  float d = abs(smax-smin);
 	  int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
 	 
 	 if(d < pow(r,2)) {
-		cout << " WARNING! - Analytic function might give an erroneous answer. d < r^2\n";
+		cout << " WARNING! - Analytic function may give an erroneous answer. d < r^2\n";
 	 }
 	 
 

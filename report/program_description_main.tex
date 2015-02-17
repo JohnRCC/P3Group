@@ -1,0 +1,65 @@
+\title{}
+\author{}
+
+
+%  This section deal with the program to solve electrostatic systems in C++ for the P3 Theoretical Laboratory 2015.
+%
+%	The text below decribes the main procedure as was the state of the program on:	12 - Feb - 2015
+%	
+%	 All information that is capitalized and within brackets is to be discussed and ammended depending on the
+%	  development of the script. That is, they stand for parts that might be implemented in due course.
+%
+
+
+\documentclass{article}
+
+\begin{document}
+
+
+  \noindent\textbf{This is for obtaining the electric potential in a generic two-dimensional electrostatics system}
+
+  \vspace{5mm}
+
+	A bitmap (pixelated drawing) describing the components of he system is passed to the program. Each pixel is then 
+	 mapped to a matrix holding values between 0 and 1, to represent the initial system. Values related to components
+	 (conductors or charges) are static and the rest of space will vary as the prgram runs.\\
+	A numerical algorithm, alg.() is run, "propagating" the field in the matrix, until the change in all values, is 
+	 considered sufficiently small. The small change is determined by a user-defined percentage value. \\
+	The matrix had thus a second layer; upon each iteration, the new values are cast to the other layer of the 
+	 matrix and recast in the next instance of the application of the algorithm. woop.
+	When the system has settled, regions where discontinuities might be present, by, for example, (NORMALISED?)
+	 steep gradients, are treated, pixelwise, in a finer grid usng the same algorithm as above. (LINEARISATION?)
+	After the scheme is finished, the resulting matrix is then plotted using a plotting package where  a "heat-map" 
+	 functionality is used to depict the potential. For the fieldlines, some further calculation is requred: the 
+	 gradient between each pixel is calculated and used to plot the electric field, as requred by equation Eq.().
+
+\vspace{7.5mm}
+
+\noindent\textbf{The same as above separated into sections}
+
+\vspace{5mm}
+
+  \begin{tabular}{ l p{10cm} }
+	Input		&	A bitmap (pixelated drawing) describing the components of he system is passed to the program. 
+				 Each pixel is then mapped to a matrix holding values between 0 and 1, to represent the 
+				  initial system. 
+				 Values related to components (conductors or charges) are static and the rest of space will 
+				  vary as the prgram runs.\\
+	Algorithm	&	A numerical algorithm, alg.() is run, "propagating" the field in the matrix, until 
+				  the change in all values, is considered sufficiently small. 
+				 The small change is determined by a user-defined percentage value. 
+				 The matrix had thus a second layer; upon each iteration, the new values are cast
+				  to the other layer of the matrix and recast in the next instance of the application 
+				  of the algorithm.\\
+ 	Meshing		&	When the system has settled, regions where discontinuities might be present, by, 
+ 				  for example, (NORMALISED?)steep gradients, are treated, pixelwise, in a finer grid
+ 				  using the same algorithm as above. (LINEARISATION?) \\
+	Results		&	After the scheme is finished, the resulting matrix is then plotted using a plotting 
+				  package where a "heat-map" functionality is used to depict the potential. 
+				 For the fieldlines, some further calculation is requred: the gradient between 
+				  each pixel is calculated and used to plot the electric field, as requred by equation 
+				  Eq.().
+  \end{tabular}
+
+
+\end{document}

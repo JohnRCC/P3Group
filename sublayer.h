@@ -60,32 +60,32 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	}
     }
 
-  // Edge values are then set to the values of the top-layer
-  // adjacent points
+  // Edge values are then set to the average of the adjacent and central
+  // top-layer values
 
   // Top row
   int r = 0;
   for ( int c = 1; c < size-1; c++ )
     {
-      array[r][c] = above;
+      array[r][c] = (above + self) / 2.0;
     }
   // Bottom row
   r = size - 1;
   for ( int c = 1; c < size-1; c++ )
     {
-      array[r][c] = below;
+      array[r][c] = (below + self) / 2.0;
     }
   // Left column
   int c = 0;
   for ( int r = 1; r < size-1; r++ )
     {
-      array[r][c] = left;
+      array[r][c] = (left + self) / 2.0;
     }
   // Right column
   c = size - 1;
   for ( int r = 1; r < size-1; r++ )
     {
-      array[r][c] = right;
+      array[r][c] = (right + self) / 2.0;
     }
 
   // Corners are the average of two top-layer points
@@ -95,7 +95,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
   array[size-1][size-1] = ( below + right) / 2.0;
 
   // Apply smoothing if enabled and if adjacent edges are equal-valued
-  if ( smoothing = 1 )
+  if ( smoothing == 1 )
     {
       if ( above == left )
 	{
@@ -110,7 +110,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	    }
 	}
 
-      else if ( above = right )
+      if ( above = right )
 	{
 	  int count = 0;
 	  while ( count < size )
@@ -123,7 +123,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	    }
 	}
 
-      else if ( below == left )
+      if ( below == left )
 	{
 	  int count = size-1;
 	  while ( count >= 0 )
@@ -136,7 +136,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	    }
 	}
 
-      else if ( below == right )
+      if ( below == right )
 	{
 	  int count = size-1;
 	  while ( count >= 0 )
