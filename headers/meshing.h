@@ -90,7 +90,7 @@ double mod(double val)
 
 // A function to transpose the top-layer matrix and its sublayers
 // onto a single unified matrix, which is then returned
-double** printmeshalt(double*** toplayer, Sublayer** mesh,
+double** printmesh(double*** toplayer, Sublayer** mesh,
 		      int rowsize, int columnsize, int maxres)
 {
   int rdim = rowsize * maxres;
@@ -160,6 +160,46 @@ double** printmeshalt(double*** toplayer, Sublayer** mesh,
     }
 
   return output;
+}
+
+// A function which smooths out the blocky-looking results of meshing
+double** refine(double** input, int rowsize, int columnsize, int iter)
+{
+  // Create an output matrix
+  double** output = new double*[rowsize];
+  for (int r = 0; r < rowsize; r++)
+    {
+      output[r] = new double[columnsize];
+    }
+  
+  // Set the output equal to the input
+  output = input;
+
+  double left, right, up, down;
+
+  // Loop for the required number of times
+  // On each loop, each point is averaged with its neighbours
+  for (int i = 0; i < iter; i++)
+    {
+      for(int row = 1; row < rowsize-1; row++)
+	{
+	  for(int column = 1; column < columnsize-1; column++)
+	    {
+	      // Define adjacent points (up, down, left, right)
+	      left = input[row][column-1];
+	      right = input[row][column+1];
+	      up = input[row+1][column];
+	      down = input[row-1][column];
+	      
+	      // Take the average of the surrounding points
+	      output[row][column] = (up + right + left + down ) / 4.0;	      
+	    }
+	}
+      // At the end of each loop, update the initail matrix
+      input = output;
+    }
+      
+  return 0;
 }
 
 
