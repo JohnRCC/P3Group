@@ -18,5 +18,8 @@ float cf(float matind,float min,float ds);
 // Check on gradient. Returns a value based on 4 surrounding points
 double grad(double*** toplayer, int row, int column, float ds);
 
+//Function to run five-point Difference Method
+double* algFivePointDM(double*** vals, int columnsize, int rowsize, int errtol);
+
 
 #endif
