@@ -14,10 +14,10 @@
 #####################################################################
 
 
-if [ -e ./mergedAandN.dat ]
+if [ -e ./merged.dat ]
    then 
-      rm ./mergedAandN.dat   	# removes redundant mergerd file
-      echo "removed previous ./mergedAandN.dat"
+      rm ./merged.dat   	# removes redundant mergerd file
+      printf "\n  ...removed previous ./mergedAandN.dat"
 fi
 
 
@@ -35,11 +35,23 @@ function abs(value)
 EOF
 )
 
+
 ##-ARGUMENTS-##
 # computes percentage difference of second argument to values of first argument#
-paste analytical.dat mat_test.dat  | awk "$awk_program" >> merged.dat
 
-./plotheat.pg	 	# plots (heatmap) percentage difference between two .dat files. 
+
+paste analytical.dat pot.dat >> combined.dat
+paste analytical.dat pot.dat  | awk "$awk_program" >> merged.dat
+printf "\n  ...created new merged.dat file\n"
+
+
+##Remove lines with '-nan' in them
+sed -i '/nan/ s/-nan/ /' ./merged.dat
+printf "  ...removed any nan lines - replaced with blanks\n"
+
+
+printf "\n  ...running ./plotheat.pg\n"
+#./plotheat.pg	 	# plots (heatmap) percentage difference between two .dat files. 
 
 
 #rm merged.dat   	# removes redundant merged file
