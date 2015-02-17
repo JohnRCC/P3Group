@@ -442,7 +442,7 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
     time = timerstart();
     cout << "done. (" << timerend(time) << "s)" << endl; }
-  
+
   // Apply meshing to the numerical solution
   if (argc < 7)
     {
@@ -458,11 +458,11 @@ int main(int argc, char* argv[]) {
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
-  
+
   // A high-res matrix with values taken entriely from the top-level matrix
   // without any sublayers
   double** comparison = nomeshing(vals, rowsize, columnsize, 9);
-  
+
   datafile.open("pot.dat");
 
   // Output results for the analytical case
@@ -641,7 +641,7 @@ int main(int argc, char* argv[]) {
 		{
 		  // Actual values of potential (for plotting etc.)
 		  datafile << row << " " << column << " "
-			   << output[row][column] << endl;
+		  	   << output[row][column] << endl;
 		}
 	      datafile << endl;
 	      
