@@ -3,16 +3,15 @@
 #####################################################################
 #                     --errors.bsh--                                #
 # bash script to compile the following into one .dat file           #
-# A) colums 1 and 2 from file analytical_data.dat                   #
+# A) columns 1 and 2 from .dat file 		                    #
 # (these are the x and y coordinates of each value in the matrix)   #
-# B) colum 3 from file analytical_data.dat                          #
-# (this is the value of the Analytical solution for the             #
-# corresponding matrix position)                                    #
-# C) colum 3 from mat_test.dat                                      #
+# B) column 3 from first file in argument (line) 		    #
+# 	(see: ##-ARGUMENTS-## below)   	                            #
+# C) colum 3 from second argument file                              #
+# 	(see: ##-ARGUMENTS-## below)   	                            #
+#								    #
+# NB both .dat files MUST BE THE SAME SIZE OF FILE!		    #
 #####################################################################
-
-# NB analytic_data.dat and mat_test.dat MUST BE THE SAME SIZE OF FILE!
-
 
 
 if [ -e ./mergedAandN.dat ]
@@ -36,14 +35,14 @@ function abs(value)
 EOF
 )
 
+##-ARGUMENTS-##
+# computes percentage difference of second argument to values of first argument#
 paste analytical.dat mat_test1000.dat  | awk "$awk_program" >> mergedAandN.dat
 
-./plotheat.pg	 	# calculates and plots (in Gnuplot) the 
-			# percentage difference between the analytical 
-			# and the numerical solution 
+./plotheat.pg	 	# plots (heatmap) percentage difference between two .dat files. 
 
 
-#rm mergedAandN.dat   	# removes redundant mergerd file
+#rm mergedAandN.dat   	# removes redundant merged file
 
-gv plotheat.pdf		# displays (via GhostView) heat map of 
-			# percentage difference
+gv plotheat.pdf		# displays (via GhostView) the
+			# percentage difference plot
