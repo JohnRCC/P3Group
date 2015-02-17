@@ -2,12 +2,9 @@
 #include <stdlib.h>
 #include <fstream>
 #include <cmath>
-#include "../funcs.h"
+#include "../headers/funcs.h"
 
 using namespace std;
-
-//function prototypes
-float potential(float x,float y,float r,float Plate_separation);
 
 int analytic(float smin,float ds,float smax,float r)
 {
@@ -107,4 +104,12 @@ float potential(float x, float y, float r,float Plate_separation) {
   v=(-1)*field*x*(1-((r*r*r)/(pow((x*x)+(y*y),1.5))));
 
   return v;
+}
+
+
+//CoordiFy converts the matrix location of a point into its physical coordinate
+float cf(float matind,float min,float ds) {
+  // matind = index of value in array, min = min true coord value,
+  // ds = coord division
+  return min + (ds*matind);
 }

@@ -1,9 +1,11 @@
 #makefile
 
 FLD = ./fieldline/fieldline
-SUB = ./sublayer
 BMP = ./easybmp/EasyBMP
 ANA = ./analytical/analytical
+FOL = ./headers/
+HED = $(FOL)sublayer.h $(FOL)meshing.h $(FOL)funcs.h $(FOL)gradient.h \
+	$(FOL)timer.h
 
 all: main.o $(FLD).o $(BMP).o $(ANA).o
 	g++ -o main main.o $(FLD).o $(BMP).o $(ANA).o
@@ -14,7 +16,7 @@ fieldline.o: $(FLD).cpp $(FLD).h funcs.h
 EasyBMP.o: $(BMP).cpp $(BMP).h
 	g++ -o $(BMP).o -c $(BMP).cpp
 
-main.o: main.cpp funcs.h timer.h $(SUB).h $(BMP).h meshing.h
+main.o: main.cpp $(BMP).h $(HED)
 	g++ -o main.o -c main.cpp
 
 analytical.o: $(ANA).cpp funcs.h
@@ -23,3 +25,6 @@ analytical.o: $(ANA).cpp funcs.h
 # removes all object files and backup files
 clean:
 	rm -f *.o $(FLD).o $(ANA).o $(BMP).o *~
+
+reset:
+	rm -f grad.dat grad.eps pot.dat pot.eps field.dat field.eps
