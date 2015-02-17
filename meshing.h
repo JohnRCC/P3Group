@@ -33,7 +33,7 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 	  double g = toplayer[r][c][2];
 
 	  // Check if it is the highest gradient encountered
-	  if ( abs(g) > maxgrad )
+	  if ( mod(g) > maxgrad )
 	    {
 	      maxgrad = g;
 	    }
