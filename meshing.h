@@ -41,8 +41,8 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
     }
 
   // Set the boundary conditions for sublayer size
-  double lim9 = maxgrad * 0.75;
-  double lim3 = maxgrad * 0.5;
+  double lim9 = maxgrad * 0.5;
+  double lim3 = maxgrad * 0.25;
 
   // Create an array to store the pointers
   Sublayer** pointers = new Sublayer*[rowsize];
