@@ -442,7 +442,6 @@ int main(int argc, char* argv[]) {
     }
   
   if (silence == 0) {
-    time = timerstart();
     cout << "done. (" << timerend(time) << "s)" << endl; }
 
   // Apply meshing to the numerical solution
