@@ -54,6 +54,8 @@ int main(int argc, char* argv[]) {
   // 				 4 - fieldlines
   // 				eg. 6 would give potential and fieldlines
   // 				    3 would give gradient test and data 
+  //            Smoothing:      Smooth corners during meshing
+  //                            0 for off (default), 1 for on
   // 		Terminal out:	Turn on or off printing program progress
   // 				Entries: 0 (default) -off- or 1 -on-
   
