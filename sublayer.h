@@ -110,7 +110,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	    }
 	}
 
-      else if ( above = right )
+      if ( above = right )
 	{
 	  int count = 0;
 	  while ( count < size )
@@ -123,7 +123,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	    }
 	}
 
-      else if ( below == left )
+      if ( below == left )
 	{
 	  int count = size-1;
 	  while ( count >= 0 )
@@ -136,7 +136,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	    }
 	}
 
-      else if ( below == right )
+      if ( below == right )
 	{
 	  int count = size-1;
 	  while ( count >= 0 )
