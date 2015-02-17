@@ -463,8 +463,6 @@ int main(int argc, char* argv[]) {
   // without any sublayers
   double** comparison = nomeshing(vals, rowsize, columnsize, 9);
 
-  datafile.open("pot.dat");
-
   // Output results for the analytical case
   if (argc > 6)
     {
@@ -476,9 +474,12 @@ int main(int argc, char* argv[]) {
 	    time = timerstart();
 	    cout << "Printing gradient to file... " << flush;
 	  }
+
+	  datafile.open("grad.dat");
 	  //datafile << "Gradient" << endl << endl;
 	  count = 0;
 	  percent = rowsize / 100.0;
+
 	  for (row = 0; row < rowsize; row++)
 	    {
 	      for (column = 0; column < columnsize; column++)
@@ -499,7 +500,9 @@ int main(int argc, char* argv[]) {
 		  count++;
 		}
 	    }
+
 	  datafile << endl;
+	  datafile.close();
 	  
 	  if (silence == 0) {
 	    cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -512,9 +515,12 @@ int main(int argc, char* argv[]) {
 	    time = timerstart();
 	    cout << "Printing potential to file... " << flush;
 	  }
+	  
+	  datafile.open("pot.dat");
 	  //datafile << "Potential" << endl << endl;	
 	  count = 0;
 	  percent = rowsize / 100.0;
+
 	  for (row = 0; row < rowsize; row++)
 	    {
 	      for (column = 0; column < columnsize; column++)
@@ -535,7 +541,9 @@ int main(int argc, char* argv[]) {
 		  count++;
 		}
 	    }
+
 	  datafile << endl;
+	  datafile.close();
 	  
 	  if (silence == 0) {
 	    cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -547,9 +555,11 @@ int main(int argc, char* argv[]) {
 	  if (silence == 0) {
 	    time = timerstart();
 	    cout << "Printing field lines to file... " << flush; }
+
 	  //datafile << "Field lines" << endl << endl;		
 	  count = 0;
 	  percent = rowsize / 100.0;
+
 	  // Get fieldlines
 	  double **fldmat = new double*[rowsize];
 	  for(row = 0; row < rowsize; row++)
@@ -563,6 +573,7 @@ int main(int argc, char* argv[]) {
 		{
 		  fldmat[row][column] = vals[row][column][1];
 		}
+
 	      // Display percentage completion
 	      if (row > (count*percent) && silence == 0)
 		{
@@ -585,6 +596,7 @@ int main(int argc, char* argv[]) {
   // Output results for the numerical case
   else
     { 
+
       // Print gradient to file
       if (index == 1 || index == 3 || index == 5 || index == 7)
 	{
@@ -592,9 +604,12 @@ int main(int argc, char* argv[]) {
 	    time = timerstart();
 	    cout << "Printing gradient to file... " << flush;
 	  }
+
+	  datafile.open("grad.dat");
 	  //datafile << "Gradient" << endl << endl;	
 	  count = 0;
 	  percent = rowsize / 100.0;
+
 	  for (row = 0; row < rowsize; row++)
 	    {
 	      for (column = 0; column < columnsize; column++)
@@ -616,7 +631,9 @@ int main(int argc, char* argv[]) {
 		  count++;
 		}   
 	    }
+
 	  datafile << endl;
+	  datafile.close();
 	  
 	  if (silence == 0) {
 	    cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -629,6 +646,8 @@ int main(int argc, char* argv[]) {
 	    time = timerstart();
 	    cout << "Printing potential to file... " << flush;
 	  }
+
+	  datafile.open("pot.dat");
 	  //datafile << "Potential" << endl << endl;
 	  int rdim = rowsize * 9;
 	  int cdim = columnsize * 9;
@@ -655,7 +674,9 @@ int main(int argc, char* argv[]) {
 		  count++;
 		}  
 	    }
+
 	  datafile << endl;
+	  datafile.close();
 	  
 	  if (silence == 0) {
 	    cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -669,6 +690,7 @@ int main(int argc, char* argv[]) {
 	    time = timerstart();
 	    cout << "Printing field lines to file... " << flush;
 	  }
+
 	  //datafile << "Field lines" << endl << endl;
 	  double **fldmat = new double*[rowsize];
 	  for (int y = 0; y < rowsize; y++)
@@ -682,6 +704,7 @@ int main(int argc, char* argv[]) {
 		{
 		  fldmat[row][column] = vals[row][column][1];
 		}
+
 	      // Display percentage completion
 	      if (row > (count*percent) && silence == 0)
 		{
@@ -700,8 +723,6 @@ int main(int argc, char* argv[]) {
 	    cout << "done. (" << timerend(time) << "s)" << endl; }
 	}
     }
-  
-  datafile.close();
   
   if (silence == 0) {
     timerend(start,1); }
