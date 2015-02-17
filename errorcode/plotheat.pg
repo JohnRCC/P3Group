@@ -8,20 +8,11 @@
 ###################################################################
 
 set pm3d map
-#set view map #V1-3
-#set dgrid3d
+splot "mat_test.dat" using 1:2:3 #with image
 
-#splot "mergedAandN.dat" using 1:2:3 #with pm3d
-splot "mat_test10000.dat" using 1:2:3 #with image
-#splot "mat_test1000.dat" using 1:2:3 with image
-
-
-#set pm3d #(V1)
-#set pm3d interpolate 2,2 #V2
-#set pm3d interpolate 0,0 #(V3)
 
 set term pdf
-set output "heatmap.pdf"
+set output "pot_r6_i1000.pdf"
 replot
 
 quit 
