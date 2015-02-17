@@ -541,7 +541,7 @@ int main(int argc, char* argv[]) {
 	    cout << "done. (" << timerend(time) << "s)" << endl; }
 	}
       
-      // Print field lines to file		
+      // Get field line data		
       if (index == 4 || index == 5 || index == 6 || index == 7)
 	{
 	  if (silence == 0) {
@@ -661,7 +661,7 @@ int main(int argc, char* argv[]) {
 	    cout << "done. (" << timerend(time) << "s)" << endl; }
 	}
       
-      // Print field lines to file		  
+      // Get field line data		  
       if (index == 4 || index == 5 || index == 6 || index == 7)
 	{
 	  // Get fieldlines
