@@ -23,3 +23,6 @@ analytical.o: $(ANA).cpp funcs.h
 # removes all object files and backup files
 clean:
 	rm -f *.o $(FLD).o $(ANA).o $(BMP).o *~
+
+reset:
+	rm -f grad.dat grad.eps pot.dat pot.eps field.dat field.eps
