@@ -1,6 +1,8 @@
 #ifndef MESHING
 #define MESHING
 #include "sublayer.h"
+#include <iostream>
+using namespace std;
 
 // A function to implement meshing. Takes the top-level array and uses the
 // pre-existing gradient data to create submatrices and store them in an array,
@@ -19,6 +21,7 @@ double mod(double);
 Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 		   int smoothing = 0)
 {
+
   // Establish a maximum gradient
   double maxgrad = 0;
 
@@ -38,8 +41,8 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
     }
 
   // Set the boundary conditions for sublayer size
-  int lim9 = maxgrad * 0.75;
-  int lim3 = maxgrad * 0.5;
+  double lim9 = maxgrad * 0.75;
+  double lim3 = maxgrad * 0.5;
 
   // Create an array to store the pointers
   Sublayer** pointers = new Sublayer*[rowsize];
@@ -47,7 +50,7 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
     {
       pointers[r] = new Sublayer[columnsize];
     }
-
+ 
   // Create the sublayers where necessary
   for ( int r = 1; r < rowsize-1; r++ )
     {
@@ -56,19 +59,17 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 	  // Maximum sublayer size
 	  if ( mod(toplayer[r][c][2]) > lim9 )
 	    {
-	      pointers[r][c] = sublayer(c, r, toplayer, 9, 100, smoothing);
-	      //pointers[r][c] = sublayer(c, r, toplayer, 9, 15, smoothing);
+	      pointers[r][c] = sublayer(c, r, toplayer, 9, 90, smoothing);
 	    }
 	  // Moderate sublayer size
 	  else if ( mod(toplayer[r][c][2]) > lim3 )
 	    {
-	      pointers[r][c] = sublayer(c, r, toplayer, 3, 100, smoothing);
-	      //pointers[r][c] = sublayer(c, r, toplayer, 3, 3, smoothing);
+	      pointers[r][c] = sublayer(c, r, toplayer, 3, 30, smoothing);
 	    }
 	  // Else there is no sublayer
 	}
     }
-
+ 
   // Return the array containing the sublayers
   return pointers;
 }
