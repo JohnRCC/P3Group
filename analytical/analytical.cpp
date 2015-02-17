@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <cmath>
-#include "../funcs.h"
+#include "../headers/funcs.h"
 
 using namespace std;
 

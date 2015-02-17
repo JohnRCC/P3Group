@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <fstream>
 #include <cmath>
-#include "sublayer.h"
-#include "meshing.h"
-#include "funcs.h"
-#include "timer.h"
-#include "gradient.h"
+#include "./headers/sublayer.h"
+#include "./headers/meshing.h"
+#include "./headers/funcs.h"
+#include "./headers/gradient.h"
+#include "./headers/timer.h"
 #include "./easybmp/EasyBMP.h"
 
 using namespace std;
