@@ -8,16 +8,17 @@
 ###################################################################
 
 set pm3d map
-splot "mat_test.dat" using 1:2:3 #with image
+splot "merged.dat" using 1:2:3 #with image
 
 
 set term pdf
-set output "Npot_10_p2_3_i1000.pdf"
+set output "AN_10_p2_3_i1000.pdf"
 
 # output format:
 # e.g. "Npot_10_p2_3_i10000.pdf":
-# N=numerical, A=analytical; pot=potential map; range=(-10,10);
-# ds=0.2; radius=3; iterations=10000
+# Npot=numerical potential, Apot=analytical potential; 
+# AN or N(1)N(2), etc = percentage difference between two methods; 
+# range=(-10,10); ds=0.2; radius=3; iterations=10000
 
 replot
 

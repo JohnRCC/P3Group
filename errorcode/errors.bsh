@@ -37,12 +37,11 @@ EOF
 
 ##-ARGUMENTS-##
 # computes percentage difference of second argument to values of first argument#
-paste analytical.dat mat_test1000.dat  | awk "$awk_program" >> mergedAandN.dat
+paste analytical.dat mat_test.dat  | awk "$awk_program" >> merged.dat
 
 ./plotheat.pg	 	# plots (heatmap) percentage difference between two .dat files. 
 
 
-#rm mergedAandN.dat   	# removes redundant merged file
+#rm merged.dat   	# removes redundant merged file
 
-gv plotheat.pdf		# displays (via GhostView) the
-			# percentage difference plot
+
