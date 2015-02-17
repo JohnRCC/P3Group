@@ -6,6 +6,7 @@
 #include "meshing.h"
 #include "funcs.h"
 #include "timer.h"
+#include "gradient.h"
 #include "./easybmp/EasyBMP.h"
 
 using namespace std;
@@ -421,25 +422,7 @@ int main(int argc, char* argv[]) {
     time = timerstart();
     cout << "Calculating gradients... " << flush; }
  
-  for (row = 1; row < rowsize-1; row++)
-    {
-      for (column = 1; column < columnsize-1; column++)
-	{
-	  vals[row][column][2] = grad(vals, row, column, ds);
-	}
-    }
-
-  // Set edge gradients to zero
-  for (row = 0; row < rowsize; row++)
-    {
-      vals[row][0][2] = 0;
-      vals[row][columnsize-1][2] = 0;
-    }
-  for (column = 0; column < columnsize; column++)
-    {
-      vals[0][column][2] = 0;
-      vals[rowsize-1][column][2] = 0;
-    }
+  vals = getgrad(vals, rowsize, columnsize, ds);
   
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -729,18 +712,4 @@ int main(int argc, char* argv[]) {
     timerend(start,1); }
   
   return 0;
-}
-
-
-// Check on gradient. Returns a value based on 4 surrounding points
-double grad(double*** toplayer, int row, int column, float ds)
-{
-  double above = toplayer[row-1][column][1];
-  double below = toplayer[row+1][column][1];
-  double left = toplayer[row][column-1][1];
-  double right = toplayer[row][column+1][1];
-  double result = pow( pow( (right-left) / ds, 2.00 )
-		       + pow( (below-above) / ds, 2.00 ),
-		       0.50 );
-  return result;
 }
