@@ -447,7 +447,7 @@ int main(int argc, char* argv[]) {
 		{
 		  //actual values of potential (for plotting etc.)
 		  datafile << row << " " << column << " "
-			   << vals[row][column][1] << endl;
+			   << vals[column][row][1] << endl;
 		}
 	      if (index == 4 || index == 5 || index == 6 || index == 7)
 		{
