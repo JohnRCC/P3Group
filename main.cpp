@@ -80,12 +80,14 @@ int main(int argc, char* argv[]) {
   double time = timerstart();
   if (silence == 0) {
     cout << "Initialising variables... " << flush; }
+
   int row, column, i, rowsize, columnsize, errtol,
     matsize, index, smooth, count;
   float smin, smax, ds, r, mid, percent;
   BMP Image;
   Sublayer** mesh;
   double** output;
+
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
   
@@ -152,7 +154,6 @@ int main(int argc, char* argv[]) {
       // Define the size of the matrix
       matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1);
       rowsize = columnsize = matsize;
-      
       mid = (matsize/2.0) - (fmod(matsize,2.0));
       
       if (silence == 0) {
@@ -182,8 +183,10 @@ int main(int argc, char* argv[]) {
       if (silence == 0) {
 	time = timerstart();
 	cout << "Filling image matrix... " << flush; }
+
       count = 0;
       percent = rowsize / 100.0;
+
       for (row = 0; row < rowsize; row++) 
 	{
 	  for (column = 0; column < columnsize; column++) 
@@ -221,7 +224,7 @@ int main(int argc, char* argv[]) {
 	    }
 	  
 	  // Display percentage completion
-	  if (r > (count*percent) && silence == 0)
+	  if (row > (count*percent) && silence == 0)
 	    {
 	      if (count < 10) {
 		cout << count << "%\b\b" << flush; }
@@ -241,8 +244,10 @@ int main(int argc, char* argv[]) {
       if (silence == 0) {
 	time = timerstart();
 	cout << "Filling analytic matrix... " << flush; }
+
       count = 0;
       percent = matsize / 100.0;
+
       for(row = 0; row < matsize; row++)
 	{
 	  for(column = 0; column < matsize; column++)
@@ -391,6 +396,7 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
     time = timerstart();
     cout << "Normalising matrix layers... " << flush; }
+
   if ((-(i%2)+1) == 1 )
     {
       for (row = 0; row < rowsize; row++)
@@ -471,10 +477,10 @@ int main(int argc, char* argv[]) {
 		{
 		  // Gradient test. See function 'grad' for more info.
 		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
-			   << " " << vals[row][column][2] << endl;
+			   << " " << vals[row][column][2] << "\n";
 		}
 
-	      datafile << endl;
+	      datafile << "\n";
 	      
 	      // Display percentage completion
 	      if (row > (count*percent) && silence == 0)
@@ -513,10 +519,10 @@ int main(int argc, char* argv[]) {
 		{	
 		  //actual values of potential (for plotting etc.)
 		  datafile << row << " " << column << " "
-			   << vals[row][column][1] << endl;
+			   << vals[row][column][1] << "\n";
 		}
 
-	      datafile << endl;
+	      datafile << "\n";
 	      
 	      // Display percentage completion
 	      if (row > (count*percent) && silence == 0)
@@ -604,10 +610,10 @@ int main(int argc, char* argv[]) {
 		{
 		  // Gradient test. see function 'grad' for more info.
 		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
-			   << " " << vals[row][column][2] << endl; 
+			   << " " << vals[row][column][2] << "\n"; 
 		}
 	      
-	      datafile << endl;
+	      datafile << "\n";
 	      
 	      // Display percentage completion
 	      if (row > (count*percent))
@@ -648,9 +654,9 @@ int main(int argc, char* argv[]) {
 		{
 		  // Actual values of potential (for plotting etc.)
 		  datafile << row << " " << column << " "
-		  	   << output[row][column] << endl;
+		  	   << output[row][column] << "\n";
 		}
-	      datafile << endl;
+	      datafile << "\n";
 	      
 	      // Display percentage completion
 	      if (row > (count*percent))
