@@ -81,23 +81,14 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
     cout << "Initialising variables... " << flush; }
 
-<<<<<<< HEAD
-  int row, column, i, rowsize, columnsize,
-    matsize, index, smooth, count;
-=======
-  int row, column, i, rowsize, columnsize, errtol, matsize,
+  int row, column, i, rowsize, columnsize, matsize,
     index, smooth, count, rdim, cdim, maxpower, maxres;
->>>>>>> ba9792029446558b7eb533be58a406ec438207cc
   float smin, smax, ds, r, mid, percent;
   BMP Image;
   Sublayer** mesh;
   double** output;
-<<<<<<< HEAD
   double errtol;
 
-=======
-  
->>>>>>> ba9792029446558b7eb533be58a406ec438207cc
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
   
@@ -312,14 +303,9 @@ int main(int argc, char* argv[]) {
   i = algFivePointDM(vals,columnsize,rowsize,errtol,silence);
 
   if (silence == 0) {
-<<<<<<< HEAD
-    cout << "done. (" << timerend(time) << "s)(" << i-1 << " iterations)" << endl; }
+    cout << "done. (" << timerend(time) << "s)("
+	 << i-1 << " iterations)" << endl; }
 
-
-=======
-    cout << "done. (" << timerend(time) << "s)" << endl; }
-  
->>>>>>> ba9792029446558b7eb533be58a406ec438207cc
   // Determine the gradient at each point
   if (silence == 0) {
     time = timerstart();
