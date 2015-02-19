@@ -106,7 +106,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	      count++;
 	    }
 	}
-
+      
       if ( above = right )
 	{
 	  int count = 0;
@@ -119,7 +119,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	      count++;
 	    }
 	}
-
+      
       if ( below == left )
 	{
 	  int count = size-1;
@@ -146,7 +146,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
 	    }
 	}
     }
-  
+
   // Done
 }
 
@@ -179,6 +179,7 @@ Sublayer::Sublayer()
 Sublayer sublayer(int column, int row, double*** toplayer,
 		  int size = 13, int iter = 15, int smooth = 0)
 {
+
   // Define adjacent toplayer values
   double above = toplayer[row-1][column][1];
   double below = toplayer[row+1][column][1];
