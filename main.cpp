@@ -521,7 +521,7 @@ int main(int argc, char* argv[]) {
 	      datafile << "\n";
 	      
 	      // Display percentage completion
-	      if (row > (count*percent))
+	      if (row > (count*percent) && silence == 0)
 		{
 		  if (count < 10) {
 		    cout << count << "%\b\b" << flush; }
@@ -564,7 +564,7 @@ int main(int argc, char* argv[]) {
 	      datafile << "\n";
 	      
 	      // Display percentage completion
-	      if (row > (count*percent))
+	      if (row > (count*percent) && silence == 0)
 		{
 		  if (count < 10) {
 		    cout << count << "%\b\b" << flush; }
