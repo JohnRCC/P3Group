@@ -46,8 +46,8 @@ int main(int argc, char* argv[]) {
   // 				Entries: float value
   // 		Circle Radius:	Radius of GND conducting circle at (0,0)
   // 				Entries: float value
-  // 		Error tol:	CURRENT: number of iterations
-  // 				Entries: float value
+  // 		Error tol:	<100: number of iterations
+  // 				>100: percentage accuracy eg 5 = max. 5% change
   // 		Output Type:	Index for plot type
   // 				Entries: any sum of 1,2,4:
   // 				 1 - gradient test (now obsolete)
@@ -81,12 +81,13 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
     cout << "Initialising variables... " << flush; }
 
-  int row, column, i, rowsize, columnsize, errtol,
+  int row, column, i, rowsize, columnsize,
     matsize, index, smooth, count;
   float smin, smax, ds, r, mid, percent;
   BMP Image;
   Sublayer** mesh;
   double** output;
+  double errtol;
 
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -314,13 +315,10 @@ int main(int argc, char* argv[]) {
     time = timerstart();
     cout << "Running algorithm... " << flush; }
   
-  algFivePointDM(vals,columnsize,rowsize,errtol,silence);
+  i = algFivePointDM(vals,columnsize,rowsize,errtol,silence);
 
   if (silence == 0) {
-    cout << "done. (" << timerend(time) << "s)" << endl; }
-  
-
-
+    cout << "done. (" << timerend(time) << "s)(" << i-1 << " iterations)" << endl; }
 
 
   // Determine the gradient at each point

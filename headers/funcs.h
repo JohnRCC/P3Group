@@ -19,7 +19,7 @@ float cf(float matind,float min,float ds);
 double grad(double*** toplayer, int row, int column, float ds);
 
 //Function to run five-point Difference Method
-double* algFivePointDM(double*** vals, int columnsize, int rowsize, int errtol, int silence);
+int algFivePointDM(double*** vals, int columnsize, int rowsize, double errtol, int silence);
 
 
 #endif
