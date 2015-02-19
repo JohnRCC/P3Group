@@ -305,9 +305,6 @@ int main(int argc, char* argv[]) {
 
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
-
-
-
   
   // Run the algorithm which calculates the potential at each point
   if (silence == 0) {
@@ -319,16 +316,12 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
   
-
-
-
-
   // Determine the gradient at each point
   if (silence == 0) {
     time = timerstart();
     cout << "Calculating gradients... " << flush; }
  
-  vals = getgrad(vals, rowsize, columnsize, ds);
+  getgrad(vals, rowsize, columnsize, ds);
   
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
