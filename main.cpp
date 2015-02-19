@@ -81,14 +81,23 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
     cout << "Initialising variables... " << flush; }
 
+<<<<<<< HEAD
   int row, column, i, rowsize, columnsize,
     matsize, index, smooth, count;
+=======
+  int row, column, i, rowsize, columnsize, errtol, matsize,
+    index, smooth, count, rdim, cdim, maxpower, maxres;
+>>>>>>> ba9792029446558b7eb533be58a406ec438207cc
   float smin, smax, ds, r, mid, percent;
   BMP Image;
   Sublayer** mesh;
   double** output;
+<<<<<<< HEAD
   double errtol;
 
+=======
+  
+>>>>>>> ba9792029446558b7eb533be58a406ec438207cc
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
   
@@ -97,42 +106,40 @@ int main(int argc, char* argv[]) {
       if (silence == 0) {
 	cout << "Bitmap detected. Entering image mode." << endl; 
 	time = timerstart();
-	cout << "Opening bitmap image... " << flush; }
+	cout << "Defining conditions... " << flush; }
       
       // Read in image from bitmap
       Image.ReadFromFile(argv[1]);
-      if (silence == 0) {
-	cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Get dimensions
-      if (silence == 0) {
-	time = timerstart();
-	cout << "Getting image dimensions... " << flush; }
       rowsize = Image.TellHeight();
       columnsize = Image.TellWidth();
+
+      // Set maximum size of submatrices and resultant variables
+      // 'Maxpower' is the power of 3 for the size of the largest submatrix
+      // e.g. if maxpower = 2, the largest submatrix will be 9x9 (2^3)
+      // Maxres is then 3^maxpower
+      maxpower = 2;
+      maxres = 1;
+      for (i = 0; i < maxpower; i++) {
+	maxres = maxres * 3; }
+
+      rdim = rowsize * maxres;
+      cdim = columnsize * maxres;
       
       // Set ds to 1 since not defined by image
       ds = 1;
-      if (silence == 0) {
-	cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Get index and error tolerance values
-      if (silence == 0) {
-	time = timerstart();
-	cout << "Getting index value... " << flush; }
       index = strtod(argv[3],NULL);
       errtol = strtod(argv[2],NULL);
-      if (silence == 0) {
-	cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Check for smoothing
-      if (silence == 0) {
-	time = timerstart();
-	cout << "Checking for smoothing... " << flush;}
       if (argc > 4) {
 	smooth = strtod(argv[4],NULL); }
       else {
 	smooth = 0; }
+
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
@@ -297,19 +304,6 @@ int main(int argc, char* argv[]) {
       analytic(smin,ds,smax,r);
     }
   
-  // Open file to write data to
-  if (silence == 0) {
-    time = timerstart();
-    cout << "Opening datafile... " << flush; }
-
-  ofstream datafile;
-
-  if (silence == 0) {
-    cout << "done. (" << timerend(time) << "s)" << endl; }
-
-
-
-  
   // Run the algorithm which calculates the potential at each point
   if (silence == 0) {
     time = timerstart();
@@ -318,15 +312,20 @@ int main(int argc, char* argv[]) {
   i = algFivePointDM(vals,columnsize,rowsize,errtol,silence);
 
   if (silence == 0) {
+<<<<<<< HEAD
     cout << "done. (" << timerend(time) << "s)(" << i-1 << " iterations)" << endl; }
 
 
+=======
+    cout << "done. (" << timerend(time) << "s)" << endl; }
+  
+>>>>>>> ba9792029446558b7eb533be58a406ec438207cc
   // Determine the gradient at each point
   if (silence == 0) {
     time = timerstart();
     cout << "Calculating gradients... " << flush; }
  
-  vals = getgrad(vals, rowsize, columnsize, ds);
+  getgrad(vals, rowsize, columnsize, ds);
   
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -334,27 +333,23 @@ int main(int argc, char* argv[]) {
   // Apply meshing to the numerical solution
   if (argc < 7)
     {
-      if (silence == 0) {
-	time = timerstart();
-	cout << "Creating sublayer mesh... " << flush; }
-
-      mesh = meshing(vals, rowsize, columnsize, smooth);
+      // Create sublayer matrix
+      mesh = meshing(vals, rowsize, columnsize, maxpower, smooth, silence);
 
       if (silence == 0) {
-	cout << "done. (" << timerend(time) << "s)" << endl;
 	time = timerstart();
 	cout << "Creating output matrix... " << flush; }
 
-      output = printmesh(vals, mesh, rowsize, columnsize, 9);
+      // Create output matrix
+      output = printmesh(vals, mesh, rowsize, columnsize, maxres);
 
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl;
         time = timerstart();
 	cout << "Refining output matrix... " << flush; }
-      
-      int rdim = rowsize * 9;
-      int cdim = columnsize * 9;
-      refine(output, rdim, cdim, 10);
+
+      // Refine output matrix
+      refine(output, rdim, cdim, 10, silence);
       
       if (silence == 0) {
 	cout << "done (" << timerend(time) << "s)." << endl; }    
@@ -362,9 +357,11 @@ int main(int argc, char* argv[]) {
 
   // A high-res matrix with values taken entriely from the top-level matrix
   // without any sublayers
-  double** comparison = nomeshing(vals, rowsize, columnsize, 9);
+  // double** comparison = nomeshing(vals, rowsize, columnsize, maxpower);
 
   // Output results for the analytical case
+  ofstream datafile;
+
   if (argc > 6)
     {
       
@@ -526,7 +523,7 @@ int main(int argc, char* argv[]) {
 	      datafile << "\n";
 	      
 	      // Display percentage completion
-	      if (row > (count*percent))
+	      if (row > (count*percent) && silence == 0)
 		{
 		  if (count < 10) {
 		    cout << count << "%\b\b" << flush; }
@@ -553,8 +550,6 @@ int main(int argc, char* argv[]) {
 
 	  datafile.open("pot.dat");
 	  //datafile << "Potential" << endl << endl;
-	  int rdim = rowsize * 9;
-	  int cdim = columnsize * 9;
 	  count = 0;
 	  percent = rdim / 100.0;
 	  
@@ -569,7 +564,7 @@ int main(int argc, char* argv[]) {
 	      datafile << "\n";
 	      
 	      // Display percentage completion
-	      if (row > (count*percent))
+	      if (row > (count*percent) && silence == 0)
 		{
 		  if (count < 10) {
 		    cout << count << "%\b\b" << flush; }
