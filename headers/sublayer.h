@@ -26,10 +26,10 @@ public:
 };
 
 
-// Constructor function to create a the submatrix
-// Takes as input the grid co-ordinates, the value of the point
-// on the top layer, the values of the adjacent points,
-// and grid size (number of points to a side)
+// Constructor function to create a the submatrix.
+// Takes as input the grid co-ordinates, the value of the point on the
+// top layer, the values of the adjacent points, grid size
+// (number of points to a side), and whether smoothing is enabled.
 Sublayer::Sublayer(int xpoint, int ypoint, double self,
 		   double above, double below, double left, double right,
 		   int gridsize, int smoothing)
@@ -41,8 +41,6 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
   size = gridsize;
 
   // Create the submatrix
-  // The compiler complains about variable-sized arrays,
-  // and this is the workaround I found
   array = new double*[size];
   for (int r = 0; r < size; r++)
     {
@@ -50,7 +48,6 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
     }
 
   // Define the submatrix's initial values
-
   // All non-edge values are set to the top-layer value
   for (int r = 1; r < (size - 1); r++)
     {
@@ -88,7 +85,7 @@ Sublayer::Sublayer(int xpoint, int ypoint, double self,
       array[r][c] = (right + self) / 2.0;
     }
 
-  // Corners are the average of two top-layer points
+  // Corners are the average of the two ajacent top-layer points
   array[0][0] = ( above + left ) / 2.0;
   array[0][size-1] = ( above + right ) / 2.0;
   array[size-1][0] = ( below + left ) / 2.0;
@@ -173,11 +170,12 @@ Sublayer::Sublayer()
 }  
 
 
-// Function to create a sublayer for a given point in the top layer
+// Function to create a sublayer for a given point in the top layer.
 // Takes as input the x and y co-ordiantes, the array containing the top layer,
-// and optionally the size to make the sublayer
-// Returns a pointer to a matrix containing the data
-// Function will break if used on top, bottom, leftmost or rightmost points
+// and optionally the size to make the sublayer, the number of balancing
+// pases to use, and whether smoothing is enabled.
+// Returns the sublayer.
+// Function will break if used on top, bottom, leftmost or rightmost points.
 Sublayer sublayer(int column, int row, double*** toplayer,
 		  int size = 13, int iter = 15, int smooth = 0)
 {
@@ -283,6 +281,7 @@ Sublayer sublayer(int column, int row, double*** toplayer,
 	{
 	  for(int c = 1; c < size-1; c++)
 	    {
+	      // Make the value of each point the average of its neighbours
 	      Temp.array[r][c] =
 		( Temp.array[r+1][c] + Temp.array[r-1][c] +
 		  Temp.array[r][c+1] + Temp.array[r][c-1] )
@@ -291,15 +290,17 @@ Sublayer sublayer(int column, int row, double*** toplayer,
 	}
     }
   
+  // Return the sublayer
   return Temp;
 }
 
 
 // Function to create a sublayer for a given point in the top layer and
-// return the average of its values
+// return the average of its values.
 // Takes as input the x and y co-ordiantes, the array containing the top layer,
-// and optionally the size to make the sublayer
-// Function will break if used on top, bottom, leftmost or rightmost points
+// and optionally the size to make the sublayer, the number of balancing passes
+// to use, and whether smoothing is enabled.
+// Function will break if used on top, bottom, leftmost or rightmost points.
 double submean(int column, int row, double*** toplayer,
 	       int size = 13, int iter = 15, int smooth = 0)
 {
