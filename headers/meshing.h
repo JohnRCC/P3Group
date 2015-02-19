@@ -168,9 +168,9 @@ double** printmesh(double*** toplayer, Sublayer** mesh,
 
 
 // A function which smooths out the blocky-looking results of meshing.
-// Takes as input a matrix, its dimensions, and the number of times it should
-// be smoothed.
-int refine(double** input, int rowsize, int columnsize, int iter)
+// Takes as input a matrix, its dimensions, the number of times it should
+// be smoothed, and whether terminal output is enabled.
+int refine(double** input, int rowsize, int columnsize, int iter, int silence)
 {
   // Create a temporary matrix to store the output
   double** output = new double*[rowsize];
@@ -184,6 +184,8 @@ int refine(double** input, int rowsize, int columnsize, int iter)
 
   // Declare adjacent points
   double left, right, up, down;
+  int count = 0;
+  double percent = (iter * (rowsize-2)) / 100.0;
 
   // Loop for the required number of times
   // On each loop, each point is averaged with its neighbours
@@ -202,6 +204,16 @@ int refine(double** input, int rowsize, int columnsize, int iter)
 	      // Take the average of the surrounding points
 	      output[row][column] = (up + right + left + down ) / 4.0;	      
 	    }
+
+	  // Display percentage completion
+	  if (((i * (rowsize-2)) + row) > (count*percent) && silence == 0)
+	    {
+	      if (count < 10) {
+		cout << count << "%\b\b" << flush; }
+	      else {
+		cout << count << "%\b\b\b" << flush; }
+	      count++;
+	      }
 	}
 
       // At the end of each loop, update the initial matrix

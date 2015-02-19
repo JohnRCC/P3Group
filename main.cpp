@@ -349,7 +349,7 @@ int main(int argc, char* argv[]) {
       
       int rdim = rowsize * 9;
       int cdim = columnsize * 9;
-      refine(output, rdim, cdim, 10);
+      refine(output, rdim, cdim, 10, silence);
       
       if (silence == 0) {
 	cout << "done (" << timerend(time) << "s)." << endl; }    
