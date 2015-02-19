@@ -2,7 +2,6 @@
 #define MESHING
 #include "sublayer.h"
 #include "timer.h"
-#include <cmath>
 #include <iostream>
 #include <iomanip>
 using namespace std;
@@ -123,9 +122,10 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 	  count++;
 	}
     }
-  
 
-  /*
+  /* Previous version of the function.
+     Will be deleted once we're sure the new version is strictly superior.
+
   for (int r = 1; r < rowsize-1; r++)
     {
       for (int c = 1; c < columnsize-1; c++)
@@ -152,8 +152,8 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 	    cout << count << "%\b\b\b" << flush; }
 	  count++;
 	}
-	}
-*/
+    }
+  */
   
   if (silence == 0) {
     cout << "done (" << timerend(time) << "s)." << endl; }
