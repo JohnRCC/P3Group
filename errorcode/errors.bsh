@@ -40,7 +40,7 @@ EOF
 # computes percentage difference of second argument to values of first argument#
 
 
-paste analytical.dat pot.dat >> combined.dat
+paste ./analytical.dat ./pot.dat > combined.dat
 paste analytical.dat pot.dat  | awk "$awk_program" >> merged.dat
 printf "\n  ...created new merged.dat file\n"
 

@@ -53,13 +53,13 @@ for(row=0;row<matsize;row++) {
     float x=cf(row,smin,ds);
     float y=cf(column,smin,ds);
 
-        if(column==0) {
+        if(row==0) {
       valsA[row][column]=valsA[row][column]=1;
       }
-      else if(column==matsize-1) {
+      else if(row==matsize-1) {
 	valsA[row][column]=valsA[row][column]=-1;
       }
-      else if( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) < pow(r,2.0) ) {
+      else if((pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) < pow(r,2.0) ) {
 	valsA[row][column]=valsA[row][column]=0;
       }
       else {
