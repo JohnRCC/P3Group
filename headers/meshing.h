@@ -1,6 +1,8 @@
 #ifndef MESHING
 #define MESHING
 #include "sublayer.h"
+#include <iostream>
+using namespace std;
 
 // A function to implement meshing. Takes the top-level array and uses the
 // pre-existing gradient data to create submatrices and store them in an array,
@@ -19,6 +21,7 @@ double mod(double);
 Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 		   int smoothing = 0)
 {
+
   // Establish a maximum gradient
   double maxgrad = 0;
 
@@ -30,7 +33,7 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 	  double g = toplayer[r][c][2];
 
 	  // Check if it is the highest gradient encountered
-	  if ( abs(g) > maxgrad )
+	  if ( mod(g) > maxgrad )
 	    {
 	      maxgrad = g;
 	    }
@@ -38,8 +41,8 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
     }
 
   // Set the boundary conditions for sublayer size
-  int lim9 = maxgrad * 0.75;
-  int lim3 = maxgrad * 0.5;
+  double lim9 = maxgrad * 0.5;
+  double lim3 = maxgrad * 0.25;
 
   // Create an array to store the pointers
   Sublayer** pointers = new Sublayer*[rowsize];
@@ -47,7 +50,7 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
     {
       pointers[r] = new Sublayer[columnsize];
     }
-
+ 
   // Create the sublayers where necessary
   for ( int r = 1; r < rowsize-1; r++ )
     {
@@ -56,19 +59,17 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 	  // Maximum sublayer size
 	  if ( mod(toplayer[r][c][2]) > lim9 )
 	    {
-	      pointers[r][c] = sublayer(c, r, toplayer, 9, 100, smoothing);
-	      //pointers[r][c] = sublayer(c, r, toplayer, 9, 15, smoothing);
+	      pointers[r][c] = sublayer(c, r, toplayer, 9, 90, smoothing);
 	    }
 	  // Moderate sublayer size
 	  else if ( mod(toplayer[r][c][2]) > lim3 )
 	    {
-	      pointers[r][c] = sublayer(c, r, toplayer, 3, 100, smoothing);
-	      //pointers[r][c] = sublayer(c, r, toplayer, 3, 3, smoothing);
+	      pointers[r][c] = sublayer(c, r, toplayer, 3, 30, smoothing);
 	    }
 	  // Else there is no sublayer
 	}
     }
-
+ 
   // Return the array containing the sublayers
   return pointers;
 }
@@ -87,49 +88,9 @@ double mod(double val)
 #include <iostream>
 #include <iomanip>
 
-// The basic structure of a function to print the matrix, including
-// top-layer and sublayer data
-/*
-int printmesh(double*** toplayer, int size, Sublayer mesh)
-{
-  using namespace std;
-
-  // Largest sublayer size
-  maxsize = 9;
-  
-  // Loop through the entries in the top layer
-  for (int row = 0; row < size; row++)
-    {
-      // Break each row into a number of virtual sub-rows
-      for (int vr = 0; vr < maxsize; vr++)
-	{
-	  for (int column = 0; column < size; column++)
-	    {
-	      for (int vc = 0; vc < maxsize; vc++)
-		{
-		  // In the case of there being a sublayer
-		  if ( mesh[row][column].index == 0 )
-		    {
-		      // Check the scale of the sublayer
-		      int scale = maxsize / mesh[row][column].size;
-		      
-		      // Print the values from the sublayer
-		      // If the sublayer is at a lower resolution than the max,
-		      // values will be printed more than once
-		      for (int s = 0; s < scale; s++)
-			{
-			  cout << mesh[r][c].array[][];
-			}
-		    }
-		}
-	    }
-	}
-    }
-}
-*/
-
-// An alternative way to print the matrix
-double** printmeshalt(double*** toplayer, Sublayer** mesh,
+// A function to transpose the top-layer matrix and its sublayers
+// onto a single unified matrix, which is then returned
+double** printmesh(double*** toplayer, Sublayer** mesh,
 		      int rowsize, int columnsize, int maxres)
 {
   int rdim = rowsize * maxres;
@@ -198,18 +159,47 @@ double** printmeshalt(double*** toplayer, Sublayer** mesh,
 	}
     }
 
-  // Print the supermatrix
-  /*
-  for (int r = 0; r < dim; r++)
-    {
-      for (int c = 0; c < dim; c++)
-	{
-	  cout << setprecision(4) << fixed << output[r][c] << " ";
-	}
-      cout << endl;
-    }
-  */
   return output;
+}
+
+// A function which smooths out the blocky-looking results of meshing
+double** refine(double** input, int rowsize, int columnsize, int iter)
+{
+  // Create an output matrix
+  double** output = new double*[rowsize];
+  for (int r = 0; r < rowsize; r++)
+    {
+      output[r] = new double[columnsize];
+    }
+  
+  // Set the output equal to the input
+  output = input;
+
+  double left, right, up, down;
+
+  // Loop for the required number of times
+  // On each loop, each point is averaged with its neighbours
+  for (int i = 0; i < iter; i++)
+    {
+      for(int row = 1; row < rowsize-1; row++)
+	{
+	  for(int column = 1; column < columnsize-1; column++)
+	    {
+	      // Define adjacent points (up, down, left, right)
+	      left = input[row][column-1];
+	      right = input[row][column+1];
+	      up = input[row+1][column];
+	      down = input[row-1][column];
+	      
+	      // Take the average of the surrounding points
+	      output[row][column] = (up + right + left + down ) / 4.0;	      
+	    }
+	}
+      // At the end of each loop, update the initail matrix
+      input = output;
+    }
+      
+  return 0;
 }
 
 
