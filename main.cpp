@@ -303,7 +303,7 @@ int main(int argc, char* argv[]) {
   i = algFivePointDM(vals,columnsize,rowsize,errtol,silence);
 
   if (silence == 0) {
-    cout << "done. (" << timerend(time) << "s)("
+    cout << "done. (" << timerend(time) << "s, "
 	 << i-1 << " iterations)" << endl; }
 
   // Determine the gradient at each point
