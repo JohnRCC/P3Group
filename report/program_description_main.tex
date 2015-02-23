@@ -27,8 +27,10 @@
 	 considered sufficiently small. The small change is determined by a user-defined percentage value. \\
 	The matrix had thus a second layer; upon each iteration, the new values are cast to the other layer of the 
 	 matrix and recast in the next instance of the application of the algorithm. 
-	When the system has settled, regions where discontinuities might be present, by, for example, (NORMALISED?)
-	 steep gradients, are treated, pixelwise, in a finer grid usng the same algorithm as above. (LINEARISATION?)
+	-1- When the system has settled, regions where discontinuities might be present, by, for example,
+	 steep gradients, are treated, pixelwise, in a finer grid usng the same algorithm as above. -- OR: \\
+	-2- When the system is considered stable, the elements in the matrix are further granulated depending on the 
+	 steepness of their gradients. --. \\
 	After the scheme is finished, the resulting matrix is then plotted using a plotting package where  a "heat-map" 
 	 functionality is used to depict the potential. For the fieldlines, some further calculation is requred: the 
 	 gradient between each pixel is calculated and used to plot the electric field, as requred by equation Eq.().
@@ -51,9 +53,11 @@
 				 The matrix had thus a second layer; upon each iteration, the new values are cast
 				  to the other layer of the matrix and recast in the next instance of the application 
 				  of the algorithm.\\
- 	Meshing		&	When the system has settled, regions where discontinuities might be present, by, 
- 				  for example, (NORMALISED?)steep gradients, are treated, pixelwise, in a finer grid
- 				  using the same algorithm as above. (LINEARISATION?) \\
+ 	Meshing		&	-1- When the system has settled, regions where discontinuities might be present, by, for example,
+	 			  steep gradients, are treated, pixelwise, in a finer grid usng the same algorithm as above. -- 
+	 			  OR: 
+				-2- When the system is considered stable, the elements in the matrix are further granulated 
+				 depending on the steepness of their gradients. --. \\
 	Results		&	After the scheme is finished, the resulting matrix is then plotted using a plotting 
 				  package where a "heat-map" functionality is used to depict the potential. 
 				 For the fieldlines, some further calculation is requred: the gradient between 
