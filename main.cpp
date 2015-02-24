@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
       matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1);
       rowsize = columnsize = matsize;
       
-      mid = (matsize/2.0) - (fmod(matsize,2.0));
+      mid = (matsize/2.0);  // - (fmod(matsize,2.0));
       
       if (silence == 0) {
       cout << "done. (" << timerend(time) << "s)" << endl; }

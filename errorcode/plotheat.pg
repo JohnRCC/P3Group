@@ -8,11 +8,11 @@
 ###################################################################
 
 set pm3d map
-splot "analytical.dat" using 1:2:3 #with image
+splot "percentdifpot.dat" using 1:2:3 #with image
 
 
 set term pdf
-set output "Apot_10_p2_3_i10000.pdf"
+set output "AN_10_p2_3_i10000.pdf"
 
 # output format:
 # e.g. "Npot_10_p2_3_i10000.pdf":
