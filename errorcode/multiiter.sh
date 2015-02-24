@@ -8,17 +8,17 @@
 ###############################################################
 
 
-for i in {1000..10000..1000}
+for i in {1000..10000..500}
 do
 
-if [ -e ./mat_test${i}.dat]
+if [ -e ./pot${i}.dat]
    then
-      rm ./mat_test${i}.dat
-      echo "removed previos ./mat_test${i}.dat"
+      rm ./pot${i}.dat
+      echo "removed previos ./pot${i}.dat"
 fi
 
-	./main -10 10 0.1 3 $i 2 
-	mv mat_test.dat mat_test${i}.dat
+	./main -10 10 0.2 3 $i 2 
+	mv pot.dat ./d10_p2_r3/pot${i}.dat
 
 
 done
