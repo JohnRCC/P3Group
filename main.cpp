@@ -544,7 +544,7 @@ int main(int argc, char* argv[]) {
 	      for (column = 0; column < cdim; column++)
 		{
 		  // Actual values of potential (for plotting etc.)
-		  datafile << row << " " << column << " "
+		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds) << " "
 		  	   << output[row][column] << "\n";
 		}
 	      datafile << "\n";
@@ -613,4 +613,10 @@ int main(int argc, char* argv[]) {
     timerend(start,1); }
   
   return 0;
+}
+
+float cf(int matind, float min, float ds)
+{
+  return min + ((ds)*matind);
+  // add ds/9.0 for when meshing is applied to numerical solution as well
 }
