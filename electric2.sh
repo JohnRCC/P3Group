@@ -221,7 +221,7 @@ while [ $run = "yes" ] ; do
 
 			while [ $plotq != "y" ] && [ $plotq != "n" ] ; do
 			    echo "Please enter y or n:"
-			    read plotq ; clear
+			    read plotq ; clear 
 			done
 
 			if [[ $plotq = "y" ]] ; then
@@ -245,7 +245,73 @@ while [ $run = "yes" ] ; do
 
 	#plotting mode
 	if [[ $choice = "p" ]] ; then
-	    echo "Entering plotting mode. Please enter filename you want to plot (without extension):"
+	    plotcont=yes
+	    while [ $plotcont = "y" ] ; do
+		
+		echo "Entering plotting mode. Please enter filename you want to plot (without extension):"
+		read plotfile ; clear
+		
+		while [ ! -f ./data/pot/$plotfile.pot ] && [ ! -f ./data/fld/$plotfile.fld ] && [ ! -f ./data/grd/$plotfile.grd ] ; do
+		    echo "Invalid file specified (no files named "$plotfile" exist). Please try again:"
+		    read plotfile ; clear
+		done
+		
+	    # POTENTIAL PLOT
+		echo "File "$plotfile" selected. Plot potential? [y/n]"
+		read potplot ; clear
+		
+		while [ $potplot != "y" ] && [ $potplot != "n" ] ; do
+		    echo "Please enter y or n:"
+		    read potplot ; clear
+		done
+		
+		if [[ $potplot = "y" ]] ; then
+		    ./pot_plot.sh $plotfile
+		    echo "Plotting potential. Plot can be found at ./plots/pot/"$plotfile".eps"
+		else
+		    echo "Skipping potential."
+		fi
+		
+	    # FIELD PLOT
+		echo "Plot electric field? [y/n]"
+		read fldplot ; clear
+		
+		while [ $fldplot != "y" ] && [ $fldplot != "n" ] ; do
+		    echo "Please enter y or n:"
+		    read fldplot ; clear
+		done
+		
+		if [[ $fldplot = "y" ]] ; then
+		    ./fld_plot.sh $plotfile
+		    echo "Plotting electric field. Plot can be found at ./plots/fld/"$plotfile".eps"
+		else
+		    echo "Skipping electric field."
+		fi
+		
+	    # GRAD PLOT
+		echo "Plot gradient? [y/n] (Advanced users only. Recommended: no)"
+		read grdplot ; clear
+		
+		while [ $grdplot != "y" ] && [ $grdplot != "n" ] ; do
+		    echo "Please enter y or n:"
+		    read grdplot ; clear
+		done
+		
+		if [[ $fldplot = "y" ]] ; then
+		    ./grd_plot.sh $plotfile
+		    echo "Plotting gradient."
+		else
+		    echo "Skipping gradient."
+		fi
+		
+		echo "Plotting complete. Plot more files? [y/n] (N will return you to the main menu.)"
+		read plotcont ; clear
+		
+		while [ $plotcont != "y" ] && [ $plotcont != "n" ] ; do
+		    echo "Please enter y or n:"
+		    read plotcont ; clear
+		done
+	    done		
 	fi
     fi
 done
