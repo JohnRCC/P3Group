@@ -63,8 +63,8 @@ printf "\nmade pd_$1 \n"
 
 
 
-
-./plotheat.bsh pd_$1
+./plotheat.pg
+#./plotheat.bsh pd_$1
  	# plots (heatmap) percentage difference between two .dat files. 
 
 
