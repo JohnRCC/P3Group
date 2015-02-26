@@ -31,7 +31,7 @@ int row,column,i;
 	
 	// Matrix size in terms of min and max values
 	/**/
-	  float d = abs(smax-smin);
+	  float d = abs(smax-smin)-ds;
 	  int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
 	 
 	 if(d < pow(r,2)) {
@@ -56,7 +56,7 @@ for(row=0;row<matsize;row++) {
       else if(row==matsize-1) {
 	valsA[row][column]=valsA[row][column]=-1;
       }
-      else if( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) < pow(r,2.0) ) {
+      else if( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) <= pow(r,2.0) ) {
 	valsA[row][column]=valsA[row][column]=0;
       }
       else {

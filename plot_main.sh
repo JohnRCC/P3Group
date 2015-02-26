@@ -9,7 +9,7 @@ set view map
 unset surface
 set title ""
 set cntrparam levels 200
-splot "mat_test.dat" using 1:2:3 with image notitle, \
-      "mat_test.dat" using 1:2:3 with lines notitle
+splot "pot.dat" using 1:2:3 with image notitle #, \
+     # "mat_test.dat" using 1:2:3 with lines notitle
 EOF
 
