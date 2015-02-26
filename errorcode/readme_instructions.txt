@@ -10,12 +10,13 @@ run ./main [arguments as usual]
 
 2)
 run ./merge.bsh [argument]
-	where argument is "pot.dat"
+	where argument is "pot.dat" (or whatever you want to compare 
+	to analytic.dat)
 	this finds difference between analytical.dat and pot.dat
-3)
-run ./plotheat.pg
-	to generate a heat map of percentage difference. 
-	this file can be edited to output as desired "file.pdf"
+	(to compare to another thing, go into file and edit "analytic.dat"
+	to whatever you want to compare to)
+
+	output: pd_[argument].pdf
 
 
 
