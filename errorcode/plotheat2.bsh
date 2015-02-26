@@ -1,0 +1,33 @@
+#!/bin/sh
+
+dif=$1
+filen=$2
+###################################################################
+#                      --plotheat.pg--				  #
+# Gnuplot script to plot three column .dat file to heat map       #
+# columns are x,v,[value], 				          #
+###################################################################
+
+gnuplot -p << EOF
+#!/usr/bin/gnuplot
+
+set pm3d map
+splot '$dif' using 1:2:3 with pm3d
+set cbrange [-10:10]
+set palette rgbformulae 22,13,-31
+#set palette defined (0 "green", 1 "red")
+set size ratio -1  	#stops 'stretching' of axes.
+#set view equal xyz
+#set view map
+set term pdf
+set output "${filen}.pdf"
+
+# output format:
+# e.g. "Npot_10_p2_3_i10000.pdf":
+# Npot=numerical potential, Apot=analytical potential; 
+# AN or N(1)N(2), etc = percentage difference between two methods; 
+# range=(-10,10); ds=0.2; radius=3; iterations=10000
+
+replot
+
+quit 

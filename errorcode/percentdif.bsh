@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# program takes two arguments (data files with equal amounts of lines)
+# and calculates and plots the difference between them.
+
+if [ -e ./merge.bsh -a plotheat2.bsh ]
+	then
+
+filename=$(basename $1)
+extention=${filename##*.}
+filename=${filename%.*}
+
+./merge.bsh $1 $2
+./plotheat2.bsh pd_$1 $filename
+#echo $filename
+#echo $extention
+
+
+#file=$(basename "$1")
+#stub=${file%.*}
+#ext=${file#*.}
+#echo $ext
+#echo ${file#"$stub"}
+#echo $file
+#./merge.bsh $1 $2
+#./plotheat.bsh pd_$1
+fi
+
