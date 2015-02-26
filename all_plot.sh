@@ -17,6 +17,22 @@ splot "pot.dat" using 2:1:3 with image notitle#, \
 EOF
 fi
 
+if [ -f analytical.dat ]
+then
+echo "Graphing analytical potential..."
+gnuplot << EOF
+set term postscript
+set output "analytical.eps"
+set contour base
+set view map
+unset surface
+set title ""
+set cntrparam levels 50
+splot "analytical.dat" using 2:1:3 with image notitle#, \
+   #   "analytical.dat" using 2:1:3 with line notitle
+EOF
+fi
+
 if [ -f grad.dat ]
 then
 echo "Graphing gradient..."

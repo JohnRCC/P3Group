@@ -327,7 +327,7 @@ int main(int argc, char* argv[]) {
 	cout << "Creating output matrix... " << flush; }
 
       // Create output matrix
-      output = printmesh(vals, mesh, rowsize, columnsize, maxres);
+      output = printmesh(vals, mesh, rowsize, columnsize, maxres, silence);
 
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl;
