@@ -8,11 +8,11 @@
 ###################################################################
 
 set pm3d map
-splot "percentdifpot.dat" using 1:2:3 #with image
+splot "pd_pot.dat" using 1:2:3 #with image
 
 
 set term pdf
-set output "AN_10_p2_3_i10000.pdf"
+set output "pd_pot.pdf"
 
 # output format:
 # e.g. "Npot_10_p2_3_i10000.pdf":
