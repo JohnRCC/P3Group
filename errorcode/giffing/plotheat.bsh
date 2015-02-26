@@ -7,6 +7,13 @@ gnuplot -p << EOF
 set pm3d map
 splot '$wazzy' using 1:2:3 #with image
 
+#____________
+
+set cbrange [-10:10]
+set palette rgbformulae 22,13,-31
+
+#_____________
+set size ratio -1
 set terminal png 
 set output "$wazzy.png"
 replot

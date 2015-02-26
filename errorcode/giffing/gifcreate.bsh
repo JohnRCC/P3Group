@@ -3,13 +3,13 @@
 
 ./multiiter.sh
 
-for i in {1000..30000..500} #{x1..x2..x3} iterates from x1 to x2 in steps of x3.
+for i in {0..5000..40} #{x1..x2..x3} iterates from x1 to x2 in steps of x3.
 do
 
 if [ -e ./pot${i}.dat ]
    then
  echo "   ./pot${i}.dat   done"    
-	./merge.bsh pot${i}.dat 
+	./merge.bsh pot${i}.dat analytical.dat
 fi
 
 done

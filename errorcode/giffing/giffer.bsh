@@ -5,11 +5,11 @@
 
 
 
-for i in {1000..30000..500} ## {x1..x2..x3} iterates from x1 to x2 in steps of x3
+for i in {0..5000..40} ## {x1..x2..x3} iterates from x1 to x2 in steps of x3
 do
 
 
-	num="$((${i} / 500))"
+	num="$((${i} / 40))"
 
 
 #echo "${num}"
@@ -17,7 +17,7 @@ do
 if [ -e "./pd_pot${i}.dat.png" ]
    then
 
-	if [ "${i}" -le "999" ]	
+	if [ "${num}" -le "10" ]	
 		then
       		mv ./pd_pot${i}.dat.png ./000${num}.png  
 		#echo "got one!"
@@ -25,21 +25,22 @@ if [ -e "./pd_pot${i}.dat.png" ]
 
 
 
-	elif [ "${i}" -le "9999" ]	
+	elif [ "${num}" -le "100" ]	
 		then
       		mv ./pd_pot${i}.dat.png ./00${num}.png  
 		#echo "got one!"
-	elif [ "${i}" -le "99999" ]
+	elif [ "${i}" -le "1000" ]
 		then
 		mv ./pd_pot${i}.dat.png ./0${num}.png	
 	else
-		echo "Horror!!"
+		mv ./pd_pot${i}.dat.png ./${num}.png
 	fi
 fi
 
 done
 
 convert -delay 10 -loop 0 *.png tlapsAN.gif
-rm pd_* *.png pot* 
+rm pd_* #*.png 
+rm pot* 
  exit 0
 

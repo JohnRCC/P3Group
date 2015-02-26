@@ -9,7 +9,7 @@
 
 
 
-for i in {1000..30000..500} ## {x1..x2..x3} iterates from x1 to x2 in steps of x3
+for i in {0..5000..40} ## {x1..x2..x3} iterates from x1 to x2 in steps of x3
 do
 
 if [ -e ./pot${i}.dat ]
@@ -18,7 +18,7 @@ if [ -e ./pot${i}.dat ]
       echo "removed previos ./pot${i}.dat"
 fi
 
-	./main -10 10 0.2 3 $i 2 
+	./main -10 10.2 0.2 2.17597 $i 2 
 	mv pot.dat ./pot${i}.dat
 
 
