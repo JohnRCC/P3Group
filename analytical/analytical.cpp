@@ -39,7 +39,7 @@ int row,column,i;
 	 }
 	 
 
-float mid = (matsize/2.0) - (fmod(matsize,2.0));
+float mid = (matsize/2.0);// - (fmod(matsize,2.0));
 double valsA[matsize][matsize]; 
 
 
