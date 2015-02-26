@@ -92,7 +92,8 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
   
-  if (argc < 7) // Case for numerical solution
+  // Declare variables specific to the numerical case
+  if (argc < 7)
     {
       if (silence == 0) {
 	cout << "Bitmap detected. Entering image mode." << endl; 
@@ -105,18 +106,6 @@ int main(int argc, char* argv[]) {
       // Get dimensions
       rowsize = Image.TellHeight();
       columnsize = Image.TellWidth();
-
-      // Set maximum size of submatrices and resultant variables
-      // 'Maxpower' is the power of 3 for the size of the largest submatrix
-      // e.g. if maxpower = 2, the largest submatrix will be 9x9 (2^3)
-      // Maxres is then 3^maxpower
-      maxpower = 2;
-      maxres = 1;
-      for (i = 0; i < maxpower; i++) {
-	maxres = maxres * 3; }
-
-      rdim = rowsize * maxres;
-      cdim = columnsize * maxres;
       
       // Set ds to 1 since not defined by image
       ds = 1;
@@ -135,7 +124,8 @@ int main(int argc, char* argv[]) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
   
-  else if (argc > 6) // Case for the analytical solution
+  // Declare variables specific to the analytical case
+  else if (argc > 6)
     {
       if (silence == 0) {
 	cout << "Input variables detected. Solving for system A." << endl;
@@ -158,7 +148,20 @@ int main(int argc, char* argv[]) {
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
+
+  // Set maximum size of submatrices and resultant variables
+  // 'Maxpower' is the power of 3 for the size of the largest submatrix
+  // e.g. if maxpower = 2, the largest submatrix will be 9x9 (2^3)
+  // Maxres is then 3^maxpower
+  maxpower = 2;
+  maxres = 1;
+  for (i = 0; i < maxpower; i++) {
+    maxres = maxres * 3; }
   
+  rdim = rowsize * maxres;
+  cdim = columnsize * maxres;
+
+
   // Define the matrix
   if (silence == 0) {
     time = timerstart();
@@ -263,8 +266,8 @@ int main(int argc, char* argv[]) {
 		    vals[row][column][1] =
 		    vals[row][column][2] = -1;
 		}
-	      else if ( (pow( (cf(row,smin,ds) - cf(mid,smin,ds)), 2.0 )
-			 + pow( (cf(column,smin,ds) - cf(mid,smin,ds)), 2.0 ) )
+	      else if ( (pow( (cf(row,smin,ds,1) - cf(mid,smin,ds,1)), 2.0 )
+			 + pow( (cf(column,smin,ds,1) - cf(mid,smin,ds,1)), 2.0 ) )
 			< pow(r, 2.0) ) // Within the circle
 		{
 		  vals[row][column][0] =
@@ -292,7 +295,7 @@ int main(int argc, char* argv[]) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Get analytical solution
-      analytic(smin,ds,smax,r);
+      analytic(smin,ds,smax,r,maxres,silence);
     }
   
   // Run the algorithm which calculates the potential at each point
@@ -316,33 +319,29 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
 
-  // Apply meshing to the numerical solution
-  if (argc < 7)
-    {
-      // Create sublayer matrix
-      mesh = meshing(vals, rowsize, columnsize, maxpower, smooth, silence);
-
-      if (silence == 0) {
-	time = timerstart();
-	cout << "Creating output matrix... " << flush; }
-
-      // Create output matrix
-      output = printmesh(vals, mesh, rowsize, columnsize, maxres, silence);
-
-      if (silence == 0) {
-	cout << "done. (" << timerend(time) << "s)" << endl;
-        time = timerstart();
-	cout << "Refining output matrix... " << flush; }
-
-      // Refine output matrix
-      refine(output, rdim, cdim, 10, silence);
-      
-      if (silence == 0) {
-	cout << "done (" << timerend(time) << "s)." << endl; }    
-    }
-
-  // A high-res matrix with values taken entriely from the top-level matrix
-  // without any sublayers
+  // Create a matrix of sublayers
+  mesh = meshing(vals, rowsize, columnsize, maxpower, smooth, silence);
+  
+  if (silence == 0) {
+    time = timerstart();
+    cout << "Creating output matrix... " << flush; }
+  
+  // Create an output matrix which includes the sublayers
+  output = printmesh(vals, mesh, rowsize, columnsize, maxres, silence);
+  
+  if (silence == 0) {
+    cout << "done. (" << timerend(time) << "s)" << endl;
+    time = timerstart();
+    cout << "Refining output matrix... " << flush; }
+  
+  // Refine the output matrix
+  refine(output, rdim, cdim, 10, silence);
+  
+  if (silence == 0) {
+    cout << "done (" << timerend(time) << "s)." << endl; }
+  
+  // Create a high-res matrix with values taken entriely from the top-level
+  // matrix without any sublayers
   // double** comparison = nomeshing(vals, rowsize, columnsize, maxpower);
 
   // Output results for the analytical case
@@ -369,7 +368,7 @@ int main(int argc, char* argv[]) {
 	      for (column = 0; column < columnsize; column++)
 		{
 		  // Gradient test. See function 'grad' for more info.
-		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
+		  datafile << cf(row,smin,ds,1) << " " << cf(column,smin,ds,1)
 			   << " " << vals[row][column][2] << "\n";
 		}
 
@@ -404,15 +403,15 @@ int main(int argc, char* argv[]) {
 	  datafile.open("pot.dat");
 	  //datafile << "Potential" << endl << endl;	
 	  count = 0;
-	  percent = rowsize / 100.0;
+	  percent = rdim / 100.0;
 
-	  for (row = 0; row < rowsize; row++)
+	  for (row = 0; row < rdim; row++)
 	    {
-	      for (column = 0; column < columnsize; column++)
+	      for (column = 0; column < cdim; column++)
 		{	
 		  //actual values of potential (for plotting etc.)
 		  datafile << row << " " << column << " "
-			   << vals[row][column][1] << "\n";
+			   << output[row][column] << "\n";
 		}
 
 	      datafile << "\n";
@@ -502,7 +501,7 @@ int main(int argc, char* argv[]) {
 	      for (column = 0; column < columnsize; column++)
 		{
 		  // Gradient test. see function 'grad' for more info.
-		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
+		  datafile << cf(row,smin,ds,1) << " " << cf(column,smin,ds,1)
 			   << " " << vals[row][column][2] << "\n"; 
 		}
 	      
@@ -544,8 +543,9 @@ int main(int argc, char* argv[]) {
 	      for (column = 0; column < cdim; column++)
 		{
 		  // Actual values of potential (for plotting etc.)
-		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds) << " "
-		  	   << output[row][column] << "\n";
+		  datafile << cf(row,smin,ds,maxres) << " "
+			   << cf(column,smin,ds,maxres) << " "
+			   << output[row][column] << "\n";
 		}
 	      datafile << "\n";
 	      
@@ -615,8 +615,7 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-float cf(int matind, float min, float ds)
+float cf(int matind, float min, float ds, int maxres)
 {
-  return min + ((ds)*matind);
-  // add ds/9.0 for when meshing is applied to numerical solution as well
+  return min + ((ds/(float)maxres)*matind);
 }

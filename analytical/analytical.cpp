@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int analytic(float smin,float ds,float smax,float r)
+int analytic(float smin,float ds,float smax,float r,int maxres,int silence)
 {
  
 int row,column,i;
@@ -28,6 +28,7 @@ int row,column,i;
 // smax = d/2.0;
 
 // Initalise matrix
+<<<<<<< HEAD
 	
 	// Matrix size in terms of min and max values
 	/**/
@@ -41,14 +42,37 @@ int row,column,i;
 
 float mid = (matsize/2.0);// - (fmod(matsize,2.0));
 double valsA[matsize][matsize]; 
+=======
+ 
+ double time;
+ if (silence == 0) {
+   time = timerstart();
+   cout << "Calculating analytical solution... " << flush; }
+
+ // Set the scale of the matrix (for compatibility with meshing)
+ ds = ds / (float)maxres;
+ 
+ // Matrix size in terms of min and max values
+ /**/
+ float d = abs(smax-smin);
+ int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
+ 
+ if(d < pow(r,2) && silence == 0) {
+   cout << "\n WARNING! - Analytic function may give an erroneous answer."
+	<< "d < r^2 \n... " << flush; }
+ 
+ 
+ float mid = (matsize/2.0) - (fmod(matsize,2.0));
+ double valsA[matsize][matsize]; 
+>>>>>>> 557eaab674748e8bdfa74bea335974b3bf88a43f
 
 
 // Cast values
 for(row=0;row<matsize;row++) {
   for(column=0;column<matsize;column++) {
 	// Sets "true" coordinates for x and y
-    float x=cf(row,smin,ds);
-    float y=cf(column,smin,ds);
+    float y=cf(row,smin,ds,1);
+    float x=cf(column,smin,ds,1);
 
         if(row==0) {
       valsA[row][column]=valsA[row][column]=1;
@@ -56,7 +80,11 @@ for(row=0;row<matsize;row++) {
       else if(row==matsize-1) {
 	valsA[row][column]=valsA[row][column]=-1;
       }
+<<<<<<< HEAD
       else if( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) <= pow(r,2.0) ) {
+=======
+      else if( (pow((cf(row,smin,ds,1)-cf(mid,smin,ds,1)),2.0) + pow((cf(column,smin,ds,1)-cf(mid,smin,ds,1)),2.0)) < pow(r,2.0) ) {
+>>>>>>> 557eaab674748e8bdfa74bea335974b3bf88a43f
 	valsA[row][column]=valsA[row][column]=0;
       }
       else {
@@ -74,21 +102,24 @@ for(row=0;row<matsize;row++) {
 ofstream analyticfile;
 analyticfile.open("analytical.dat");
 
-for(row=0;row<matsize;row++)
-{
-  for(column=0;column<matsize;column++)
-  {
-    analyticfile<<row<<" "<<column<<" "<<valsA[row][column]<<"\n";
-  }
-  analyticfile<<"\n";
-}
-
-analyticfile.close();
-
-return 0;
-
-}
-
+ for(row=0;row<matsize;row++)
+   {
+     for(column=0;column<matsize;column++)
+       {
+	 analyticfile<<row<<" "<<column<<" "<<valsA[row][column]<<"\n";
+       }
+     analyticfile<<"\n";
+   }
+ 
+ analyticfile.close();
+ 
+ if (silence == 0) {
+   cout << "done. (" << timerend(time,silence) << "s)" << endl; }
+ 
+ return 0;
+ 
+ }
+ 
 
 /*
  *	FUNCTIONS
@@ -108,8 +139,8 @@ float potential(float x, float y, float r,float Plate_separation) {
 
 
 //CoordiFy converts the matrix location of a point into its physical coordinate
-float cf(float matind,float min,float ds) {
+float cf(float matind,float min,float ds,int maxres) {
   // matind = index of value in array, min = min true coord value,
-  // ds = coord division
-  return min + (ds*matind);
+  // ds = coord division, maxres = scaling factor (used in main, not used here)
+  return min + ((ds/(float)maxres)*matind);
 }
