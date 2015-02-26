@@ -180,7 +180,7 @@ double mod(double val)
 // their dimensions, and the dimensions of the largest sublayer.
 // Returns the unified matrix.
 double** printmesh(double*** toplayer, Sublayer** mesh,
-		      int rowsize, int columnsize, int maxres)
+		   int rowsize, int columnsize, int maxres, int silence)
 {
   // Define the dimensions of the output matrix
   int rdim = rowsize * maxres;
@@ -194,11 +194,13 @@ double** printmesh(double*** toplayer, Sublayer** mesh,
     }
 
   // Loop through the top-level matrix
+  int count = 0;
+  int percent = rowsize / 100.0;
   for (int r = 0; r < rowsize; r++)
     {
       for (int c = 0; c < columnsize; c++)
 	{
-
+	  
 	  // In the case of there being a sublayer at this point
 	  if ( mesh[r][c].index == 0 )
 	    {
@@ -213,11 +215,11 @@ double** printmesh(double*** toplayer, Sublayer** mesh,
 		{
 		  for (int yc = 0; yc < scale; yc++)
 		    {
-
+		      
 		      for (int x = 0; x < subsize; x++)
 			{
 			  for (int xc = 0; xc < scale; xc++)
-
+			    
 			    {
 			      output[(r*maxres) +(y*scale) +yc]
 				[(c*maxres) +(x*scale) +xc] =
@@ -227,7 +229,7 @@ double** printmesh(double*** toplayer, Sublayer** mesh,
 		    }
 		}
 	    }
-
+	  
 	  // In the case of there not being a sublayer at this point
 	  else
 	    {
@@ -244,16 +246,26 @@ double** printmesh(double*** toplayer, Sublayer** mesh,
 		    }
 		}
 	    }
-
+	  
+	}
+      
+      // Display percentage completion
+      if (r > (count*percent) && silence == 0)
+	{
+	  if (count < 10) {
+	    cout << count << "%\b\b" << flush; }
+	  else {
+	    cout << count << "%\b\b\b" << flush; }
+	  count++;
 	}
     }
-
+  
   // Return the output matrix
   return output;
 }
 
-
-// A function which smooths out the blocky-looking results of meshing.
+  
+  // A function which smooths out the blocky-looking results of meshing.
 // Takes as input a matrix, its dimensions, the number of times it should
 // be smoothed, and whether terminal output is enabled.
 int refine(double** input, int rowsize, int columnsize, int iter, int silence)
