@@ -1,0 +1,45 @@
+#!/bin/bash
+
+#		--giffer.bsh--
+
+
+
+
+for i in {1000..30000..500} ## {x1..x2..x3} iterates from x1 to x2 in steps of x3
+do
+
+
+	num="$((${i} / 500))"
+
+
+#echo "${num}"
+
+if [ -e "./pd_pot${i}.dat.png" ]
+   then
+
+	if [ "${i}" -le "999" ]	
+		then
+      		mv ./pd_pot${i}.dat.png ./000${num}.png  
+		#echo "got one!"
+
+
+
+
+	elif [ "${i}" -le "9999" ]	
+		then
+      		mv ./pd_pot${i}.dat.png ./00${num}.png  
+		#echo "got one!"
+	elif [ "${i}" -le "99999" ]
+		then
+		mv ./pd_pot${i}.dat.png ./0${num}.png	
+	else
+		echo "Horror!!"
+	fi
+fi
+
+done
+
+convert -delay 10 -loop 0 *.png tlapsAN.gif
+rm pd_* *.png pot* 
+ exit 0
+
