@@ -123,10 +123,12 @@ while [ $run = "yes" ] ; do
 		    done
 		    
 		    if [[ $pot == "y" ]] ; then
+			potcheck="| Potential" #used for names.txt
 			option=$(( $option + 2 ))
 			echo "Calculating equipotentials. Calculate electric field? [y/n]"
 		    elif [[ $pot == "n" ]] ; then
 		#	touch ./data/pot/$outfile.pot # to maintain symmetry in filenames
+			potcheck=" "
 			echo "Not calculating equipotentials. Calculate electric field? [y/n]"
 		    fi
 		    
@@ -138,10 +140,12 @@ while [ $run = "yes" ] ; do
 		    done
 		    
 		    if [[ $fld == "y" ]] ; then
+			fldcheck="| Field" # used for names.txt
 			option=$(( $option + 4 ))
 			echo "Calculating electric field. Output grad test results? [y/n] (Advanced users only: recommended choice no)"
 		    elif [[ $fld == "n" ]] ; then
 		#	touch ./data/fld/$outfile.fld
+			fldcheck=" "
 			echo "Not calculating electric field. Output grad test results? [y/n] (Advanced users only: recommended choice no)"
 		    fi
 		    
@@ -153,10 +157,12 @@ while [ $run = "yes" ] ; do
 		    done
 		    
 		    if [[ $grd == "y" ]] ; then
+			grdcheck="| Gradient" # used for names.txt
 			option=$(( $option + 1 ))
 			echo "Calculating grad test results. Error tolerance? (Used to determine number of iterations, a good guideline number is ____."
 		    elif [[ $grd == "n" ]] ; then
 		#	touch ./data/grd/$outfile.grd
+			grdchedk=" "
 			echo "Not calculating grad test results. Error tolerance? (Used to determine number of iterations, a good guideline number is ____."
 		    fi
 		    
@@ -186,14 +192,25 @@ while [ $run = "yes" ] ; do
 		    echo "    Error tolerance: "$errtol
 		    echo "          Smoothing: "$smooth
 		    
+		    #set go to "run" for now as leaving it blank is causing issues
+		    go=run
+		    
 		    read go ; clear
+		    
+		    if [[ $go = "" ]] ; then
+			go=run
+		    fi
 
 		    while [ $go != "run" ] && [ $go != "reset" ] ; do
 			echo "Please type 'run' or 'reset':"
 			read go ; clear
 		    done
-
+		    
 		    if [[ $go = "run" ]] ; then
+		      
+			# first thing that needs doing is to update names.txt with this new file
+			echo `date +"%D %T"` "--" $outfile "--" $potcheck $fldcheck $grdcheck >> ./data/.names.txt
+		      
 			checkloop=no
 			./main $imagefile $errtol $option $smooth
 
@@ -201,19 +218,19 @@ while [ $run = "yes" ] ; do
 			if [[ -f pot.dat ]] ; then
 			    mv pot.dat ./data/pot/$outfile.pot
 			else
-			    cp ./data/pot/.empty.pot ./data/pot/$outfile.pot
+			    cp ./data/pot/.empty.pot ./data/pot/$outfile.pot.dum
 			fi
 
 			if [[ -f field.dat ]] ; then
 			    mv field.dat ./data/fld/$outfile.fld
 			else
-			    cp ./data/fld/.empty.fld ./data/fld/$outfile.fld
+			    cp ./data/fld/.empty.fld ./data/fld/$outfile.fld.dum
 			fi
 
 			if [[ -f grad.dat ]] ; then
 			    mv grad.dat ./data/grd/$outfile.grd
 			else
-			    cp ./data/grd/.empty.grd ./data/grd/$outfile.grd
+			    cp ./data/grd/.empty.grd ./data/grd/$outfile.grd.dum
 			fi
 
 			echo "Calculations complete. Go to plotting mode now? [y/n]"
@@ -245,63 +262,80 @@ while [ $run = "yes" ] ; do
 
 	#plotting mode
 	if [[ $choice = "p" ]] ; then
-	    plotcont=yes
+	    plotcont=y
 	    while [ $plotcont = "y" ] ; do
 		
-		echo "Entering plotting mode. Please enter filename you want to plot (without extension):"
-		read plotfile ; clear
+		echo "Entering plotting mode. Please enter filename you want to plot (without extension), or type 'list' for a list of files available for plotting:"
 		
-		while [ ! -f ./data/pot/$plotfile.pot ] && [ ! -f ./data/fld/$plotfile.fld ] && [ ! -f ./data/grd/$plotfile.grd ] ; do
-		    echo "Invalid file specified (no files named "$plotfile" exist). Please try again:"
+		listloop=y
+		
+		while [ $listloop = "y" ] ; do
 		    read plotfile ; clear
+		    if [[ $plotfile = "list" ]] ; then
+			echo "Showing plottable files. The 'Potential | Field | Gradient flags show what is available for plotting."
+			echo ""
+			cat ./data/.names.txt
+			echo ""
+			echo "Please enter the name of the file you want to plot (without extension):"
+		    elif [[ -f ./data/pot/$plotfile.pot || -f ./data/fld/$plotfile.fld || -f ./data/grd/$plotfile.grd ]] ; then
+			listloop=n
+		    else
+			echo "Invalid file specified (no files with that name exist). Please try again, or type list for a list of files available for plotting:"
+		    fi
 		done
 		
 	    # POTENTIAL PLOT
-		echo "File "$plotfile" selected. Plot potential? [y/n]"
-		read potplot ; clear
-		
-		while [ $potplot != "y" ] && [ $potplot != "n" ] ; do
-		    echo "Please enter y or n:"
+		if [[ ! -f ./data/pot/$plotfile.pot.dum ]] ; then
+		    echo "File "$plotfile" selected. Plot potential? [y/n]"
 		    read potplot ; clear
-		done
 		
-		if [[ $potplot = "y" ]] ; then
-		    ./pot_plot.sh $plotfile
-		    echo "Plotting potential. Plot can be found at ./plots/pot/"$plotfile".eps"
-		else
-		    echo "Skipping potential."
+		    while [ $potplot != "y" ] && [ $potplot != "n" ] ; do
+			echo "Please enter y or n:"
+			read potplot ; clear
+		    done
+		
+		    if [[ $potplot = "y" ]] ; then
+			./pot_plot.sh $plotfile
+			echo "Done. Plot can be found at ./plots/pot/"$plotfile".eps"
+		    else
+			echo "Skipping potential."
+		    fi
 		fi
-		
+		    
 	    # FIELD PLOT
-		echo "Plot electric field? [y/n]"
-		read fldplot ; clear
-		
-		while [ $fldplot != "y" ] && [ $fldplot != "n" ] ; do
-		    echo "Please enter y or n:"
+		if [[ ! -f ./data/fld/$plotfile.fld.dum ]] ; then
+		    echo "Plot electric field? [y/n]"
 		    read fldplot ; clear
-		done
 		
-		if [[ $fldplot = "y" ]] ; then
-		    ./fld_plot.sh $plotfile
-		    echo "Plotting electric field. Plot can be found at ./plots/fld/"$plotfile".eps"
-		else
-		    echo "Skipping electric field."
+		    while [ $fldplot != "y" ] && [ $fldplot != "n" ] ; do
+			echo "Please enter y or n:"
+			read fldplot ; clear
+		    done
+		
+		    if [[ $fldplot = "y" ]] ; then
+			./fld_plot.sh $plotfile
+			echo "Done. Plot can be found at ./plots/fld/"$plotfile".eps"
+		    else
+			echo "Skipping electric field."
+		    fi
 		fi
 		
 	    # GRAD PLOT
-		echo "Plot gradient? [y/n] (Advanced users only. Recommended: no)"
-		read grdplot ; clear
-		
-		while [ $grdplot != "y" ] && [ $grdplot != "n" ] ; do
-		    echo "Please enter y or n:"
+		if [[ ! -f ./data/grd/$plotfile.grd.dum ]] ; then
+		    echo "Plot gradient? [y/n] (Advanced users only. Recommended: no)"
 		    read grdplot ; clear
-		done
 		
-		if [[ $fldplot = "y" ]] ; then
-		    ./grd_plot.sh $plotfile
-		    echo "Plotting gradient."
-		else
-		    echo "Skipping gradient."
+		    while [ $grdplot != "y" ] && [ $grdplot != "n" ] ; do
+			echo "Please enter y or n:"
+			read grdplot ; clear
+		    done
+		
+		    if [[ $fldplot = "y" ]] ; then
+			./grd_plot.sh $plotfile
+			echo "Done. Plot can be found at ./plots/grd/"$plotfile".eps"
+		    else
+			echo "Skipping gradient."
+		    fi
 		fi
 		
 		echo "Plotting complete. Plot more files? [y/n] (N will return you to the main menu.)"
