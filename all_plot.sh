@@ -11,7 +11,8 @@ set view map
 unset surface
 set title ""
 set cntrparam levels 50
-splot "pot.dat" using 2:1:3 with image notitle
+splot "pot.dat" using 2:1:3 with image notitle#, \
+   #   "pot.dat" using 2:1:3 with line notitle
 #plot "field.dat" using 2:1:3:4 with vectors head size 01.20,20 notitle	# line for contour plot
 EOF
 fi
