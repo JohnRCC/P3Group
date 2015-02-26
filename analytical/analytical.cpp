@@ -62,7 +62,7 @@ double valsA[matsize][matsize];
 	<< "d < r^2 \n... " << flush; }
  
  
- float mid = (matsize/2.0) - (fmod(matsize,2.0));
+ float mid = (matsize/2.0);// - (fmod(matsize,2.0));
  double valsA[matsize][matsize]; 
 >>>>>>> 557eaab674748e8bdfa74bea335974b3bf88a43f
 
