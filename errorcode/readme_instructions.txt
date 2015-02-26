@@ -5,22 +5,14 @@ NB:  "./"  refers to  "P3Group/errorocode/"
 
 
 1)
-run ./main [arguments as usual]
-	to output analytical.dat and pot.dat
-
-2)
-run ./merge.bsh [argument]
-	where argument is "pot.dat" (or whatever you want to compare 
-	to analytic.dat)
-	this finds difference between analytical.dat and pot.dat
-	(to compare to another thing, go into file and edit "analytic.dat"
-	to whatever you want to compare to)
-
-	output: pd_[argument].pdf
-
+run ./percentdif.bsh arg1 arg2
+(to compare arg1 to arg2)
+eg
+	./percentdif.bsh pot.dat analytical.dat
 
 
 _________________________________________________________
+
 	--animated gif generation instructions--
 	--(animated gif of how percentage difference-- 
 	--between two files changes with iteration)--
