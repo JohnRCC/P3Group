@@ -47,7 +47,7 @@ int row,column,i;
 	<< "d < r^2 \n... " << flush; }
  
  
- float mid = (matsize/2.0) - (fmod(matsize,2.0));
+ float mid = (matsize/2.0);// - (fmod(matsize,2.0));
  double valsA[matsize][matsize]; 
 
 
