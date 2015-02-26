@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
 		cout << "cannot give " << confidence << 
 		"\% confidence with these dimensions;\nmake radius " <<
-		"at most " << (distance/2)*cubeconf << endl;
+		"less than " << (distance/2)*cubeconf << endl;
 		return 1;
 	}
 	else{
