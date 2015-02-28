@@ -39,7 +39,7 @@ int row,column,i;
 	 }
 	 
 
-float mid = (matsize/2.0) - (fmod(matsize,2.0));
+float mid = (matsize/2.0) - (fmod(matsize,2.0)), x,y;
 double valsA[matsize][matsize]; 
 
 
@@ -47,21 +47,21 @@ double valsA[matsize][matsize];
 for(row=0;row<matsize;row++) {
   for(column=0;column<matsize;column++) {
 	// Sets "true" coordinates for x and y
-    float x=cf(row,smin,ds);
-    float y=cf(column,smin,ds);
+    x=cf(row,smin,ds);
+    y=cf(column,smin,ds);
 
-        if(row==0) {
-      valsA[row][column]=valsA[row][column]=1;
+      if (row== 0) {
+        valsA[row][column] = 1;
       }
-      else if(row==matsize-1) {
-	valsA[row][column]=valsA[row][column]=-1;
+      else if (row == matsize-1) {
+	valsA[row][column] = -1;
       }
-      else if( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) < pow(r,2.0) ) {
-	valsA[row][column]=valsA[row][column]=0;
+      else if ( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) < pow(r,2.0) ) {
+	valsA[row][column] = 0;
       }
       else {
       	// Only values that differ from main
-	valsA[row][column]=valsA[row][column]=potential(x,y,r,d);
+	valsA[row][column] = potential(x,y,r,d);
       }
 	
   }
@@ -74,14 +74,15 @@ for(row=0;row<matsize;row++) {
 ofstream analyticfile;
 analyticfile.open("analytical.dat");
 
-for(row=0;row<matsize;row++)
-{
-  for(column=0;column<matsize;column++)
+for (row = 0; row < matsize; row++)
   {
-    analyticfile<<row<<" "<<column<<" "<<valsA[row][column]<<"\n";
+  for (column = 0; column < matsize; column++)
+    {
+      analyticfile << row << " " << column << " " 
+                   << valsA[column][row] << "\n";
+    }
+    analyticfile<<"\n";
   }
-  analyticfile<<"\n";
-}
 
 analyticfile.close();
 
