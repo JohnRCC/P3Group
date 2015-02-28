@@ -32,4 +32,4 @@ clean:
 	rm -f *.o $(FLD).o $(ANA).o $(BMP).o $(FPDM).o *~
 
 reset:
-	rm -f grad.dat grad.eps pot.dat pot.eps field.dat field.eps analytical.eps
+	rm -f grad.dat grad.eps pot.dat pot.eps field.dat field.eps analytical.dat analytical.eps
