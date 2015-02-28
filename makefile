@@ -21,10 +21,10 @@ EasyBMP.o: $(BMP).cpp $(BMP).h
 main.o: main.cpp $(BMP).h $(HED)
 	g++ -o main.o -c main.cpp
 
-analytical.o: $(ANA).cpp funcs.h
+analytical.o: $(ANA).cpp $(FOL)funcs.h
 	g++ -o $(ANA).o -c $(ANA).cpp
 
-algFivePointDM.o: $(FPDM).cpp funcs.h
+algFivePointDM.o: $(FPDM).cpp $(FOL)funcs.h
 	g++ -o $(FPDM).o -c $(FPDM).cpp
 
 # removes all object files and backup files
