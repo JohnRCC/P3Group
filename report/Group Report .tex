@@ -1,8 +1,8 @@
 \documentclass[a4paper]{jpconf}
 \usepackage{amsmath} % for subequations
 \usepackage{xfrac} %to write fractions in different ways
-%\usepackage{graphicx} %for figures
-%\usepackage{caption} %for figures
+\usepackage{graphicx} %for figures
+\usepackage{caption} %for figures
 
 
 
@@ -49,17 +49,17 @@ In general, there are two methods to analyse the electric potential in all space
 The electric field is dominated by inherent symmetries that are better described in spherical coordinates \cite{RHB-MathematicalMethods} in which Laplace's Equation is expressed as
 
 \begin{equation}
-\frac{1}{r^2}\frac{\partial}{\partial r}\bigg(r^2 \frac{\partial V}{\partial r}\bigg) + \frac{1}{r^2 \sin \theta} \frac{\partial}{\partial \theta}\bigg(\sin \theta \frac{\partial V}{\partial \theta}\bigg) + \frac{1}{r^2 \sin^2 \theta}\frac{\partial^2 V}{\partial \phi^2} = 0~.
+\frac{1}{r^2}\frac{\partial}{\partial r}\bigg(r^2 \frac{\partial \Phi}{\partial r}\bigg) + \frac{1}{r^2 \sin \theta} \frac{\partial}{\partial \theta}\bigg(\sin \theta \frac{\partial \Phi}{\partial \theta}\bigg) + \frac{1}{r^2 \sin^2 \theta}\frac{\partial^2 \Phi}{\partial \phi^2} = 0~.
 \label{eq:1}
 \end{equation}
 
-For round objects $V$ can be independent of $\phi$ given an appropriate choice of coordinate orientation. Multiplying through by $r^2$ the equation is simplified to
+For round objects $\Phi$ can be independent of $\phi$ given an appropriate choice of coordinate orientation. Multiplying through by $r^2$ the equation is simplified to
 \begin{equation}
-\frac{\partial}{\partial r}\bigg(r^2 \frac{\partial V}{\partial r}\bigg) + \frac{1}{\sin \theta}\frac{\partial}{\partial \theta}\bigg(\sin \theta \frac{\partial V}{\partial \theta}\bigg) = 0~.
+\frac{\partial}{\partial r}\bigg(r^2 \frac{\partial \Phi}{\partial r}\bigg) + \frac{1}{\sin \theta}\frac{\partial}{\partial \theta}\bigg(\sin \theta \frac{\partial \Phi}{\partial \theta}\bigg) = 0~.
 \label{eq:2}
 \end{equation}
 
-Separation of variables is used to solve the equation above. Assume that $V(r,\theta) = R(r)\Theta(\theta)$, where the factors $R$ and $\Theta$ are functions of $r$ and $\theta$ respectively. Substituting for and dividing through by $V$, Eq.(\ref{eq:2}) can be written as 
+Separation of variables is used to solve the equation above. Assume that $\Phi(r,\theta) = R(r)\Theta(\theta)$, where the factors $R$ and $\Theta$ are functions of $r$ and $\theta$ respectively. Substituting for and dividing through by $\Phi$, Eq.(\ref{eq:2}) can be written as 
 \begin{equation}
 \frac{1}{R}\frac{d}{dr}\bigg(r^2 \frac{dR}{dr}\bigg) + \frac{1}{\Theta \sin \theta}\frac{d}{d \theta}\bigg(\sin \theta \frac{d \Theta }{d \theta}\bigg) = 0~.
 \label{eq:3}
@@ -87,40 +87,88 @@ P_s(x) = \frac{1}{2^s s!} \frac{d^s}{dx^s}(x^2 -1)^s~.
 
 \noindent Therefore, the most general separable solution is:
 \begin{equation}
-V(r, \theta) = \bigg(A r^s + \frac{B}{r^{s+1}}\bigg) P_s (\cos \theta)~.
+\Phi(r, \theta) = \bigg(A r^s + \frac{B}{r^{s+1}}\bigg) P_s (\cos \theta)~.
 \label{eq:7}
 \end{equation}  
 
 \noindent Since Laplace's equation is a linear PDE, the general solution is a superposition of all solutions corresponding to different allowed values of $s$ \cite{griffiths-introElec}. The linear combination can be written as:
 \begin{equation}
-V(r, \theta) = \sum_{s=0}^{\infty} \bigg( A_s r^s + \frac{B_s}{r^{s+1}}\bigg) P_s (\cos \theta)~,
+\Phi(r, \theta) = \sum_{s=0}^{\infty} \bigg( A_s r^s + \frac{B_s}{r^{s+1}}\bigg) P_s (\cos \theta)~,
 \label{eq:8}
 \end{equation} where $A_s$ and $B_s$ are arbitrary constants that are determined by boundary conditions. \\ \par 
 
 \subsection*{Numerical Techniques}
-Finite difference scheme \\
-relaxation methods \\
-adaptive meshing
+%\cite{Press.T.V.F-NumericalRecipes}
+%Laplace?s equation is mathematically described as an elliptic PDE due to its characteristics. To find a particular solution for this differential equation additional conditions must be imposed. These conditions are boundary values that describe all or part of the perimeter of the region in which a solution is desired. The nature of these boundary conditions usually determines the numerical method required to obtain an approximate solution [4]. This is called a Boundary value problem, specifically an Elliptic boundary value problem which does not involve a time variable.
+
+To find a particular solution for a differential equation additional conditions must be imposed, boundary values that describe all or part of the region in which the solution is desired. The nature of these boundary conditions usually determines the numerical method required to obtain an approximate solution \cite{Cheney.Kincai-NumericalMethods}. \par
+Laplace's equation is mathematically described as an elliptic PDE due to its characteristics and these are fundamental for its physical significance \cite{RHB-MathematicalMethods}. Problems that are governed by elliptic PDEs and subjected to boundary conditions are called Boundary value problems.
+These problems can be solved by the Finite-difference and Relaxation methods. \par
+
+The first step of the numerical technique is to discretize the problem by defining a mesh, which is a grid of  spatial points that covers the domain of interest. The points that lie on the mesh can be written in cartesian coordinates as 
+\begin{subequations}
+\begin{align}
+&x_i = ih\\ 
+&y_j = jh
+\end{align}
+\label{eq:coord}
+\end{subequations} 
+\noindent where h is the distance between the grid points and i,j is an integer pair of indices which count grid points from some reference point. The differential operator $\nabla^2$ is then approximated 
+to a discrete form through the use of finite-differences. The standard formula for second derivatives is 
+\begin{equation}
+f''(x) \approx \frac{1}{h^2}[f(x+h) - 2f(x) + f(x-h)].
+\end{equation}
+\noindent Since there are two variables, $x$ and $y$, the discrete approximation to the the Laplacian can be written as
+\begin{equation}
+\nabla^2 \Phi \approx \frac{\Phi(x+h,y) + \Phi(x-h,y) - 2\Phi(x,y)}{h^2} + \frac{\Phi(x,y+h) + \Phi(x,y-h) - 2\Phi(x,y)}{h^2}~,
+\end{equation}
+\noindent or in grid notation
+\begin{equation}
+(\nabla^2 \Phi)_{ij} \approx \frac{1}{h^2}[\Phi_{i+1,j} + \Phi_{i-1,j} + \Phi_{i,j+1} + \Phi_{i,j-1} - 4\Phi_{ij}]~.
+\label{eq:fivepoint}
+\end{equation}
+This equation is called the Five-point formula. The name comes from the fact that it involves values of $\Phi$ at $(x,y)$ and at the four nearest grid points. $(\nabla^2 \Phi)_{ij}$ = 0 therefore Eq.(\ref{eq:fivepoint}) can be rewritten as 
+\begin{equation}
+\Phi_{i,j} = \frac{1}{4}(\Phi_{i+1,j} + \Phi_{i-1,j} + \Phi_{i,j+1} + \Phi_{i,j-1})~.
+\end{equation}
+\noindent This form shows that a solution to Laplace's equation has the property that at any point it is equal to the average of the values at neighbouring points \cite{Cheney.Kincai-NumericalMethods}. 
+
+The boundary conditions are specified in the mesh and the interior points of the region desired are assigned to an arbitrary value. This value chosen will not influence the final solution but it may affect the convergence of the scheme.
+
+The iterative scheme to solve Laplace's equation starts by guessing a solution and then sweeps across the grid updating the value at each point. On each interaction $\Phi_{i,j}$ is set to the average of the four nearest points. Initially the result will not be exact since the neighbours also get updated, but by repeating the process several times the scheme converges to a solution. When the change between iterations is two small, according to a specified error tolerance, a solution is obtained. This procedure is called Relaxation Method. This method is generally slow but others such as Jacobi or Gauss-Seidel can be implemented in order to improve it.
+
+The inherent error in the Five-point formula is 
+\begin{equation}
+\frac{-h^2}{12}\bigg[\frac{\partial^4 \Phi}{\partial x^4}(\xi, y) + \frac{\partial^4 \Phi}{\partial y^4}(x,\eta)\bigg]~,
+\end{equation}
+\noindent which provides an approximation of order $\mathcal{O}(h^2)$ \cite{Cheney.Kincai-NumericalMethods}. The accuracy of the approximation improves as the mesh points increases, that is, as h approaches zero.  This can be done by implementing Adaptive meshing. The problem is solved using the Relaxation method on a uniform mesh and then the solution is examined to see where more gride points can be added. The procedure is then repeated with the improved mesh. This numerical technique decreases the uncertainty in the solution.
 
 
 \section*{Solving a physical system}
+There are simple electrostatic systems for which an analytical solution can be derived. These systems can be extremely helpful when developing a numerical solution. They are used to ensure the correctness and the accuracy of the numerical approximation. System $A$, shown in Fig.\ref{fig:systemA}, was used to obtain this information. This system has a perfectly uniform electric field defined by two plates at potential $+V$ and $-V$. %A long conducting cylinder is placed into the field at ground potential between the plates. 
 
-SYSTEM A
-Consider system $A$, which has a perfectly uniform electric field defined by two plates at potential $+V$ and $-V$. When a long conducting cylinder is placed into the field at ground potential, the electric field is altered as shown in Fig.(). This system can be described mathematically using principles of electrostatics.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=5.7cm]{GPdiagram11} 
+	\caption{CAPTION!!}
+	\label{fig:systemA}
+\end{figure}
 
-The system $A$ illustrated above can be solved analytically using Laplace's Equation, Eq.(\ref{eq:intro3}). This is a partial differential equation (PDE) that describes the electrostatic potential for a given charge distribution, and consequently the corresponding field. A mathematical method, namely Separation of Variables, can be applied, resulting in a set of ordinary differential equations. Then, using the required boundary conditions, a particular solution describing the diagram in Fig.() may be obtained. \\ \par 
+When the uncharged cylindrical conductor is placed in the system the electric field is altered. The field pushes free positive charges to the right and the negative ones to the left. The charges accumulate in the edges of the conductor distorting the field in the surroundings of the cylinder. The potential outside the conductor can be described mathematically using principles of electrostatics, namely Laplace's Equation Eq.(\ref{eq:intro3}). %This PDE describes the electrostatic potential for a given charge distribution, and consequently the corresponding field. 
+A particular solution defining System $A$ is obtained using Eq.(\ref{eq:8}) and the required boundary conditions. 
 
-DERIVATION
-The uncharged cylinder in Fig.() is a perfect conductor placed in a uniform electric field. The field pushes free positive charges to the right and the negative ones to the left. The charges accumulate in the edges of the conductor distorting the field in the surroundings of the cylinder. The electrostatic potential outside the conductor can be found using the general solution Eq.(\ref{eq:8}) and the required boundary conditions.  \par
-The potential at the surface of a grounded conductor is zero \cite{griffiths-introElec}. Also, far from the cylinder the field is perpendicular to the plates, so at infinity $\bf{E}$ = $E_0$$\bf{\hat{x}}$, hence $V = -E_0 x + C$, where C is an arbitrary constant. Due to the symmetry of the system, $V$ is known to be zero at the same distance from the plates. In polar coordinates, this becomes $V(r,\theta) = -E_0 r \cos \theta$. Therefore, the boundary conditions can be expressed as
+
+The potential at the surface of a grounded conductor is zero \cite{griffiths-introElec}. Also, far from the cylinder the field is perpendicular to the plates, so at infinity $\bf{E}$ = $E_0$$\bf{\hat{x}}$, hence $\Phi = -E_0 x + C$, where C is an arbitrary constant and $E_0$ is the initial electric field. Due to the symmetry of the system, $\Phi$ is known to be zero at the same distance from the plates. In polar coordinates, this becomes $\Phi(r,\theta) = -E_0 r \cos \theta$. Therefore, the boundary conditions can be expressed as
+
 \begin{subequations}
 \begin{align}
-&V = 0  \hspace{75pt} r = R~,\\ 
-&V \to -E_0 r \cos \theta \hspace{27pt} r \gg R~,
+&\Phi = 0  \hspace{75pt} r = R~,\\ 
+&\Phi \to -E_0 r \cos \theta \hspace{27pt} r \gg R~,
 \end{align}
-\end{subequations}where $R$ is the radius of the sphere. 
+\end{subequations}
 
-The first boundary condition implies that the general solution is zero, but $P_s(\cos \theta)$ is not always zero, therefore
+\noindent where $R$ is the radius of the sphere as shown in Fig.\ref{fig:systemA}. The first boundary condition implies that the general solution is zero, but $P_s(\cos \theta)$ is not always zero, therefore
+
 \begin{equation}
 A_s R^s + \frac{B_s}{R^{s+1}} = 0~,
 \end{equation}
@@ -129,28 +177,69 @@ or
 B_s = -A_s R^{2s+1}~.
 \end{equation}
 
-The general solution, Eq.(\ref{eq:8}) can be rewritten as
+\noindent The general solution, Eq.(\ref{eq:8}) can be rewritten as
+
 \begin{equation}
-V(r,\theta) = \sum_{s=0}^{\infty} A_s \bigg(r^s - \frac{R^{2s+1}}{r^{s+1}}\bigg) P_s (\cos \theta)~.
+\Phi(r,\theta) = \sum_{s=0}^{\infty} A_s \bigg(r^s - \frac{R^{2s+1}}{r^{s+1}}\bigg) P_s (\cos \theta)~.
 \end{equation}
 
-For $r\gg R$ the term $(\sfrac{R^{2s+1}}{r^{s+1}})$ goes to zero, therefore the second condition requires that
+\noindent For $r\gg R$ the term $(\sfrac{R^{2s+1}}{r^{s+1}})$ goes to zero, therefore the second condition requires that
+
 \begin{equation}
-V(r,\theta)=\sum_{s=0}^{\infty} A_s r^s P_s(\cos \theta) = -E_0 r \cos \theta~,
+\Phi(r,\theta)=\sum_{s=0}^{\infty} A_s r^s P_s(\cos \theta) = -E_0 r \cos \theta~,
 \label{eq:14}
-\end{equation}since there is only one term in this summation, $s=1$. So $P_s(\cos \theta)= \cos \theta$ and $A_1 = -E_0$ and $A_{s \ne 1} = 0$. Therefore, Eq.(\ref{eq:14}) becomes
-\begin{equation}
-V(r,\theta) = -E_0 \bigg(r - \frac{R^3}{r^2}\bigg) \cos \theta~.
 \end{equation}
-The particular solution describing system A is then,
+
+\noindent since there is only one term in this summation, $s=1$. So $P_s(\cos \theta)= \cos \theta$ and $A_1 = -E_0$ and $A_{s \ne 1} = 0$. Therefore, Eq.(\ref{eq:14}) becomes
+
 \begin{equation}
-V(r,\theta) = \left\{ 
+\Phi(r,\theta) = -E_0 \bigg(r - \frac{R^3}{r^2}\bigg) \cos \theta~.
+\end{equation}
+
+The particular solution describing system A is then
+
+\begin{equation}
+\Phi(r,\theta) = \left\{ 
   \begin{array}{l l}
    -E_0 \big(r - \frac{R^3}{r^2}\big) \cos \theta  & \qquad \text{for $r \geq R$}\\
     0 & \qquad \text{for $r < R$}
   \end{array} \right.
 \end{equation}
 
+\noindent or in cartesian coordinates, 
+
+\begin{equation}
+\Phi(x,y) = \left\{ 
+  \begin{array}{l l}
+   -E_0 \big(1 - \frac{R^3}{(x^2 + y^2)^{\sfrac{3}{2}}}\big) & \qquad \text{for $\sqrt{x^2 + y^2} \geq R$}\\
+    0 & \qquad \text{for $\sqrt{x^2 + y^2} < R$~.}
+  \end{array} \right.
+  \label{eq:cartesian}
+\end{equation}
+
+In order to compare numerical and analytical solutions the latter had to be implemented in a computer program. The boundaries were specified to 1V and -1V at the plates and 0V inside the cylinder. The electric field $E_0$ was defined as ratio of the voltage difference between the plates and the plate separation. Then using Eq.(\ref{eq:cartesian}) the potential was calculated at all points on a discretized . \\
+
+
+The Finite-difference and Relaxation methods described were utilised in a C++ program to solve system $A$.
+The plates and the grounded cylinder were defined in a matrix to hold the required values, just as in the analytical case. They remained constant throughout the program and the rest of the elements in the matrix were allowed to vary. A numerical algorithm, Alg.(), was run updating the elements in the matrix until the change in all values between two iterations was considered sufficiently small. This small change is determined using the requested error tolerance. Upon every iteration, the previous iterations values were stored in a temporary array.  When the system is considered stable, the elements in the matrix are further granulated depending on the steepness of their gradients.After the scheme is finished, the resulting matrix is then plotted using a plotting package where a heat-map functionality is used to depict the potential. For the fieldlines, some further calculation is requred: the gradient between each pixel is calculated and used to plot the electric field, as requred by equation Eq.().
+
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=13cm]{progflow} 
+%	\caption{Program Flow}
+%	\label{fig:prog}
+%\end{figure}
+
+\section*{System B}
+
+A pixelated drawing describing the components of the system, a bitmap, was passed to the program. Each pixel was then mapped to a matrix holding values between -1 and 1, to represent the voltages of the initial system. The matrix elements related to components, that is, conductors or charges, were not changed during the numerical procedure while the rest varied as the program run.
+
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=7cm]{GPdiagram21} 
+%	\caption{systemB}
+%	\label{fig:systemB}
+%\end{figure}
 
 \section*{References}
 \bibliographystyle{ieeetr}
