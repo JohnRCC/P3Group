@@ -1,0 +1,62 @@
+this is the pseudocode for the five-point method, though it could quite easily be expanded into the nine-point
+method, as well as the method which uses the current iteration's values (whatever it's called)
+
+matrix M_(m x n x 2)
+integer m = row size
+integer n = column size
+integer count = 0
+float errtol
+
+while gradient condition not met
+
+  for row from 0 to m
+    for column from 0 to n
+
+      i = count mod 2
+      j = (count+1) mod 2
+
+      if point is to remain constant (e.g. positive plate)
+
+        M_(row,column,j) = M_(row,column,i)
+
+      else
+
+	left  = M_(row,column-1,i)
+	right = M_(row,column+1,i)
+	above = M_(row-1,column,i)
+	below = M_(row+1,column,i)
+
+	if point in top-left
+	   M_(row,column,j) = 0.5 * (right+below)
+	else if point in top-right
+	   M_(row,column,j) = 0.5 * (left+below)
+	else if point in bottom-left
+	   M_(row,column,j) = 0.5 * (right+above)
+	else if point in bottom-right
+	   M_(row,column,j) = 0.5 * (left+above)
+	else if point in top row
+	   M_(row,column,j) = (1/3) * (right+left+below)
+        else if point in bottom row
+	   M_(row,column,j) = (1/3) * (right+left+above)
+        else if point in leftmost column
+	   M_(row,column,j) = (1/3) * (right+above+below)
+	else if point in rightmost column
+	   M_(row,column,j) = (1/3) * (right+above+below)
+	else
+ 	   M_(row,column,j) = 0.25 * (right+left+above+below)
+	end if
+
+      	find % difference from point in previous iteration
+
+      end if
+
+    end for
+  end for
+
+  if no points had a percentage error > errtol% in previous iteration
+    
+    gradient test met
+
+  end if
+
+end while
