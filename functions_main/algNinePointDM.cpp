@@ -11,34 +11,58 @@ Input:
 - 3-Dimensional matrix
 - Row size
 - Column size
+- Chance tolerance (or iteration count)
 - "Silence" index - output algorithm progresson to stdout
 
 Output:
-- Pointer to original array
+- Iteration count
 
 
-      _________________
-     |     |     |     | 
-     |  NW |  N  |  NE |
-     |_____|_____|_____|
-     |     |     |     |
-     |  W  |  ME |  E  |
-     |_____|_____|_____|
-     |     |     |     |
-     |  SW |  S  |  SE |
-     |_____|_____|_____|
+      _|_____|_____|_____|__
+       |     |     |     | 
+ A     |  NW |  N  |  NE |
+ |    _|_____|_____|_____|_
+ |     |     |     |     |
+ |     |  W  |  ME |  E  |
+row   _|_____|_____|_____|_
+incr.  |     |     |     |
+       |  SW |  S  |  SE |
+      _|_____|_____|_____|_
+       |     |     |     |
+        column incr. ---->
 
       The nine-point difference method formula gives: 
 
-      ME = 2/3*(N + S + W + E) + 1/6*( NW + NE + SW + SE  ) 
+      10/3*ME = 2/3*(N + S + W + E) + 1/6*(NW + NE + SW + SE) 
+
+      So that,
+
+      ME = 1/5*(N + S + W + E) + 1/20*(NW + NE + SW + SE)
+         = Ka(N + S + W + E) + Kd(NW + NE + SW + SE), 
+         Ka the coefficeints for the adjacent elenemts and
+         Kd for the diagonal
+
+       Note that: 
+                  4Ka + 4Kd = 1, and
+                  Ka/Kd = 4
 
       Special cases are considered; when "ME", the value to be calculated
        is either on a corner or on an edge.
 
-      ME(corner)
+      ME(NW corner) = 4/9*(S + E) + 1/9*(SE)
+       Eg, upper left corner, 2Ka + Kd = 1 with Ka/Kd = 4
 
-      ME(edge
+      ME(edge) = 2/7*(N + E + S) + 1/14(NE + SE)
+       Ed. western edge. 3Ka + 2Kd = 1, Ka/Kd = 4
 
+
+  GAUSS-SEIDEL(?) METHOD: 
+
+    Turn Gauss on by setting is as true.
+
+   This method utilizes the already calculated values for some elements 
+    around the point of interest. 
+   More specifically, the values below and the value to the left (S,SW,SE,W).
 
 
 
@@ -46,13 +70,29 @@ Output:
  */
 
 
-int algFivePointDM(double*** vals, int columnsize, int rowsize,double errtol, int silence) {
+int algNinePointDM(double*** vals, int columnsize, int rowsize,double errtol, int silence) {
 
-  double left, right, up, down, ratio;
+
+  double  ME, PreviousME, ratio;
   int count = 0,i = 0,row,column;
   bool test = true;
   double percent = errtol / 100.0;
 
+  // Coefficients for non-boundary elements
+  double W, E, N, S, SW, SE, NW, NE;
+  double dAdjCoeff = (1.00/5.00), dDiagCoeff = (1.00/20.00) ;
+
+  // Coefficients for corner elements
+  double dCornerAdjCoeff = (4.00/9.00), dCornerDiagCoeff = (1.00/9.00);
+
+  //Coefficients for non-corner sides
+  double dSideAdjCoeff = (2.00/7.00), dSideDiagCoeff = (1.00/14.00);
+
+  // Gauss -Seidel method : true for ON
+  bool bGauss = true;
+  if (bGauss) {cout << "(Gauss-Seidel method ON) ";}
+
+// RUN THE NINE-POINT DIFERRENCE METHOD ALGORITHM
   while(test == true) 
   { 
     if(errtol > 100 && i >= errtol) {
@@ -62,39 +102,76 @@ int algFivePointDM(double*** vals, int columnsize, int rowsize,double errtol, in
 
     for(row = 0; row < rowsize; row++) {
       for(column = 0; column < columnsize; column++) {
-        // Define adjacent points (up, down, left, right)
+      // DEFINE ELEMENTS AROUND POINT OF INTEREST
+        // Define adjacent points (N, S, W, E)
         if (column != 0 ) {
-          west = vals[row][column-1][(i%2)]; }
+          if (bGauss) {
+            W = vals[row][column-1][-(i%2)+1];}
+          else { W = vals[row][column-1][(i%2)]; }
+            // Diagonal, westward points
+          if (row != 0) {
+            if (bGauss) {
+              SW = vals[row-1][column-1][-(i%2)+1];}
+            else { SW = vals[row-1][column-1][(i%2)]; }
+          }
+          if (row != rowsize-1){
+            NW = vals[row+1][column-1][(i%2)]; }
+        }
         if (column != columnsize-1) {
-          east = vals[row][column+1][(i%2)]; }
+          E = vals[row][column+1][(i%2)];
+            // Diagonal, eastward points
+          if (row != 0) {
+            if (bGauss) {
+              SE = vals[row-1][column+1][-(i%2)+1];}
+            else {SE = vals[row-1][column+1][(i%2)]; }
+          }
+          if (row != rowsize-1){
+            NE = vals[row+1][column+1][(i%2)]; }
+        }
         if (row != rowsize-1) {
-          north = vals[row+1][column][(i%2)]; }
+          N = vals[row+1][column][(i%2)]; }
         if (row != 0) {
-          south = vals[row-1][column][(i%2)]; }
-        // For any possible point, apply propogation
+          if (bGauss) {
+            S = vals[row-1][column][-(i%2)+1];}
+          else {S = vals[row-1][column][(i%2)]; }
+        }
+        // APPLY PROPAGATION FOR VARIABLE ELEMENTS
+          // Cast Boundary conditions (held in the third layer)
         if (vals[row][column][2] != 2) {
           vals[row][column][-(i%2)+1] = vals[row][column][2]; }
+          // SW corner
         else if (row == 0 && column == 0) {
-          vals[row][column][-(i%2)+1] = (right+up)/2.00; }
+          vals[row][column][-(i%2)+1] = dCornerAdjCoeff*(S + E) + dCornerDiagCoeff*(NE); }
+         // SE corner
         else if (row == 0 && column == columnsize-1) {
-          vals[row][column][-(i%2)+1] = (left+up)/2.00;	}
-        else if (row == rowsize-1 && column == 0)	{
-          vals[row][column][-(i%2)+1] = (down+right)/2.00; }
+          vals[row][column][-(i%2)+1] = dCornerAdjCoeff*(N + W) + dCornerDiagCoeff*(NW); }
+         // NW corner
+        else if (row == rowsize-1 && column == 0) {
+          vals[row][column][-(i%2)+1] = dCornerAdjCoeff*(S + E) + dCornerDiagCoeff*(SE); }
+          // NE corner
         else if (row == rowsize-1 && column == columnsize-1) {
-          vals[row][column][-(i%2)+1] = (left+down)/2.00;	}
-        else if (column == 0)	{
-          vals[row][column][-(i%2)+1] = (right+down+up)/3.00;	}
-        else if (column == columnsize-1)	{
-          vals[row][column][-(i%2)+1] = (left+down+up)/3.00; }
+          vals[row][column][-(i%2)+1] = dCornerAdjCoeff*(S + W) + dCornerDiagCoeff*(SW); }
+          // W - side
+        else if (column == 0) {
+          vals[row][column][-(i%2)+1] = dSideAdjCoeff*(S + E + N) + dSideDiagCoeff*(SE + NE); }
+          // E - side
+        else if (column == columnsize-1) {
+            vals[row][column][-(i%2)+1] = dSideAdjCoeff*(S + W + N) + dSideDiagCoeff*(SW + NW); }
+          // S - side
         else if (row == 0) {
-          vals[row][column][-(i%2)+1] = (right+up+left)/3.00;	}
+          vals[row][column][-(i%2)+1] = dSideAdjCoeff*(N + W + E) + dSideDiagCoeff*(NE + NW); }
+          // N - side
         else if (row == rowsize-1) {
-          vals[row][column][-(i%2)+1] = (right+left+down)/3.00;	}
+          vals[row][column][-(i%2)+1] = dSideAdjCoeff*(S + W + E) + dSideDiagCoeff*(SW + SE); }
+          // Inside
         else {
-          vals[row][column][-(i%2)+1] = (up+down+right+left)/4.00; }          
+          vals[row][column][-(i%2)+1] = dAdjCoeff*(N + S + W + E) + dDiagCoeff*(NW + NE + SW + SE); }
         // Check if errtol accuracy has been achieved yet
+          // ME = just calculated value, PreviousME = previous iteration value
+        ME = vals[row][column][-(i%2)+1];
+        PreviousME = vals[row][column][(i%2)];
         if (test == false && errtol < 100) { 		
-          ratio = fabs(vals[row][column][-(i%2)+1]/vals[row][column][(i%2)]);
+          ratio = fabs(ME/PreviousME);
           if (ratio <= (1.0-errtol/100.0) || ratio >= (1.0+errtol/100.0)) {
             test = true; }
         }

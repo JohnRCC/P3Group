@@ -298,17 +298,38 @@ int main(int argc, char* argv[]) {
       analytic(smin,ds,smax,r,maxres,silence);
     }
   
-  // Run the algorithm which calculates the potential at each point
+  // Run the algorithms which calculate the potential at each point
+  //
+  int algType = 9;
+  //
+  // FIVE_POINT DIFFERENCE METHOD ALGORITHM
+  //
+
+if (algType == 5) {
   if (silence == 0) {
     time = timerstart();
-    cout << "Running algorithm... " << flush; }
+    cout << "Running five-point difference method algorithm... " << flush; }
   
   i = algFivePointDM(vals,columnsize,rowsize,errtol,silence);
 
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s, "
 	 << i-1 << " iterations)" << endl; }
+}
+  //
+  //NINE-POINT DIFFERENCE METHOD ALGORITHM
+  //
+if (algType == 9){
+  if (silence == 0) {
+    time = timerstart();
+    cout << "Running nine-point difference method algorithm... " << flush; }
+  
+  i = algNinePointDM(vals,columnsize,rowsize,errtol,silence);
 
+  if (silence == 0) {
+    cout << "done. (" << timerend(time) << "s, "
+	 << i-1 << " iterations)" << endl; }
+}
   // Determine the gradient at each point
   if (silence == 0) {
     time = timerstart();

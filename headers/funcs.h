@@ -23,8 +23,10 @@ double timerstart(void);
 double timerend(double, int);
 double timer(int);
 
-//Function to run five-point Difference Method
+//Function to run five-point Difference Method algorithm
 int algFivePointDM(double*** vals, int columnsize, int rowsize, double errtol, int silence);
 
+// Function to run the nine-point Difference Method algorithm
+int algNinePointDM(double*** vals, int columnsize, int rowsize,double errtol, int silence); 
 
 #endif
