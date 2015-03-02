@@ -55,8 +55,8 @@ int row,column,i;
 for(row=0;row<matsize;row++) {
   for(column=0;column<matsize;column++) {
 	// Sets "true" coordinates for x and y
-    x=cf(row,smin,ds);
-    y=cf(column,smin,ds);
+    x=cf(row,smin,ds,1);
+    y=cf(column,smin,ds,1);
 
       if (row == 0) {
         valsA[row][column] = 1;
