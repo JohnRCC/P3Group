@@ -28,6 +28,21 @@ int row,column,i;
 // smax = d/2.0;
 
 // Initalise matrix
+<<<<<<< HEAD
+	
+	// Matrix size in terms of min and max values
+	/**/
+	  float d = abs(smax-smin)-ds;
+	  int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
+	 
+	 if(d < pow(r,2)) {
+		cout << " WARNING! - Analytic function may give an erroneous answer. d < r^2\n";
+	 }
+	 
+
+float mid = (matsize/2.0);// - (fmod(matsize,2.0));
+double valsA[matsize][matsize]; 
+=======
  
  double time;
  if (silence == 0) {
@@ -49,6 +64,7 @@ int row,column,i;
  
  float mid = (matsize/2.0),x,y;// - (fmod(matsize,2.0));
  double valsA[matsize][matsize]; 
+>>>>>>> 557eaab674748e8bdfa74bea335974b3bf88a43f
 
 
 // Cast values
@@ -64,6 +80,9 @@ for(row=0;row<matsize;row++) {
       else if (row == matsize-1) {
 	valsA[row][column] = -1;
       }
+<<<<<<< HEAD
+      else if( (pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) <= pow(r,2.0) ) {
+=======
       else if( (pow((cf(row,smin,ds,1)-cf(mid,smin,ds,1)),2.0) + pow((cf(column,smin,ds,1)-cf(mid,smin,ds,1)),2.0)) < pow(r,2.0) ) {
 	valsA[row][column] = 0;
       }

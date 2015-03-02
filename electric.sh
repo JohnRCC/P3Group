@@ -87,7 +87,7 @@ while [ $run = "yes" ] ; do
 		#   if [[ ! -f ./data/pot/$outfile\_1.pot || ! -f ./data/fld/$outfile\_1.fld || ! -f ./data/grd/$outfile\_1.grd ]] ; then
 		#	outfile=$outfile\_1
 		#	fileloop=no
-			if [[ ! -f ./data/pot/$outfile\_$fileiter.pot || ! -f ./data/fld/$outfile\_$fileiter.fld || ! -f ./data/grd/$outfile\_$fileiter.grd ]] ; then
+			if [[ ! -f ./data/pot/$outfile\_$fileiter.pot* || ! -f ./data/fld/$outfile\_$fileiter.fld* || ! -f ./data/grd/$outfile\_$fileiter.grd* ]] ; then
 			    outfile=$outfile\_$fileiter
 			    fileloop=no
 			fi
@@ -252,10 +252,34 @@ while [ $run = "yes" ] ; do
 		fi
 		
 		if [[ $choice == "a" ]] ; then
-		    echo analysis
-		    echo "woo" > ./data/pot/$outfile.pot
-		    echo "yay" > ./data/fld/$outfile.fld
-		    echo "gud" > ./data/grd/$outfile.grd
+		    
+		    valsloop=y
+		    
+		    while [ $valsloop = "y" ] ; do
+		    
+			echo "Please enter the minimum and maximum x values:"
+			read minx maxx ; clear
+		   
+			echo "Please enter cylinder radius:"
+			read radius ; clear
+		   
+			./errorA 90 $minx $maxx $radius
+			read valscont ; clear
+			
+			while [ $valscont != "y" ] && [ $valscont != "r" ] ; do
+			    echo "Please type 'y' to proceed or 'r' to redefine values:"
+			    read valscont ; clear
+			done
+			
+			if [[ $valscont = "y" ]] ; then
+			    valsloop=n
+			fi
+			
+		    done
+		    
+		    echo "Error tolerance / iteration number?"
+		    read errtol ; clear	
+		    
 		fi
 	    done
 	fi
