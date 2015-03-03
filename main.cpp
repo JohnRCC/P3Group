@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
   
   // Declare variables specific to the numerical case
-  if (argc < 8)
+  if (argc < 7)
     {
       if (silence == 0) {
 	cout << "Bitmap detected. Entering image mode." << endl; 
@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
     }
   
   // Declare variables specific to the analytical case
-  else if (argc > 7)
+  else if (argc > 6)
     {
       if (silence == 0) {
 	cout << "Input variables detected. Solving for system A." << endl;
@@ -189,7 +189,7 @@ int main(int argc, char* argv[]) {
     {
       vals[r] = new double*[columnsize];
       for (int s = 0; s < columnsize; s++) {
-	vals[r][s] = new double[3];
+	vals[r][s] = new double[4];
       }
     }
   
@@ -373,8 +373,10 @@ if (algType == 9){
     cout << "Refining output matrix... " << flush; }
   
   // Refine the output matrix
-  // refine(output, rdim, cdim, maxres, silence);
-  algNinePointDM(output, rdim, cdim, errtol, silence);
+  if (algType == 5) {
+    refine5point(output, rdim, cdim, maxres, silence); }
+  else if (algType == 9) {
+    refine9point(output, rdim, cdim, maxres, silence); }
   
   if (silence == 0) {
     cout << "done (" << timerend(time) << "s)." << endl; }
@@ -383,9 +385,10 @@ if (algType == 9){
   // matrix without any sublayers
   // double** comparison = nomeshing(vals, rowsize, columnsize, maxpower);
 
-  // Output results for the analytical case
+  // Open datafile to output results to
   ofstream datafile;
 
+  // Output results for the analytical case
   if (argc > 6)
     {
       
@@ -649,7 +652,8 @@ if (algType == 9){
     }
   
   if (silence == 0) {
-    timerend(start,1); }
+    timerend(start,1);
+    timer(1); }
   
   return 0;
 }

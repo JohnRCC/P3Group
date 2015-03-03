@@ -90,7 +90,7 @@ int algNinePointDM(double*** vals, int columnsize, int rowsize,double errtol, in
 
   // Gauss -Seidel method : true for ON
   bool bGauss = true;
-  if (bGauss) {cout << "(Gauss-Seidel method ON) ";}
+  if (bGauss) {cout << "\n(Gauss-Seidel method ON)... ";}
 
 // RUN THE NINE-POINT DIFERRENCE METHOD ALGORITHM
   while(test == true) 

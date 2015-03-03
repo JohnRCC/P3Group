@@ -36,20 +36,20 @@ int getgrad(double*** vals, int rowsize, int columnsize, float ds)
     {
       for (column = 1; column < columnsize-1; column++)
 	{
-	  vals[row][column][2] = grad(vals, row, column, ds);
+	  vals[row][column][3] = grad(vals, row, column, ds);
 	}
     }
   
   // Set the gradients of the outermost points to zero
   for (row = 0; row < rowsize; row++)
     {
-      vals[row][0][2] = 0;
-      vals[row][columnsize-1][2] = 0;
+      vals[row][0][3] = 0;
+      vals[row][columnsize-1][3] = 0;
     }
   for (column = 0; column < columnsize; column++)
     {
-      vals[0][column][2] = 0;
-      vals[rowsize-1][column][2] = 0;
+      vals[0][column][3] = 0;
+      vals[rowsize-1][column][3] = 0;
     }
 
   return 0;

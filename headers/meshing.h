@@ -47,7 +47,7 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
     {
       for (int c = 0; c < columnsize; c++)
 	{
-	  double g = toplayer[r][c][2];
+	  double g = toplayer[r][c][3];
 
 	  // Check if it is the highest gradient encountered
 	  if (mod(g) > maxgrad)
@@ -96,7 +96,7 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
 	  // For each point, check the gradient against the limits
 	  for (int i = maxpower; i > 0; i--)
 	    {
-	      if (mod(toplayer[r][c][2]) > limit[i])
+	      if (mod(toplayer[r][c][3]) > limit[i])
 		{
 		  // If the condition is met, create a sublayer of the
 		  // appropiate size
@@ -192,7 +192,7 @@ double*** printmesh(double*** toplayer, Sublayer** mesh,
     {
       output[r] = new double*[cdim];
       for (int s = 0; s < cdim; s++) {
-	output[r][s] = new double[1]; }
+	output[r][s] = new double[2]; }
     }
   
   // Loop through the top-level matrix
@@ -202,7 +202,7 @@ double*** printmesh(double*** toplayer, Sublayer** mesh,
     {
       for (int c = 0; c < columnsize; c++)
 	{
-	  
+
 	  // In the case of there being a sublayer at this point
 	  if ( mesh[r][c].index == 0 )
 	    {
@@ -226,6 +226,14 @@ double*** printmesh(double*** toplayer, Sublayer** mesh,
 			      output[(r*maxres) +(y*scale) +yc]
 				[(c*maxres) +(x*scale) +xc][0] =
 				mesh[r][c].array[y][x];
+
+			      // Check if the point is mean to remain static
+			      if (toplayer[r][c][2] == 2) {
+				output[(r*maxres) +(y*scale) +yc]
+				  [(c*maxres) +(x*scale) +xc][1] = 0; }
+			      else {
+				output[(r*maxres) +(y*scale) +yc]
+				  [(c*maxres) +(x*scale) +xc][1] = 0; }
 			    }
 			}
 		    }
@@ -244,6 +252,14 @@ double*** printmesh(double*** toplayer, Sublayer** mesh,
 			output[(r*maxres) +y]
 			  [(c*maxres) +x][0] =
 			  toplayer[r][c][1];
+			
+			// Check if the point is mean to remain static
+			if (toplayer[r][c][2] == 2) {
+			  output[(r*maxres) +y]
+			    [(c*maxres) + x][1] = 0; }
+			else {
+			  output[(r*maxres) + y]
+			    [(c*maxres) + x][1] = 0; }
 		      }
 		    }
 		}
@@ -267,16 +283,20 @@ double*** printmesh(double*** toplayer, Sublayer** mesh,
 }
 
   
-  // A function which smooths out the blocky-looking results of meshing.
+// A function which smooths out the blocky-looking results of meshing.
+// Uses the Five-Point Difference Method.
 // Takes as input a matrix, its dimensions, the number of times it should
 // be smoothed, and whether terminal output is enabled.
-int refine(double** input, int rowsize, int columnsize, int iter, int silence)
+int refine5point
+(double*** input, int rowsize, int columnsize, int iter, int silence)
 {
   // Create a temporary matrix to store the output
-  double** output = new double*[rowsize];
+  double*** output = new double**[rowsize];
   for (int r = 0; r < rowsize; r++)
     {
-      output[r] = new double[columnsize];
+      output[r] = new double*[columnsize];
+      for (int s = 0; s < columnsize; s++) {
+	output[r][s] = new double[2]; }
     }
   
   // Set the output equal to the input
@@ -295,16 +315,20 @@ int refine(double** input, int rowsize, int columnsize, int iter, int silence)
 	{
 	  for(int column = 1; column < columnsize-1; column++)
 	    {
-	      // Define adjacent points (up, down, left, right)
-	      left = input[row][column-1];
-	      right = input[row][column+1];
-	      up = input[row+1][column];
-	      down = input[row-1][column];
-	      
-	      // Take the average of the surrounding points
-	      output[row][column] = (up + right + left + down ) / 4.0;	      
+	      // Check if the point is meant to remain static
+	      if (output[row][column][1] == 0)
+		{
+		  // Define adjacent points (up, down, left, right)
+		  left = input[row][column-1][0];
+		  right = input[row][column+1][0];
+		  up = input[row+1][column][0];
+		  down = input[row-1][column][0];
+		  
+		  // Take the average of the surrounding points
+		  output[row][column][0] = (up + right + left + down ) / 4.0;
+		}
 	    }
-
+	  
 	  // Display percentage completion
 	  if (((i * (rowsize-2)) + row) > (count*percent) && silence == 0)
 	    {
@@ -313,15 +337,92 @@ int refine(double** input, int rowsize, int columnsize, int iter, int silence)
 	      else {
 		cout << count << "%\b\b\b" << flush; }
 	      count++;
-	      }
+	    }
 	}
-
+      
       // At the end of each loop, update the initial matrix
       input = output;
     }
       
   return 0;
 }
+
+
+// A function which smooths out the blocky-looking results of meshing.
+// Uses the Nine-Point Difference Method.
+// Takes as input a matrix, its dimensions, the number of times it should
+// be smoothed, and whether terminal output is enabled.
+int refine9point
+(double*** input, int rowsize, int columnsize, int iter, int silence)
+{
+  // Create a temporary matrix to store the output
+  double*** output = new double**[rowsize];
+  for (int r = 0; r < rowsize; r++)
+    {
+      output[r] = new double*[columnsize];
+      for (int s = 0; s < columnsize; s++) {
+	output[r][s] = new double[2]; }
+    }
+  
+  // Set the output equal to the input
+  output = input;
+
+  // Declare adjacent points
+  double left, right, up, down, upleft, upright, downleft, downright;
+
+  // Declare coefficients
+  double dAdjCoeff = (1.00/5.00), dDiagCoeff = (1.00/20.00);
+  
+  // Delare the components of the progress display
+  int count = 0;
+  double percent = (iter * (rowsize-2)) / 100.0;
+
+  // Loop for the required number of times
+  // On each loop, each point is averaged with its neighbours
+  for (int i = 0; i < iter; i++)
+    {
+      for(int row = 1; row < rowsize-1; row++)
+	{
+	  for(int column = 1; column < columnsize-1; column++)
+	    {
+	      // Check if the point is meant to remain static
+	      if (output[row][column][1] == 0)
+		{
+		  // Define adjacent points
+		  left = input[row][column-1][0];
+		  right = input[row][column+1][0];
+		  up = input[row+1][column][0];
+		  down = input[row-1][column][0];
+		  upleft = input[row-1][column-1][0];
+		  upright = input[row-1][column+1][0];
+		  downleft = input[row+1][column-1][0];
+		  downright = input[row+1][column+1][0];
+		  
+		  // Take the average of the surrounding points
+		  output[row][column][0] = 
+		    dAdjCoeff*(up + down + left + right) +
+		    dDiagCoeff*(upleft + upright + downleft + downright);
+		}
+	    }
+	  
+	  // Display percentage completion
+	  if (((i * (rowsize-2)) + row) > (count*percent) && silence == 0)
+	    {
+	      if (count < 10) {
+		cout << count << "%\b\b" << flush; }
+	      else {
+		cout << count << "%\b\b\b" << flush; }
+	      count++;
+	    }
+	}
+      
+      // At the end of each loop, update the initial matrix
+      input = output;
+    }
+      
+  return 0;
+}
+
 
 
 // Function that returns a larger version of the top-layer matrix,
