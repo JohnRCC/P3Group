@@ -18,13 +18,13 @@ int main(int argc, char* argv[]) {
   // If silence = 0, progress will be displayed; for any
   // other value, it will be supressed
   int silence = 0;
-  if (argc == 6)
+  if (argc == 7)
     {
-      silence = strtod(argv[5],NULL);
+      silence = strtod(argv[6],NULL);
     }
-  if (argc == 8)
+  if (argc == 9)
     {
-      silence = strtod(argv[7],NULL);
+      silence = strtod(argv[8],NULL);
     }
   
   // Commence timer
@@ -55,20 +55,24 @@ int main(int argc, char* argv[]) {
   // 				 4 - fieldlines
   // 				eg. 6 would give potential and fieldlines
   // 				    3 would give gradient test and data 
+  //            Meshing:        The power of three for the finest mesh grid,
+  //                            e.g. if maxpower = 2, the largest submatrix
+  //                            will be 9x9 (2^3).
+  //                            Set to zero to disable meshing.
   // 		Terminal out:	Turn on or off printing program progress
   // 				Entries: 0 (default) -off- or 1 -on-
 
   if (silence == 0) {
     cout << "Checking arguments... " << flush; }
   
-  if (argc < 4 || argc > 8) {
+  if (argc < 4 || argc > 9) {
     cout << "Usage: " << endl;
     cout << "    Analytical: " << argv[0]
 	 << " [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius]"
-	 << "[Error Tolerance][Output type][Terminal output]" << endl;;
+	 << "[Error Tolerance][Output type][Meshing][Terminal output]" << endl;;
     cout << "    Numerical:  " << argv[0]
 	 << " [BMP Filename][Error Tolerance][Output Type]"
-	 << "[Smoothing][Terminal Output]" << endl;
+	 << "[Smoothing][Meshing][Terminal Output]" << endl;
     return 1;
   }
   
@@ -93,7 +97,7 @@ int main(int argc, char* argv[]) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
   
   // Declare variables specific to the numerical case
-  if (argc < 7)
+  if (argc < 8)
     {
       if (silence == 0) {
 	cout << "Bitmap detected. Entering image mode." << endl; 
@@ -120,6 +124,19 @@ int main(int argc, char* argv[]) {
       else {
 	smooth = 0; }
 
+      // Check for meshing
+      if (argc > 5) {
+	maxpower = strtod(argv[5],NULL); }
+      else {
+	maxpower = 2; }
+
+      // Work out resultant meshing variables
+      maxres = 1;
+      for (i = 0; i < maxpower; i++) {
+	maxres = maxres * 3; }
+      rdim = rowsize * maxres;
+      cdim = columnsize * maxres;
+
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
@@ -139,28 +156,21 @@ int main(int argc, char* argv[]) {
       r = strtod(argv[4],NULL); // Circle radius
       errtol = strtod(argv[5],NULL); // Error tolerance
       index = strtod(argv[6],NULL); // Output type
+      maxpower = strtod(argv[7],NULL); // Meshing power
       
       // Define the size of the matrix
       matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1);
       rowsize = columnsize = matsize;
       mid = (matsize/2.0);// - (fmod(matsize,2.0));
+      maxres = 1;
+      for (i = 0; i < maxpower; i++) {
+	maxres = maxres * 3; }
+      rdim = rowsize * maxres;
+      cdim = columnsize * maxres;
       
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
-
-  // Set maximum size of submatrices and resultant variables
-  // 'Maxpower' is the power of 3 for the size of the largest submatrix
-  // e.g. if maxpower = 2, the largest submatrix will be 9x9 (2^3)
-  // Maxres is then 3^maxpower
-  maxpower = 2;
-  maxres = 1;
-  for (i = 0; i < maxpower; i++) {
-    maxres = maxres * 3; }
-  
-  rdim = rowsize * maxres;
-  cdim = columnsize * maxres;
-
 
   // Define the matrix
   if (silence == 0) {
@@ -356,7 +366,7 @@ if (algType == 9){
     cout << "Refining output matrix... " << flush; }
   
   // Refine the output matrix
-  refine(output, rdim, cdim, 10, silence);
+  refine(output, rdim, cdim, maxres, silence);
   
   if (silence == 0) {
     cout << "done (" << timerend(time) << "s)." << endl; }
