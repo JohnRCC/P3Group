@@ -22,9 +22,9 @@ int main(int argc, char* argv[]) {
     {
       silence = strtod(argv[6],NULL);
     }
-  if (argc == 9)
+  if (argc == 8 || argc == 9)
     {
-      silence = strtod(argv[8],NULL);
+      silence = strtod(argv[7],NULL);
     }
   
   // Commence timer
@@ -69,10 +69,10 @@ int main(int argc, char* argv[]) {
     cout << "Usage: " << endl;
     cout << "    Analytical: " << argv[0]
 	 << " [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius]"
-	 << "[Error Tolerance][Output type][Meshing][Terminal output]" << endl;;
+	 << "[Error Tolerance][Output type][Terminal output][Meshing]" << endl;;
     cout << "    Numerical:  " << argv[0]
 	 << " [BMP Filename][Error Tolerance][Output Type]"
-	 << "[Smoothing][Meshing][Terminal Output]" << endl;
+	 << "[Meshing][Terminal Output]" << endl;
     return 1;
   }
   
@@ -119,14 +119,18 @@ int main(int argc, char* argv[]) {
       errtol = strtod(argv[2],NULL);
       
       // Check for smoothing
+      // Currently disabled due to shortage of input arguments
+      /*
       if (argc > 4) {
 	smooth = strtod(argv[4],NULL); }
       else {
 	smooth = 0; }
+      */
+      smooth = 0;
 
       // Check for meshing
-      if (argc > 5) {
-	maxpower = strtod(argv[5],NULL); }
+      if (argc > 4) {
+	maxpower = strtod(argv[4],NULL); }
       else {
 	maxpower = 2; }
 
@@ -156,7 +160,10 @@ int main(int argc, char* argv[]) {
       r = strtod(argv[4],NULL); // Circle radius
       errtol = strtod(argv[5],NULL); // Error tolerance
       index = strtod(argv[6],NULL); // Output type
-      maxpower = strtod(argv[7],NULL); // Meshing power
+      if (argc == 9) {
+	maxpower = strtod(argv[8],NULL); } // Meshing power
+      else {
+	maxpower = 2; }
       
       // Define the size of the matrix
       matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1);
