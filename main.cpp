@@ -358,7 +358,14 @@ if (algType == 9){
     cout << "done. (" << timerend(time) << "s)" << endl; }
 
   // Create a matrix of sublayers
-  mesh = meshing(vals, rowsize, columnsize, maxpower, smooth, silence);
+  // Use meshtype = 0 for gradient-dependent meshing and
+  // meshtype = 1 for second-derivative based meshing
+  meshtype = 0;
+  if (meshtype == 0) {
+    mesh = meshing(vals, rowsize, columnsize, maxpower, smooth, silence); }
+  else if (meshtype == 1) {
+    mesh =
+      secondmeshing(vals, rowsize, columnsize, maxpower, smooth, silence); }
   
   if (silence == 0) {
     time = timerstart();
