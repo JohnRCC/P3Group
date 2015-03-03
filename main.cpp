@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
     {
       silence = strtod(argv[5],NULL);
     }
-  if (argc == 8)
+  if (argc == 8 || argc == 9)
     {
       silence = strtod(argv[7],NULL);
     }
@@ -55,20 +55,24 @@ int main(int argc, char* argv[]) {
   // 				 4 - fieldlines
   // 				eg. 6 would give potential and fieldlines
   // 				    3 would give gradient test and data 
+  //            Meshing:        The power of three for the finest mesh grid,
+  //                            e.g. if maxpower = 2, the largest submatrix
+  //                            will be 9x9 (2^3).
+  //                            Set to zero to disable meshing.
   // 		Terminal out:	Turn on or off printing program progress
   // 				Entries: 0 (default) -off- or 1 -on-
 
   if (silence == 0) {
     cout << "Checking arguments... " << flush; }
   
-  if (argc < 4 || argc > 8) {
+  if (argc < 4 || argc > 9) {
     cout << "Usage: " << endl;
     cout << "    Analytical: " << argv[0]
 	 << " [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius]"
-	 << "[Error Tolerance][Output type][Terminal output]" << endl;;
+	 << "[Error Tolerance][Output type][Terminal output][Meshing]" << endl;;
     cout << "    Numerical:  " << argv[0]
 	 << " [BMP Filename][Error Tolerance][Output Type]"
-	 << "[Smoothing][Terminal Output]" << endl;
+	 << "[Meshing][Terminal Output]" << endl;
     return 1;
   }
   
@@ -86,7 +90,7 @@ int main(int argc, char* argv[]) {
   float smin, smax, ds, r, mid, percent;
   BMP Image;
   Sublayer** mesh;
-  double** output;
+  double*** output;
   double errtol;
 
   if (silence == 0) {
@@ -115,10 +119,27 @@ int main(int argc, char* argv[]) {
       errtol = strtod(argv[2],NULL);
       
       // Check for smoothing
+      // Currently disabled due to shortage of input arguments
+      /*
       if (argc > 4) {
 	smooth = strtod(argv[4],NULL); }
       else {
 	smooth = 0; }
+      */
+      smooth = 0;
+
+      // Check for meshing
+      if (argc > 4) {
+	maxpower = strtod(argv[4],NULL); }
+      else {
+	maxpower = 2; }
+
+      // Work out resultant meshing variables
+      maxres = 1;
+      for (i = 0; i < maxpower; i++) {
+	maxres = maxres * 3; }
+      rdim = rowsize * maxres;
+      cdim = columnsize * maxres;
 
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -139,28 +160,24 @@ int main(int argc, char* argv[]) {
       r = strtod(argv[4],NULL); // Circle radius
       errtol = strtod(argv[5],NULL); // Error tolerance
       index = strtod(argv[6],NULL); // Output type
+      if (argc == 9) {
+	maxpower = strtod(argv[8],NULL); } // Meshing power
+      else {
+	maxpower = 2; }
       
       // Define the size of the matrix
       matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1);
       rowsize = columnsize = matsize;
       mid = (matsize/2.0);// - (fmod(matsize,2.0));
+      maxres = 1;
+      for (i = 0; i < maxpower; i++) {
+	maxres = maxres * 3; }
+      rdim = rowsize * maxres;
+      cdim = columnsize * maxres;
       
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
-
-  // Set maximum size of submatrices and resultant variables
-  // 'Maxpower' is the power of 3 for the size of the largest submatrix
-  // e.g. if maxpower = 2, the largest submatrix will be 9x9 (2^3)
-  // Maxres is then 3^maxpower
-  maxpower = 2;
-  maxres = 1;
-  for (i = 0; i < maxpower; i++) {
-    maxres = maxres * 3; }
-  
-  rdim = rowsize * maxres;
-  cdim = columnsize * maxres;
-
 
   // Define the matrix
   if (silence == 0) {
@@ -172,7 +189,7 @@ int main(int argc, char* argv[]) {
     {
       vals[r] = new double*[columnsize];
       for (int s = 0; s < columnsize; s++) {
-	vals[r][s] = new double[3];
+	vals[r][s] = new double[4];
       }
     }
   
@@ -356,7 +373,10 @@ if (algType == 9){
     cout << "Refining output matrix... " << flush; }
   
   // Refine the output matrix
-  refine(output, rdim, cdim, 10, silence);
+  if (algType == 5) {
+    refine5point(output, rdim, cdim, maxres, silence); }
+  else if (algType == 9) {
+    refine9point(output, rdim, cdim, maxres, silence); }
   
   if (silence == 0) {
     cout << "done (" << timerend(time) << "s)." << endl; }
@@ -365,9 +385,10 @@ if (algType == 9){
   // matrix without any sublayers
   // double** comparison = nomeshing(vals, rowsize, columnsize, maxpower);
 
-  // Output results for the analytical case
+  // Open datafile to output results to
   ofstream datafile;
 
+  // Output results for the analytical case
   if (argc > 6)
     {
       
@@ -432,7 +453,7 @@ if (algType == 9){
 		{	
 		  //actual values of potential (for plotting etc.)
 		  datafile << row << " " << column << " "
-			   << output[row][column] << "\n";
+			   << output[row][column][0] << "\n";
 		}
 
 	      datafile << "\n";
@@ -566,7 +587,7 @@ if (algType == 9){
 		  // Actual values of potential (for plotting etc.)
 		  datafile << cf(row,smin,ds,maxres) << " "
 			   << cf(column,smin,ds,maxres) << " "
-			   << output[row][column] << "\n";
+			   << output[row][column][0] << "\n";
 		}
 	      datafile << "\n";
 	      
@@ -631,7 +652,8 @@ if (algType == 9){
     }
   
   if (silence == 0) {
-    timerend(start,1); }
+    timerend(start,1);
+    timer(1); }
   
   return 0;
 }

@@ -87,7 +87,7 @@ while [ $run = "yes" ] ; do
 		#   if [[ ! -f ./data/pot/$outfile\_1.pot || ! -f ./data/fld/$outfile\_1.fld || ! -f ./data/grd/$outfile\_1.grd ]] ; then
 		#	outfile=$outfile\_1
 		#	fileloop=no
-			if [[ ! -f ./data/pot/$outfile\_$fileiter.pot* || ! -f ./data/fld/$outfile\_$fileiter.fld* || ! -f ./data/grd/$outfile\_$fileiter.grd* ]] ; then
+			if [[ ! -f ./data/pot/$outfile\_$fileiter.pot || ! -f ./data/fld/$outfile\_$fileiter.fld || ! -f ./data/grd/$outfile\_$fileiter.grd ]] ; then
 			    outfile=$outfile\_$fileiter
 			    fileloop=no
 			fi
@@ -218,20 +218,23 @@ while [ $run = "yes" ] ; do
 			if [[ -f pot.dat ]] ; then
 			    mv pot.dat ./data/pot/$outfile.pot
 			else
-			    cp ./data/pot/.empty.pot ./data/pot/$outfile.pot.dum
+			    cp ./data/pot/.empty.pot ./data/pot/$outfile.pot
 			fi
 
 			if [[ -f field.dat ]] ; then
 			    mv field.dat ./data/fld/$outfile.fld
 			else
-			    cp ./data/fld/.empty.fld ./data/fld/$outfile.fld.dum
+			    cp ./data/fld/.empty.fld ./data/fld/$outfile.fld
 			fi
 
 			if [[ -f grad.dat ]] ; then
 			    mv grad.dat ./data/grd/$outfile.grd
 			else
-			    cp ./data/grd/.empty.grd ./data/grd/$outfile.grd.dum
+			    cp ./data/grd/.empty.grd ./data/grd/$outfile.grd
 			fi
+
+			#used to go straight to plotting mode
+			plotmode=0
 
 			echo "Calculations complete. Go to plotting mode now? [y/n]"
 			read plotq ; clear
@@ -243,6 +246,8 @@ while [ $run = "yes" ] ; do
 
 			if [[ $plotq = "y" ]] ; then
 			    choice=p
+			    plotmode=1
+		            plotfile=$outfile
 			fi
 		    elif [[ $go = "reset" ]] ; then
 			echo "Resetting..."
@@ -286,30 +291,32 @@ while [ $run = "yes" ] ; do
 
 	#plotting mode
 	if [[ $choice = "p" ]] ; then
-	    plotcont=y
-	    while [ $plotcont = "y" ] ; do
+          plotcont=y
+          while [ $plotcont = "y" ] ; do
 		
-		echo "Entering plotting mode. Please enter filename you want to plot (without extension), or type 'list' for a list of files available for plotting:"
+ 	    if [[ $plotmode = 0 ]] ; then
+	  	echo "Entering plotting mode. Please enter filename you want to plot (without extension), or type 'list' for a list of files available for plotting:"
 		
 		listloop=y
 		
 		while [ $listloop = "y" ] ; do
 		    read plotfile ; clear
 		    if [[ $plotfile = "list" ]] ; then
-			echo "Showing plottable files. The 'Potential | Field | Gradient flags show what is available for plotting."
-			echo ""
-			cat ./data/.names.txt
-			echo ""
-			echo "Please enter the name of the file you want to plot (without extension):"
+		      echo "Showing plottable files. The 'Potential | Field | Gradient flags show what is available for plotting."
+		      echo ""
+	    	      cat ./data/.names.txt
+		      echo ""
+		      echo "Please enter the name of the file you want to plot (without extension):"
 		    elif [[ -f ./data/pot/$plotfile.pot || -f ./data/fld/$plotfile.fld || -f ./data/grd/$plotfile.grd ]] ; then
 			listloop=n
 		    else
 			echo "Invalid file specified (no files with that name exist). Please try again, or type list for a list of files available for plotting:"
 		    fi
 		done
+            fi
 		
 	    # POTENTIAL PLOT
-		if [[ ! -f ./data/pot/$plotfile.pot.dum ]] ; then
+		if [[ `head -n 1 ./data/pot/$plotfile.pot` != "#dummy" ]] ; then
 		    echo "File "$plotfile" selected. Plot potential? [y/n]"
 		    read potplot ; clear
 		
@@ -327,7 +334,7 @@ while [ $run = "yes" ] ; do
 		fi
 		    
 	    # FIELD PLOT
-		if [[ ! -f ./data/fld/$plotfile.fld.dum ]] ; then
+		if [[ `head -n 1 ./data/fld/$plotfile.fld` != "#dummy" ]] ; then
 		    echo "Plot electric field? [y/n]"
 		    read fldplot ; clear
 		
@@ -345,7 +352,7 @@ while [ $run = "yes" ] ; do
 		fi
 		
 	    # GRAD PLOT
-		if [[ ! -f ./data/grd/$plotfile.grd.dum ]] ; then
+		if [[ `head -n 1 ./data/grd/$plotfile.grd` != "#dummy" ]] ; then
 		    echo "Plot gradient? [y/n] (Advanced users only. Recommended: no)"
 		    read grdplot ; clear
 		
@@ -354,7 +361,7 @@ while [ $run = "yes" ] ; do
 			read grdplot ; clear
 		    done
 		
-		    if [[ $fldplot = "y" ]] ; then
+		    if [[ $grdplot = "y" ]] ; then
 			./grd_plot.sh $plotfile
 			echo "Done. Plot can be found at ./plots/grd/"$plotfile".eps"
 		    else
@@ -362,6 +369,9 @@ while [ $run = "yes" ] ; do
 		    fi
 		fi
 		
+		#come out of autoplot mode
+		plotmode=0
+
 		echo "Plotting complete. Plot more files? [y/n] (N will return you to the main menu.)"
 		read plotcont ; clear
 		

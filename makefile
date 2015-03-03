@@ -35,6 +35,9 @@ algFivePointDM.o: $(FPDM).cpp $(FOL)funcs.h
 algNinePointDM.o: $(NPDM).cpp $(FOL)funcs.h
 	g++ -o $(NPDM).o -c $(NPDM).cpp
 
+errorA:
+	g++ -o errorA errorA.cpp
+
 # removes all object files and backup files
 clean:
 	rm -f *.o $(FLD).o $(ANA).o $(BMP).o $(FPDM).o $(NPDM).o *~
