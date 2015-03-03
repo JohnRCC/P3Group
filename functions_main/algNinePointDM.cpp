@@ -39,7 +39,7 @@ incr.  |     |     |     |
 
       ME = 1/5*(N + S + W + E) + 1/20*(NW + NE + SW + SE)
          = Ka(N + S + W + E) + Kd(NW + NE + SW + SE), 
-         Ka the coefficeints for the adjacent elenemts and
+         Ka the coefficeints for the adjacent elements and
          Kd for the diagonal
 
        Note that: 
@@ -56,7 +56,7 @@ incr.  |     |     |     |
        Ed. western edge. 3Ka + 2Kd = 1, Ka/Kd = 4
 
 
-  GAUSS-SEIDEL(?) METHOD: 
+  GAUSS-SEIDEL METHOD: 
 
     Turn Gauss on by setting is as true.
 
