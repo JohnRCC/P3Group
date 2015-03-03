@@ -18,9 +18,9 @@ int main(int argc, char* argv[]) {
   // If silence = 0, progress will be displayed; for any
   // other value, it will be supressed
   int silence = 0;
-  if (argc == 7)
+  if (argc == 6)
     {
-      silence = strtod(argv[6],NULL);
+      silence = strtod(argv[5],NULL);
     }
   if (argc == 8 || argc == 9)
     {
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
   float smin, smax, ds, r, mid, percent;
   BMP Image;
   Sublayer** mesh;
-  double** output;
+  double*** output;
   double errtol;
 
   if (silence == 0) {
@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
     }
   
   // Declare variables specific to the analytical case
-  else if (argc > 6)
+  else if (argc > 7)
     {
       if (silence == 0) {
 	cout << "Input variables detected. Solving for system A." << endl;
@@ -373,7 +373,8 @@ if (algType == 9){
     cout << "Refining output matrix... " << flush; }
   
   // Refine the output matrix
-  refine(output, rdim, cdim, maxres, silence);
+  // refine(output, rdim, cdim, maxres, silence);
+  algNinePointDM(output, rdim, cdim, errtol, silence);
   
   if (silence == 0) {
     cout << "done (" << timerend(time) << "s)." << endl; }
@@ -449,7 +450,7 @@ if (algType == 9){
 		{	
 		  //actual values of potential (for plotting etc.)
 		  datafile << row << " " << column << " "
-			   << output[row][column] << "\n";
+			   << output[row][column][0] << "\n";
 		}
 
 	      datafile << "\n";
@@ -583,7 +584,7 @@ if (algType == 9){
 		  // Actual values of potential (for plotting etc.)
 		  datafile << cf(row,smin,ds,maxres) << " "
 			   << cf(column,smin,ds,maxres) << " "
-			   << output[row][column] << "\n";
+			   << output[row][column][0] << "\n";
 		}
 	      datafile << "\n";
 	      

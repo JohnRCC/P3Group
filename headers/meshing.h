@@ -179,7 +179,7 @@ double mod(double val)
 // Takes as input the top-layer matrix, the array of sublayers,
 // their dimensions, and the dimensions of the largest sublayer.
 // Returns the unified matrix.
-double** printmesh(double*** toplayer, Sublayer** mesh,
+double*** printmesh(double*** toplayer, Sublayer** mesh,
 		   int rowsize, int columnsize, int maxres, int silence)
 {
   // Define the dimensions of the output matrix
@@ -187,12 +187,14 @@ double** printmesh(double*** toplayer, Sublayer** mesh,
   int cdim = columnsize * maxres;
 
   // Create the output matrix
-  double** output = new double*[rdim];
+  double*** output = new double**[rdim];
   for (int r = 0; r < rdim; r++)
     {
-      output[r] = new double[cdim];
+      output[r] = new double*[cdim];
+      for (int s = 0; s < cdim; s++) {
+	output[r][s] = new double[1]; }
     }
-
+  
   // Loop through the top-level matrix
   int count = 0;
   int percent = rowsize / 100.0;
@@ -222,7 +224,7 @@ double** printmesh(double*** toplayer, Sublayer** mesh,
 			    
 			    {
 			      output[(r*maxres) +(y*scale) +yc]
-				[(c*maxres) +(x*scale) +xc] =
+				[(c*maxres) +(x*scale) +xc][0] =
 				mesh[r][c].array[y][x];
 			    }
 			}
@@ -240,7 +242,7 @@ double** printmesh(double*** toplayer, Sublayer** mesh,
 		    {
 		      {
 			output[(r*maxres) +y]
-			  [(c*maxres) +x] =
+			  [(c*maxres) +x][0] =
 			  toplayer[r][c][1];
 		      }
 		    }
