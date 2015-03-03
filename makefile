@@ -1,15 +1,20 @@
 #makefile
 
+# Input, Output (eg. plots)
 FLD = ./fieldline/fieldline
 BMP = ./easybmp/EasyBMP
-ANA = ./analytical/analytical
 FOL = ./headers/
-FUNFOL = ./functions_main/
-FPDM = $(FUNFOL)algFivePointDM
 HED = $(FOL)sublayer.h $(FOL)meshing.h $(FOL)funcs.h $(FOL)gradient.h \
 	$(FOL)timer.h
 
-all: main.o $(FLD).o $(BMP).o $(ANA).o $(FPDM).o
+ANA = ./analytical/analytical
+
+# Algorithms 
+FUNFOL = ./functions_main/
+FPDM = $(FUNFOL)algFivePointDM
+NPDM = $(FUNFOL)algNinePointDM
+
+all: main.o $(FLD).o $(BMP).o $(ANA).o $(FPDM).o $(NPDM).o
 	g++ -o main $?
 
 fieldline.o: $(FLD).cpp $(FLD).h funcs.h
@@ -27,9 +32,12 @@ analytical.o: $(ANA).cpp $(FOL)funcs.h
 algFivePointDM.o: $(FPDM).cpp $(FOL)funcs.h
 	g++ -o $(FPDM).o -c $(FPDM).cpp
 
+algNinePointDM.o: $(NPDM).cpp $(FOL)funcs.h
+	g++ -o $(NPDM).o -c $(NPDM).cpp
+
 # removes all object files and backup files
 clean:
-	rm -f *.o $(FLD).o $(ANA).o $(BMP).o $(FPDM).o *~
+	rm -f *.o $(FLD).o $(ANA).o $(BMP).o $(FPDM).o $(NPDM).o *~
 
 reset:
 	rm -f grad.dat grad.eps pot.dat pot.eps field.dat field.eps analytical.dat analytical.eps
