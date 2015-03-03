@@ -41,7 +41,7 @@ int row,column,i;
  
  // Matrix size in terms of min and max values
  float d = abs(smax-smin);
- int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
+ long matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
  
  if(d < pow(r,2) && silence == 0) {
    cout << "\n WARNING! - Analytic function may give an erroneous answer."
@@ -49,27 +49,30 @@ int row,column,i;
  
  
  float mid = (matsize/2.0),x,y;// - (fmod(matsize,2.0));
- double valsA[matsize][matsize]; 
+ //double valsA[matsize][matsize]; 
+
+ ofstream analyticfile;
+analyticfile.open("analytical.dat");
 
 // Cast values
 for(row=0;row<matsize;row++) {
   for(column=0;column<matsize;column++) {
-	// Sets "true" coordinates for x and y
-    x=cf(row,smin,ds,1);
-    y=cf(column,smin,ds,1);
+    // Sets "true" coordinates for x and y
+    y=cf(row,smin,ds,1);
+    x=cf(column,smin,ds,1);
 
-      if (row == 0) {
-        valsA[row][column] = 1;
+      if (column == 0) {
+	analyticfile << row << " " << column << " " << 1 << "\n";
       }
-      else if (row == matsize-1) {
-	valsA[row][column] = -1;
+      else if (column == matsize-1) {
+	analyticfile << row << " " << column << " " << -1 << "\n";
       }
       else if( (pow((cf(row,smin,ds,1)-cf(mid,smin,ds,1)),2.0) + pow((cf(column,smin,ds,1)-cf(mid,smin,ds,1)),2.0)) < pow(r,2.0) ) {
-	valsA[row][column] = 0;
+	analyticfile << row << " " << column << " " << -0 << "\n";
       }
       else {
       	// Only values that differ from main
-	valsA[row][column] = potential(x,y,r,d);
+	analyticfile << row << " " << column << " " << potential(x,y,r,d) << "\n";	
       }
 	
   }
@@ -78,7 +81,7 @@ for(row=0;row<matsize;row++) {
 /*
  *	Writing data to file
  */
-
+/*
 ofstream analyticfile;
 analyticfile.open("analytical.dat");
 
@@ -91,7 +94,7 @@ for (row = 0; row < matsize; row++)
     }
     analyticfile<<"\n";
   }
- 
+*/
  analyticfile.close();
  
  if (silence == 0) {
