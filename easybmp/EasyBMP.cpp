@@ -22,7 +22,7 @@
 
 /* These functions are defined in EasyBMP.h */
 
-bool EasyBMPwarnings = true;
+bool EasyBMPwarnings = false;
 
 void SetEasyBMPwarningsOff( void )
 { EasyBMPwarnings = false; }
