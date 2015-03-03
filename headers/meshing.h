@@ -162,6 +162,141 @@ Sublayer** meshing(double*** toplayer, int rowsize, int columnsize,
   return pointers;
 }
 
+
+// An alternate version of the meshing system, using the second derivative
+// to determine mesh placement, instead of the first.
+Sublayer** secondmeshing(double*** toplayer, int rowsize, int columnsize,
+			 int maxpower = 2, int smoothing = 0, int silence = 0)
+{
+  if (maxpower < 1) {
+    if (silence == 0) {
+      cout << "No meshing required." << endl; }
+    // Create empty array to return
+    Sublayer** pointers = new Sublayer*[rowsize];
+    for (int r = 0; r < rowsize; r++)
+      {
+	pointers[r] = new Sublayer[columnsize];
+      }
+    return pointers;
+  }
+
+  // Create an array to store the derivatives of the gradient
+  double*** deriv = new double**[rowsize];
+  for (int r = 0; r < rowsize; r++)
+    {
+      deriv[r] = new double*[columnsize];
+      for (int s = 0; s < columnsize; s++)
+	{
+	  deriv[r][s] = new double[3];
+	}
+    }
+
+  // Fill the array
+  for (int r = 0; r < rowsize; r++)
+    {
+      for (int c = 0; c < columnsize; c++)
+	{
+	  deriv[r][c][1] = toplayer[r][c][2];
+	}
+    }
+
+  getgrad(deriv, rowsize, columnsize, 1);
+
+  double time = timerstart();
+  if (silence == 0) {
+    cout << "Checking gradients... " << flush; }
+
+  // Establish a maximum gradient
+  double maxgrad = 0;
+
+   // Loop through the matrix, checking the gradient of each point
+  for (int r = 0; r < rowsize; r++)
+    {
+      for (int c = 0; c < columnsize; c++)
+	{
+	  double g = deriv[r][c][2];
+
+	  // Check if it is the highest gradient encountered
+	  if (mod(g) > maxgrad)
+	    {
+	      maxgrad = g;
+	    }
+	}
+    }
+
+  if (silence == 0) {
+    cout << "done (" << timerend(time) << "s)." << endl;
+    time = timerstart();
+    cout << "Establishing sublayer conditions... " << flush; }
+
+  // Set the boundary conditions for sublayer size
+  double limit[maxpower+1];
+  double division = 1.0 / (maxpower+1);
+  for (int i = 1; i <= maxpower; i++)
+    {
+      limit[i] = 0 + (i * division * maxgrad);
+    }
+
+  // Create an array to store the pointers
+  Sublayer** pointers = new Sublayer*[rowsize];
+  for (int r = 0; r < rowsize; r++)
+    {
+      pointers[r] = new Sublayer[columnsize];
+    }
+  
+   if (silence == 0) {
+     cout << "done (" << timerend(time) << "s)." << endl; }
+
+  // Create the sublayers where necessary
+  if (silence == 0) {
+    time = timerstart();
+    cout << "Creating sublayers... " << flush; }
+  int count = 0;
+  double percent = (rowsize-2) / 100.0;
+  
+  // Loop through the top-level matrix. The outermost points are excluded
+  // as sublayer() is not designed to handle them
+  for (int r = 1; r < rowsize-1; r++)
+    {
+      for (int c = 1; c < columnsize-1; c++)
+	{
+	  // For each point, check the gradient against the limits
+	  for (int i = maxpower; i > 0; i--)
+	    {
+	      if (mod(deriv[r][c][2]) > limit[i])
+		{
+		  // If the condition is met, create a sublayer of the
+		  // appropiate size
+		  int power = 1;
+		  for (int a = 0; a < i; a++) {
+		    power = power * 3; }
+		  pointers[r][c] =
+		    sublayer(c, r, toplayer, power, (power*10), smoothing);
+		  break;
+		}
+	    }
+	  // If the gradient is less than the lowest limit,
+	  // no sublayer is created
+	}
+
+      // Display percentage completion
+      if (r > (count*percent) && silence == 0)
+	{
+	  if (count < 10) {
+	    cout << count << "%\b\b" << flush; }
+	  else {
+	    cout << count << "%\b\b\b" << flush; }
+	  count++;
+	}
+    }
+  
+  if (silence == 0) {
+    cout << "done (" << timerend(time) << "s)." << endl; }
+  
+  // Return the array containing the sublayers
+  return pointers;
+}
+
   
 // A function to find the absolute value of a number.
 // Takes as input a number (double), returns its positive value.
