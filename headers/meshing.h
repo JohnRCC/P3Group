@@ -197,12 +197,12 @@ double*** printmesh(double*** toplayer, Sublayer** mesh,
   
   // Loop through the top-level matrix
   int count = 0;
-  int percent = rowsize / 100.0;
+  double percent = rowsize / 100.0;
   for (int r = 0; r < rowsize; r++)
     {
       for (int c = 0; c < columnsize; c++)
 	{
-
+	  
 	  // In the case of there being a sublayer at this point
 	  if ( mesh[r][c].index == 0 )
 	    {
@@ -226,7 +226,7 @@ double*** printmesh(double*** toplayer, Sublayer** mesh,
 			      output[(r*maxres) +(y*scale) +yc]
 				[(c*maxres) +(x*scale) +xc][0] =
 				mesh[r][c].array[y][x];
-
+			      
 			      // Check if the point is mean to remain static
 			      if (toplayer[r][c][2] == 2) {
 				output[(r*maxres) +(y*scale) +yc]
@@ -334,7 +334,7 @@ int refine5point
 	    {
 	      if (count < 10) {
 		cout << count << "%\b\b" << flush; }
-	      else {
+	      else if (count < 100) {
 		cout << count << "%\b\b\b" << flush; }
 	      count++;
 	    }
@@ -410,7 +410,7 @@ int refine9point
 	    {
 	      if (count < 10) {
 		cout << count << "%\b\b" << flush; }
-	      else {
+	      else if (count < 100) {
 		cout << count << "%\b\b\b" << flush; }
 	      count++;
 	    }
