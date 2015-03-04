@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+# takes argument of file you need to compute variance for
+SUM="$(cat $1 | awk '{ sum += $3 } END { print sum }')"
+M="$(cat $1 | wc -l)"
+./testvar $SUM $M
