@@ -76,6 +76,7 @@ for(row=0;row<matsize;row++) {
       }
 	
   }
+  analyticfile << "\n";
 }
 
 /*
@@ -112,11 +113,12 @@ for (row = 0; row < matsize; row++)
 float potential(float x, float y, float r,float Plate_separation) {
   float v=0, Plate_Vdiff=2; //Plate_separation=r*pow(10,2);
 
-
 // E = DV/d (Volage difference of plates(2V) / separation of plates (xmax-xmin) )
   float field = Plate_Vdiff/Plate_separation;
   //calculating the analytical solution
-  v=(-1)*field*x*(1-((r*r*r)/(pow((x*x)+(y*y),1.5))));
+  v=(-1)*field*x*(1-((r*r*r)/(pow((x*x)+(y*y),1.5))));    // Spherical
+ // coordinates
+ // v = (-1)*field*x*( 1 - ((r*r)/( x*x + y*y )) );     // Cylindrical coordinate
 
   return v;
 }
