@@ -219,12 +219,19 @@ The particular solution describing system A is then
 
 In order to compare numerical and analytical solutions the latter had to be implemented in a computer program. The boundaries were specified to 1V and -1V at the plates and 0V inside the cylinder. The electric field $E_0$ was defined as ratio of the voltage difference between the plates and the plate separation. Then using Eq.(\ref{eq:cartesian}) the potential was calculated at all points on a discretized . \\
 
+Values of the analytical solution of system A were calculated using Eq.(\ref{eq:cartesian}) for discrete values of $x$ and $y$ to allow for comparison with the numerical. The initial electric field, $E_0$, was defined as
+
+\begin{equation}
+	E_0 = \frac{\Delta V}{d},
+\end{equation} 
+
+\noindent where $d$ is the plate separation and $\Delta V$ is the potential difference between the plates. The potentials at the plates were defined as +1V and -1V.
 
 %The Finite-difference and Relaxation methods described were utilised in a C++ program to solve system $A$.
 %The plates and the grounded cylinder were defined in a matrix to hold the required values, just as in the analytical case. They remained constant throughout the program and the rest of the elements in the matrix were allowed to vary. A numerical algorithm, Alg.(), was run updating the elements in the matrix until the change in all values between two iterations was considered sufficiently small. This small change is determined using the requested error tolerance. Upon every iteration, the previous iterations values were stored in a temporary array.  When the system is considered stable, the elements in the matrix are further granulated depending on the steepness of their gradients.
 %After the scheme is finished, the resulting matrix is then plotted using a plotting package where a heat-map functionality is used to depict the potential. For the fieldlines, some further calculation is requred: the gradient between each pixel is calculated and used to plot the electric field, as requred by equation Eq.().
 
-The Gauss-Seidel method described was implemented in C++. Boundary conditions pertaining to system A were imposed, and with a starting matrix containing only the boundary values, the algorithm was run until no point on the matrix changed by more than a user-defined percentage between two iterations. A method of adaptive meshing was then applied, the level of granulation depending on the gradient of the potential and the maximum granulation being user-defined. This meshed system was refined further by applying the Gauss-Seidel method again for several more iterations, and finally plotted as a heatmap showing potential. (See Fig. () for a more detailed programme flow.)
+The Gauss-Seidel method described was implemented in C++. Initial values pertaining to system A were imposed, and with a starting matrix containing only the boundary values, the algorithm was run until no point on the matrix changed by more than a user-defined percentage between two iterations. A method of adaptive meshing was then applied, the level of granulation depending on the gradient of the potential and the maximum granulation being user-defined. This meshed system was refined further by applying the Gauss-Seidel method again for several more iterations, and finally plotted as a heatmap showing potential. (See Fig. () for a more detailed programme flow.)
 
 %\begin{figure}[H]
 %	\centering
