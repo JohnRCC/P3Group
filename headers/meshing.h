@@ -566,17 +566,21 @@ int refine9point
 // without meshing and with the values directly transposed.
 // Takes as input the top-layer matrix, its dimensions, and the scale factor
 // for the output matrix. Returns an output matrix.
-double** nomeshing(double*** toplayer, int rowsize, int columnsize, int maxres)
+double*** nomeshing(double*** toplayer, int rowsize, int columnsize, int maxres)
 {
   // Define the dimensions of the ouput matrix
   int rdim = rowsize * maxres;
   int cdim = columnsize * maxres;
 
   // Create the output matrix
-  double** output = new double*[rdim];
+  double*** output = new double**[rdim];
   for (int r = 0; r < rdim; r++)
     {
-      output[r] = new double[cdim];
+      output[r] = new double*[cdim];
+      for (int c = 0; c < cdim; c++)
+	{
+	  output[r][c] = new double[2];
+	}
     }
 
   // Loop through the top-level matrix
@@ -590,7 +594,15 @@ double** nomeshing(double*** toplayer, int rowsize, int columnsize, int maxres)
 	      for (int x = 0; x < maxres; x++)
 		{
 		  {
-		    output[(r*maxres) +y][(c*maxres) +x] = toplayer[r][c][1];
+		    output[(r*maxres) +y][(c*maxres) +x][0] = toplayer[r][c][1];
+
+		    // Check if the point is mean to remain static
+		    if (toplayer[r][c][2] == 2) {
+		      output[(r*maxres) +y]
+			[(c*maxres) + x][1] = 0; }
+		    else {
+		      output[(r*maxres) + y]
+			[(c*maxres) + x][1] = 0; }
 		  }
 		}
 	    }

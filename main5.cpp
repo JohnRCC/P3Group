@@ -406,10 +406,59 @@ int main(int argc, char* argv[]) {
   
   // Create a high-res matrix with values taken entriely from the top-level
   // matrix without any sublayers
-  // double** comparison = nomeshing(vals, rowsize, columnsize, maxpower);
+  double*** comparison = nomeshing(vals, rowsize, columnsize, maxres);
+
+  // Refine the comparison matrix to reduce blockiness (if meshing was used)
+  if (maxres > 0)
+    {
+      if (algType == 5) {
+	refine5point(comparison, rdim, cdim, maxres, silence); }
+      else if (algType == 9) {
+	refine9point(comparison, rdim, cdim, maxres, silence); }
+    }
 
   // Open datafile to output results to
   ofstream datafile;
+
+  // Output the comparison matrix
+  if (silence == 0) {
+    time = timerstart();
+    cout << "Printing comparison to file... " << flush;
+  }
+  
+  datafile.open("compare.dat");
+  //datafile << "Potential" << endl << endl;	
+  count = 0;
+  percent = rdim / 100.0;
+  
+  for (row = 0; row < rdim; row++)
+    {
+      for (column = 0; column < cdim; column++)
+	{	
+	  //actual values of potential (for plotting etc.)
+	  datafile << row << " " << column << " "
+		   << comparison[row][column][0] << "\n";
+	}
+      
+      datafile << "\n";
+      
+      // Display percentage completion
+      if (row > (count*percent) && silence == 0)
+	
+	{
+	  if (count < 10) {
+	    cout << count << "%\b\b" << flush; }
+	  else {
+	    cout << count << "%\b\b\b" << flush; }
+	  count++;
+	}
+    }
+  
+  datafile << endl;
+  datafile.close();
+  
+  if (silence == 0) {
+    cout << "done. (" << timerend(time) << "s)" << endl; }
 
   // Output results for the analytical case
   if (argc > 6)

@@ -33,6 +33,23 @@ splot "analytical.dat" using 2:1:3 with image notitle#, \
 EOF
 fi
 
+if [ -f pot.dat ]
+then
+echo "Graphing unmeshed potential..."
+gnuplot << EOF
+set term postscript
+set output "compare.eps"
+set contour base
+set view map
+unset surface
+set title ""
+set cntrparam levels 50
+splot "compare.dat" using 2:1:3 with image notitle#, \
+   #   "pot.dat" using 2:1:3 with line notitle
+#plot "field.dat" using 2:1:3:4 with vectors head size 01.20,20 notitle	# line for contour plot
+EOF
+fi
+
 if [ -f grad.dat ]
 then
 echo "Graphing gradient..."
