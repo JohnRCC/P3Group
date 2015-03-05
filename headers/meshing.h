@@ -4,6 +4,8 @@
 #include "timer.h"
 #include <iostream>
 #include <iomanip>
+#include "gradient.h"
+
 using namespace std;
 
 // A set of functions related to meshing.
