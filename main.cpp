@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
   BMP Image;
   Sublayer** mesh;
   double*** output;
-  double errtol;
+  double errtol, runtime, cputime;
 
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
@@ -658,9 +658,23 @@ if (algType == 9){
 	}
     }
   
+  // Print final time to terminal
   if (silence == 0) {
-    timerend(start,1);
-    timer(1); }
+    runtime = timerend(start,1);
+    cputime = timer(1); }
+  else {
+    runtime = timerend(start);
+    cputime = timer(); }
+
+  // Output runtime and cpu time to text file
+  datafile.open("stats.dat");
+  datafile << "Input arguments: ";
+  for (i = 1; i < argc; i++) {
+    datafile << argv[i] << " "; }
+  datafile << "\n" << "Runtime: " << runtime << "s"
+	   << "\n" << "CPU time: " << cputime << "s\n" << endl;
+  datafile.close();
+  
   
   return 0;
 }
