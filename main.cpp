@@ -318,6 +318,7 @@ int main(int argc, char* argv[]) {
   // Run the algorithms which calculate the potential at each point
   //
   int algType = 9;
+
   //
   // FIVE_POINT DIFFERENCE METHOD ALGORITHM
   //
