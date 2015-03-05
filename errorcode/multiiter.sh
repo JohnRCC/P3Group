@@ -8,7 +8,7 @@
 ###############################################################
 
 
-for i in {1000..10000..500} ##{x1..x2..x3} iterates from x1 to x2 in steps of x3
+for i in {1000..10000..1000} ##{x1..x2..x3} iterates from x1 to x2 in steps of x3
 do
 
 if [ -e ./pot${i}.dat]
@@ -17,9 +17,9 @@ if [ -e ./pot${i}.dat]
       echo "removed previos ./pot${i}.dat"
 fi
 
-	./main -10 10 0.2 3 $i 2 
-	mv pot.dat ./d10_p2_r3/pot${i}.dat
-
+	./main -10 10.2 0.2 3 $i 2 
+	mv pot.dat ./temp/pot${i}.dat
+	mv analytical.dat ./temp/
 
 done
 
