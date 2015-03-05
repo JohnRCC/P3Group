@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# takes argument of file you need to compute variance for
+# file must have no spaces in it (ie continuous columns)
+
+SUM="$(cat $1 | awk '{ sum += $3 } END { print sum }')"
+M="$(cat $1 | wc -l)"
+
+echo sum = $SUM, total = $M.

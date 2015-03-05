@@ -1,7 +1,48 @@
 #!/bin/bash
 
+ ## update mean (numeric value in AWK function 'musq'))
 
-# takes argument of file you need to compute variance for
-SUM="$(cat $1 | awk '{ sum += $3 } END { print sum }')"
-M="$(cat $1 | wc -l)"
-./testvar $SUM $M
+
+
+
+
+ ## declare AWK function
+musq=$(cat << 'EOF'
+
+	function abs(value)
+	{
+		 return (value<0?-value:value);
+	}
+{
+	print ($3-4.0)*($3-4.0)
+}
+EOF
+)
+
+ ## find (percentdif-mu)^2
+paste $1 | awk "$musq" >> squares$1
+
+
+ ## find sum of all (percentdif-mu)^2
+SUMsq="$(cat squares$1 | awk '{ sumsq += $1 } END { print sumsq }')"
+Mvar="$(cat squares$1 | wc -l)" ## find M to be summed over
+
+ ## find and cat variance into varianc.dat
+VARIANCE="$(echo $SUMsq $Mvar | awk '{ ver = ($1/$2) } END { print ver }')"
+
+	## cat all calculated 'outputs' to info.txt
+echo $1: sum of \(pd-mu\)^2sq = $SUMsq, total number of values = $Mvar, VARIANCE = $VARIANCE >> info.dat
+
+	## cat variance to variance.txt
+echo sum of \(pd-mu\)^2sq = $SUMsq, total number of values = $Mvar, VARIANCE = $VARIANCE >> variance.dat
+
+#echo VARIANCE = $VARIANCE  ## print variance to screen
+
+
+ ## remove temp file
+if [ -e ./squares$1 ] ## || [ -e ./sumvar.txt ] || [ -e ./squares ]
+   then
+	rm ./squares$1 ## ./sumvar.txt ./squares
+fi	
+
+exit
