@@ -6,10 +6,14 @@
 
 using namespace std;
 
+<<<<<<< HEAD
 //function prototypes
 float potential(float x,float y,float r,float Plate_separation);
 
 int analytic(float smin,float ds,float smax,float r)
+=======
+int analytic(float smin,float ds,float smax,float r,int maxres,int silence)
+>>>>>>> master
 {
  
 int row,column,i;
@@ -19,7 +23,8 @@ int row,column,i;
  *
  *		Sets the values as defined by the parameters passed such that
  *		 System A's setting is satisfied: 
- *		 	- Plates of opposite polarities at either side horiz.
+ *		 	- Plates of opposite polarities at either side
+ *                         vrom the vertical (think y-axis)
  *		 	- Ground, circular plate positioned at middle
  */
  
@@ -30,29 +35,45 @@ int row,column,i;
 // smin = -d/2.0;
 // smax = d/2.0;
 
+
 // Initalise matrix
 	
-	// Matrix size in terms of min and max values
-	/**/
-	  float d = abs(smax-smin);
-	  int matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
-	 
-	 if(d < pow(r,2)) {
-		cout << " WARNING! - Analytic function may give an erroneous answer. d < r^2\n";
-	 }
-	 
+ double time;
+ if (silence == 0) {
+   time = timerstart();
+   cout << "Calculating analytical solution... " << flush; }
 
+<<<<<<< HEAD
 float mid = (matsize/2.0) ;//- (fmod(matsize,2.0));
 double valsA[matsize][matsize]; 
+=======
+ // Set the scale of the matrix (for compatibility with meshing)
+ ds = ds / (float)maxres;
+ 
+ // Matrix size in terms of min and max values
+ float d = abs(smax-smin);
+ long matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1); 
+ 
+ if(d < pow(r,2) && silence == 0) {
+   cout << "\n WARNING! - Analytic function may give an erroneous answer."
+	<< "d < r^2 \n... " << flush; }
+ 
+ 
+ float mid = (matsize/2.0),x,y;// - (fmod(matsize,2.0));
+ //double valsA[matsize][matsize]; 
+>>>>>>> master
 
+ ofstream analyticfile;
+analyticfile.open("analytical.dat");
 
 // Cast values
 for(row=0;row<matsize;row++) {
   for(column=0;column<matsize;column++) {
-	// Sets "true" coordinates for x and y
-    float x=cf(row,smin,ds);
-    float y=cf(column,smin,ds);
+    // Sets "true" coordinates for x and y
+    y=cf(row,smin,ds,1);
+    x=cf(column,smin,ds,1);
 
+<<<<<<< HEAD
         if(row==0) {
       valsA[row][column]=valsA[row][column]=1;
       }
@@ -61,37 +82,52 @@ for(row=0;row<matsize;row++) {
       }
       else if((pow((cf(row,smin,ds)-cf(mid,smin,ds)),2.0) + pow((cf(column,smin,ds)-cf(mid,smin,ds)),2.0)) < pow(r,2.0) ) {
 	valsA[row][column]=valsA[row][column]=0;
+=======
+      if (column == 0) {
+	analyticfile << row << " " << column << " " << 1 << "\n";
+      }
+      else if (column == matsize-1) {
+	analyticfile << row << " " << column << " " << -1 << "\n";
+      }
+      else if( (pow((cf(row,smin,ds,1)-cf(mid,smin,ds,1)),2.0) + pow((cf(column,smin,ds,1)-cf(mid,smin,ds,1)),2.0)) < pow(r,2.0) ) {
+	analyticfile << row << " " << column << " " << -0 << "\n";
+>>>>>>> master
       }
       else {
       	// Only values that differ from main
-	valsA[row][column]=valsA[row][column]=potential(x,y,r,d);
+	analyticfile << row << " " << column << " " << potential(x,y,r,d) << "\n";	
       }
 	
   }
+  analyticfile << "\n";
 }
 
 /*
  *	Writing data to file
  */
-
+/*
 ofstream analyticfile;
 analyticfile.open("analytical.dat");
 
-for(row=0;row<matsize;row++)
-{
-  for(column=0;column<matsize;column++)
+for (row = 0; row < matsize; row++)
   {
-    analyticfile<<row<<" "<<column<<" "<<valsA[row][column]<<"\n";
+  for (column = 0; column < matsize; column++)
+    {
+      analyticfile << row << " " << column << " " 
+                   << valsA[column][row] << "\n";
+    }
+    analyticfile<<"\n";
   }
-  analyticfile<<"\n";
-}
-
-analyticfile.close();
-
-return 0;
-
-}
-
+*/
+ analyticfile.close();
+ 
+ if (silence == 0) {
+   cout << "done. (" << timerend(time,silence) << "s)" << endl; }
+ 
+ return 0;
+ 
+ }
+ 
 
 /*
  *	FUNCTIONS
@@ -100,11 +136,23 @@ return 0;
 float potential(float x, float y, float r,float Plate_separation) {
   float v=0, Plate_Vdiff=2; //Plate_separation=r*pow(10,2);
 
-
 // E = DV/d (Volage difference of plates(2V) / separation of plates (xmax-xmin) )
   float field = Plate_Vdiff/Plate_separation;
   //calculating the analytical solution
-  v=(-1)*field*x*(1-((r*r*r)/(pow((x*x)+(y*y),1.5))));
+  v=(-1)*field*x*(1-((r*r*r)/(pow((x*x)+(y*y),1.5))));    // Spherical
+ // coordinates
+ // v = (-1)*field*x*( 1 - ((r*r)/( x*x + y*y )) );     // Cylindrical coordinate
 
   return v;
 }
+<<<<<<< HEAD
+=======
+
+
+//CoordiFy converts the matrix location of a point into its physical coordinate
+float cf(float matind,float min,float ds,int maxres) {
+  // matind = index of value in array, min = min true coord value,
+  // ds = coord division, maxres = scaling factor (used in main, not used here)
+  return min + ((ds/(float)maxres)*matind);
+}
+>>>>>>> master

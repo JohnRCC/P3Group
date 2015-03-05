@@ -18,6 +18,7 @@ int main(int argc, char* argv[]) {
 
   int silence = 0;
   if (argc == 6)
+<<<<<<< HEAD
   {
   	silence = strtod(argv[5],NULL);
   }
@@ -25,6 +26,15 @@ int main(int argc, char* argv[]) {
   {
   	silence = strtod(argv[7],NULL);
   }
+=======
+    {
+      silence = strtod(argv[5],NULL);
+    }
+  if (argc == 8 || argc == 9)
+    {
+      silence = strtod(argv[7],NULL);
+    }
+>>>>>>> master
   
   // Commence timer
   if (silence == 0) {
@@ -54,20 +64,24 @@ int main(int argc, char* argv[]) {
   // 				 4 - fieldlines
   // 				eg. 6 would give potential and fieldlines
   // 				    3 would give gradient test and data 
+  //            Meshing:        The power of three for the finest mesh grid,
+  //                            e.g. if maxpower = 2, the largest submatrix
+  //                            will be 9x9 (2^3).
+  //                            Set to zero to disable meshing.
   // 		Terminal out:	Turn on or off printing program progress
   // 				Entries: 0 (default) -off- or 1 -on-
   //
   if (silence == 0) {
   cout << "Checking arguments... " << flush; }
   
-  if (argc < 4 || argc > 8) {
+  if (argc < 4 || argc > 9) {
     cout << "Usage: " << endl;
     cout << "    Analytical: " << argv[0]
 	 << " [Min x/y val][Max x/y val][x/y divisions (ds)][Circle Radius]"
-	 << "[Error Tolerance][Output type][Terminal output]" << endl;;
+	 << "[Error Tolerance][Output type][Terminal output][Meshing]" << endl;;
     cout << "    Numerical:  " << argv[0]
 	 << " [BMP Filename][Error Tolerance][Output Type]"
-	 << "[Smoothing][Terminal Output]" << endl;
+	 << "[Meshing][Terminal Output]" << endl;
     return 1;
   }
   
@@ -84,11 +98,22 @@ int main(int argc, char* argv[]) {
   float smin, smax, ds, r, mid, percent;
   BMP Image;
   Sublayer** mesh;
+<<<<<<< HEAD
   double** output;
+=======
+  double*** output;
+  double errtol;
+
+>>>>>>> master
   if (silence == 0) {
   cout << "done. (" << timerend(time) << "s)" << endl; }
   
+<<<<<<< HEAD
   if (argc==4 || argc==5) // Case for numerical solution
+=======
+  // Declare variables specific to the numerical case
+  if (argc < 7)
+>>>>>>> master
     {
     	if (silence == 0) {
       cout << "Bitmap detected. Entering image mode." << endl; 
@@ -122,6 +147,7 @@ int main(int argc, char* argv[]) {
       cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Check for smoothing
+<<<<<<< HEAD
       if (silence == 0) {
       time = timerstart();
       cout << "Checking for smoothing... " << flush;}
@@ -134,6 +160,36 @@ int main(int argc, char* argv[]) {
     }
   
   else if (argc == 7) // Case for the analytical solution
+=======
+      // Currently disabled due to shortage of input arguments
+      /*
+      if (argc > 4) {
+	smooth = strtod(argv[4],NULL); }
+      else {
+	smooth = 0; }
+      */
+      smooth = 0;
+
+      // Check for meshing
+      if (argc > 4) {
+	maxpower = strtod(argv[4],NULL); }
+      else {
+	maxpower = 2; }
+
+      // Work out resultant meshing variables
+      maxres = 1;
+      for (i = 0; i < maxpower; i++) {
+	maxres = maxres * 3; }
+      rdim = rowsize * maxres;
+      cdim = columnsize * maxres;
+
+      if (silence == 0) {
+	cout << "done. (" << timerend(time) << "s)" << endl; }
+    }
+  
+  // Declare variables specific to the analytical case
+  else if (argc > 6)
+>>>>>>> master
     {
     	if (silence == 0) {
       cout << "Input variables detected. Solving for system A." << endl;
@@ -147,17 +203,30 @@ int main(int argc, char* argv[]) {
       r = strtod(argv[4],NULL); // Circle radius
       errtol = strtod(argv[5],NULL); // Error tolerance
       index = strtod(argv[6],NULL); // Output type
+      if (argc == 9) {
+	maxpower = strtod(argv[8],NULL); } // Meshing power
+      else {
+	maxpower = 2; }
       
       // Define the size of the matrix
       matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1);
       rowsize = columnsize = matsize;
+<<<<<<< HEAD
       
       mid = (matsize/2.0);  // - (fmod(matsize,2.0));
+=======
+      mid = (matsize/2.0);// - (fmod(matsize,2.0));
+      maxres = 1;
+      for (i = 0; i < maxpower; i++) {
+	maxres = maxres * 3; }
+      rdim = rowsize * maxres;
+      cdim = columnsize * maxres;
+>>>>>>> master
       
       if (silence == 0) {
       cout << "done. (" << timerend(time) << "s)" << endl; }
     }
-  
+
   // Define the matrix
   if (silence == 0) {
   time = timerstart();
@@ -168,7 +237,7 @@ int main(int argc, char* argv[]) {
     {
       vals[r] = new double*[columnsize];
       for (int s = 0; s < columnsize; s++) {
-	vals[r][s] = new double[3];
+	vals[r][s] = new double[4];
       }
     }
     
@@ -256,8 +325,8 @@ int main(int argc, char* argv[]) {
 		    vals[row][column][1] =
 		    vals[row][column][2] = -1;
 		}
-	      else if ( (pow( (cf(row,smin,ds) - cf(mid,smin,ds)), 2.0 )
-			 + pow( (cf(column,smin,ds) - cf(mid,smin,ds)), 2.0 ) )
+	      else if ( (pow( (cf(row,smin,ds,1) - cf(mid,smin,ds,1)), 2.0 )
+			 + pow( (cf(column,smin,ds,1) - cf(mid,smin,ds,1)), 2.0 ) )
 			< pow(r, 2.0) ) // Within the circle
 		{
 		  vals[row][column][0] =
@@ -275,14 +344,50 @@ int main(int argc, char* argv[]) {
       cout << "done. (" << timerend(time) << "s)" << endl; }
       
       // Get analytical solution
-      analytic(smin,ds,smax,r);
+      analytic(smin,ds,smax,r,maxres,silence);
     }
   
+<<<<<<< HEAD
   // Open file to write data to
   if (silence == 0) {
   time = timerstart();
   cout << "Opening datafile... " << flush; }
   ofstream datafile;
+=======
+  // Run the algorithms which calculate the potential at each point
+  //
+  int algType = 9;
+  //
+  // FIVE_POINT DIFFERENCE METHOD ALGORITHM
+  //
+
+if (algType == 5) {
+  if (silence == 0) {
+    time = timerstart();
+    cout << "Running five-point difference method algorithm... " << flush; }
+  
+  i = algFivePointDM(vals,columnsize,rowsize,errtol,silence);
+
+  if (silence == 0) {
+    cout << "done. (" << timerend(time) << "s, "
+	 << i-1 << " iterations)" << endl; }
+}
+  //
+  //NINE-POINT DIFFERENCE METHOD ALGORITHM
+  //
+if (algType == 9){
+  if (silence == 0) {
+    time = timerstart();
+    cout << "Running nine-point difference method algorithm... " << flush; }
+  
+  i = algNinePointDM(vals,columnsize,rowsize,errtol,silence);
+
+  if (silence == 0) {
+    cout << "done. (" << timerend(time) << "s, "
+	 << i-1 << " iterations)" << endl; }
+}
+  // Determine the gradient at each point
+>>>>>>> master
   if (silence == 0) {
   cout << "done. (" << timerend(time) << "s)" << endl; }
  
@@ -381,6 +486,7 @@ int main(int argc, char* argv[]) {
     if (silence == 0) {
   cout << "done. (" << timerend(time) << "s)" << endl; }
 
+<<<<<<< HEAD
   // Ensure the first layer always contains the final matrix
   // Chose first layer rather than zeroth because the matrix will end up in
   // the first layer anyway for even numbers of iterations, which is what we'll
@@ -429,6 +535,48 @@ int main(int argc, char* argv[]) {
 
   // Output results for the analytical case
   if (argc == 7)
+=======
+  // Create a matrix of sublayers
+  // Use meshtype = 0 for gradient-dependent meshing and
+  // meshtype = 1 for second-derivative based meshing
+  int meshtype = 0;
+  if (meshtype == 0) {
+    mesh = meshing(vals, rowsize, columnsize, maxpower, smooth, silence); }
+  else if (meshtype == 1) {
+    mesh =
+      secondmeshing(vals, rowsize, columnsize, maxpower, smooth, silence); }
+  
+  if (silence == 0) {
+    time = timerstart();
+    cout << "Creating output matrix... " << flush; }
+  
+  // Create an output matrix which includes the sublayers
+  output = printmesh(vals, mesh, rowsize, columnsize, maxres, silence);
+  
+  if (silence == 0) {
+    cout << "done. (" << timerend(time) << "s)" << endl;
+    time = timerstart();
+    cout << "Refining output matrix... " << flush; }
+  
+  // Refine the output matrix
+  if (algType == 5) {
+    refine5point(output, rdim, cdim, maxres, silence); }
+  else if (algType == 9) {
+    refine9point(output, rdim, cdim, maxres, silence); }
+  
+  if (silence == 0) {
+    cout << "done (" << timerend(time) << "s)." << endl; }
+  
+  // Create a high-res matrix with values taken entriely from the top-level
+  // matrix without any sublayers
+  // double** comparison = nomeshing(vals, rowsize, columnsize, maxpower);
+
+  // Open datafile to output results to
+  ofstream datafile;
+
+  // Output results for the analytical case
+  if (argc > 6)
+>>>>>>> master
     {
       count = 0;
       percent = rowsize / 100.0;
@@ -440,14 +588,57 @@ int main(int argc, char* argv[]) {
 	      if (index == 1 || index == 3 || index == 5 || index == 7)
 		{
 		  // Gradient test. See function 'grad' for more info.
+<<<<<<< HEAD
 		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
 			   << " " << vals[row][column][2] << endl;
+=======
+		  datafile << cf(row,smin,ds,1) << " " << cf(column,smin,ds,1)
+			   << " " << vals[row][column][2] << "\n";
+>>>>>>> master
 		}
 	      if (index == 2 || index == 3 || index == 6 || index == 7)
 		{
+<<<<<<< HEAD
 		  //actual values of potential (for plotting etc.)
 		  datafile << row << " " << column << " "
 			   << vals[column][row][1] << endl;
+=======
+		  if (count < 10) {
+		    cout << count << "%\b\b" << flush; }
+		  else {
+		    cout << count << "%\b\b\b" << flush; }
+		  count++;
+		}
+	    }
+
+	  datafile << endl;
+	  datafile.close();
+	  
+	  if (silence == 0) {
+	    cout << "done. (" << timerend(time) << "s)" << endl; }
+	}
+      
+      // Print potential data		
+      if (index == 2 || index == 3 || index == 6 || index == 7)
+	{
+	  if (silence == 0) {
+	    time = timerstart();
+	    cout << "Printing potential to file... " << flush;
+	  }
+	  
+	  datafile.open("pot.dat");
+	  //datafile << "Potential" << endl << endl;	
+	  count = 0;
+	  percent = rdim / 100.0;
+
+	  for (row = 0; row < rdim; row++)
+	    {
+	      for (column = 0; column < cdim; column++)
+		{	
+		  //actual values of potential (for plotting etc.)
+		  datafile << row << " " << column << " "
+			   << output[row][column][0] << "\n";
+>>>>>>> master
 		}
 	      if (index == 4 || index == 5 || index == 6 || index == 7)
 		{
@@ -500,8 +691,13 @@ int main(int argc, char* argv[]) {
 		  //cout<<"File Iter: "<<row<<"\r";
 		  
 		  // Gradient test. see function 'grad' for more info.
+<<<<<<< HEAD
 		  datafile << cf(row,smin,ds) << " " << cf(column,smin,ds)
 			   << " " << vals[row][column][2] << endl; 
+=======
+		  datafile << cf(row,smin,ds,1) << " " << cf(column,smin,ds,1)
+			   << " " << vals[row][column][2] << "\n"; 
+>>>>>>> master
 		}
 	      
 	      datafile << endl;
@@ -593,6 +789,35 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
+<<<<<<< HEAD
+=======
+	  datafile.open("pot.dat");
+	  //datafile << "Potential" << endl << endl;
+	  count = 0;
+	  percent = rdim / 100.0;
+	  
+	  for (row = 0; row < rdim; row++)
+	    {
+	      for (column = 0; column < cdim; column++)
+		{
+		  // Actual values of potential (for plotting etc.)
+		  datafile << cf(row,smin,ds,maxres) << " "
+			   << cf(column,smin,ds,maxres) << " "
+			   << output[row][column][0] << "\n";
+		}
+	      datafile << "\n";
+	      
+	      // Display percentage completion
+	      if (row > (count*percent) && silence == 0)
+		{
+		  if (count < 10) {
+		    cout << count << "%\b\b" << flush; }
+		  else {
+		    cout << count << "%\b\b\b" << flush; }
+		  count++;
+		}  
+	    }
+>>>>>>> master
 
 //CoordiFy converts the matrix location of a point into its physical coordinate
 float cf(float matind,float min,float ds) {
@@ -607,6 +832,7 @@ float cf(float matind,float min,float ds) {
 float grad(float right,float left,float up,float down,float ds) {
   float result = pow(pow((right-left)/ds,2.00)+pow((down-up)/ds,2.00),0.50);
   
+<<<<<<< HEAD
   /*for now, return result to see values
   if(result>100 || result<0.001){
     return 0;
@@ -623,5 +849,15 @@ float grad(float right,float left,float up,float down,float ds) {
     {
       return 1;
     }
+=======
+  if (silence == 0) {
+    timerend(start,1);
+    timer(1); }
+>>>>>>> master
   
+}
+
+float cf(int matind, float min, float ds, int maxres)
+{
+  return min + ((ds/(float)maxres)*matind);
 }

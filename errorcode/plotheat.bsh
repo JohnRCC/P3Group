@@ -1,0 +1,13 @@
+#!/bin/sh
+wazzy=$1
+
+gnuplot -p << EOF
+#!/usr/bin/gnuplot
+
+set pm3d map
+splot '$wazzy' using 1:2:3 #with image
+
+set terminal png 
+set output "$wazzy.png"
+replot
+quit 
