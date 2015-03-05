@@ -5,5 +5,7 @@
 
 SUM="$(cat $1 | awk '{ sum += $3 } END { print sum }')"
 M="$(cat $1 | wc -l)"
+echo sum.bsh sum=$SUM, total=$M
+#echo sum = $SUM, total = $M.
 
-echo sum = $SUM, total = $M.
+./variance.bsh $1 $SUM $M
