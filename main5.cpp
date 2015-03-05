@@ -318,6 +318,7 @@ int main(int argc, char* argv[]) {
   // Run the algorithms which calculate the potential at each point
   //
   int algType = 5;
+
   //
   // FIVE_POINT DIFFERENCE METHOD ALGORITHM
   //
@@ -379,11 +380,14 @@ if (algType == 9){
     time = timerstart();
     cout << "Refining output matrix... " << flush; }
   
-  // Refine the output matrix
-  if (algType == 5) {
-    refine5point(output, rdim, cdim, maxres, silence); }
-  else if (algType == 9) {
-    refine9point(output, rdim, cdim, maxres, silence); }
+  // Refine the output matrix (if meshing was used)
+  if (maxres > 0)
+    {
+      if (algType == 5) {
+	refine5point(output, rdim, cdim, maxres, silence); }
+      else if (algType == 9) {
+	refine9point(output, rdim, cdim, maxres, silence); }
+    }
   
   if (silence == 0) {
     cout << "done (" << timerend(time) << "s)." << endl; }
