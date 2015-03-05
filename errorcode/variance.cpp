@@ -2,6 +2,8 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -29,19 +31,20 @@ cout << ball << endl;
 
 cout << endl << endl << endl << ball << endl;
 
-ifstream derp;
-derp.open ("test");
-float data[6], a, b, c, d, e, f;
-for (int p=0;p<=6;p++)
-{
-derp>>data[i];
-}
-derp.close();
+//for(std::string )
+//ifstream derp;
+//derp.open ("test");
+//float data[6], a, b, c, d, e, f;
+//for (int p=0;p<=6;p++)
+//{
+//derp>>data[i];
+//}
+//derp.close();
 
-for (int x=0;x<=6;x++)
-{
-cout << data[x] << endl;
-}
+//for (int x=0;x<=6;x++)
+//{
+//cout << data[x] << endl;
+//}
 
 
 return 0;
