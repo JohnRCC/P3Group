@@ -17,6 +17,10 @@ NPDM = $(FUNFOL)algNinePointDM
 all: main.o $(FLD).o $(BMP).o $(ANA).o $(FPDM).o $(NPDM).o
 	g++ -o main $?
 
+full: 	main5.o main9.o $(FLD).o $(BMP).o $(ANA).o $(FPDM).o $(NPDM).o
+	g++ -o main5 main5.o $(FLD).o $(BMP).o $(ANA).o $(FPDM).o $(NPDM).o
+	g++ -o main9 main9.o $(FLD).o $(BMP).o $(ANA).o $(FPDM).o $(NPDM).o
+
 fieldline.o: $(FLD).cpp $(FLD).h funcs.h
 	g++ -o $(FLD).o -c $(FLD).cpp
 
@@ -25,6 +29,12 @@ EasyBMP.o: $(BMP).cpp $(BMP).h
 
 main.o: main.cpp $(BMP).h $(HED)
 	g++ -o main.o -c main.cpp
+
+main5.o: main5.cpp $(BMP).h $(HED)
+	 g++ -o main5.o -c main5.cpp
+
+main9.o: main9.cpp $(BMP).h $(HED)
+	 g++ -o main9.o -c main9.cpp
 
 analytical.o: $(ANA).cpp $(FOL)funcs.h
 	g++ -o $(ANA).o -c $(ANA).cpp
