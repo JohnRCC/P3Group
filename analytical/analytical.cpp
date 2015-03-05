@@ -6,11 +6,15 @@
 
 using namespace std;
 
+
+float SphericalPotential(float x, float y, float r,float Plate_separation);
+float CylindricalPotential(float x, float y, float r,float Plate_separation);
+
 int analytic(float smin,float ds,float smax,float r,int maxres,int silence)
 {
  
 int row,column,i;
-      
+bool bCylindricalCoords = true;
 /*
  *	GENERATE MATRIX
  *
@@ -34,8 +38,12 @@ int row,column,i;
  double time;
  if (silence == 0) {
    time = timerstart();
-   cout << "Calculating analytical solution... " << flush; }
+   cout << "Calculating analytical solution "; }
 
+if (silence == 0) {
+  if (bCylindricalCoords) {cout << "with Cylindrical Coordinates... " << flush; }
+  else {cout << "with Spherical Coordinates..." << flush;}
+}
  // Set the scale of the matrix (for compatibility with meshing)
  ds = ds / (float)maxres;
  
@@ -72,7 +80,13 @@ for(row=0;row<matsize;row++) {
       }
       else {
       	// Only values that differ from main
-	analyticfile << row << " " << column << " " << potential(x,y,r,d) << "\n";	
+        if (bCylindricalCoords) {
+          analyticfile << row << " " << column << " " << CylindricalPotential(x,y,r,d) << "\n";
+        }
+        else {
+          analyticfile << row << " " << column << " " << SphericalPotential(x,y,r,d) << "\n";
+          
+        }
       }
 	
   }
@@ -110,19 +124,27 @@ for (row = 0; row < matsize; row++)
  *	FUNCTIONS
  */
 
-float potential(float x, float y, float r,float Plate_separation) {
+float CylindricalPotential(float x, float y, float r,float Plate_separation) {
   float v=0, Plate_Vdiff=2; //Plate_separation=r*pow(10,2);
 
 // E = DV/d (Volage difference of plates(2V) / separation of plates (xmax-xmin) )
   float field = Plate_Vdiff/Plate_separation;
   //calculating the analytical solution
-  v=(-1)*field*x*(1-((r*r*r)/(pow((x*x)+(y*y),1.5))));    // Spherical
- // coordinates
- // v = (-1)*field*x*( 1 - ((r*r)/( x*x + y*y )) );     // Cylindrical coordinate
-
+    v = (-1)*field*x*( 1 - ((r*r)/( x*x + y*y )) );     // Cylindrical coordinate
   return v;
 }
 
+
+float SphericalPotential(float x, float y, float r,float Plate_separation) {
+  float v=0, Plate_Vdiff=2; //Plate_separation=r*pow(10,2);
+
+// E = DV/d (Volage difference of plates(2V) / separation of plates (xmax-xmin) )
+  float field = Plate_Vdiff/Plate_separation;
+  //calculating the analytical solution
+    v=(-1)*field*x*(1-((r*r*r)/(pow((x*x)+(y*y),1.5))));    // Spherical coordinates
+
+  return v;
+}
 
 //CoordiFy converts the matrix location of a point into its physical coordinate
 float cf(float matind,float min,float ds,int maxres) {
