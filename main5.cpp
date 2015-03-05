@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
   if (silence == 0) {
     cout << "Initialising variables... " << flush; }
 
-  int row, column, i, rowsize, columnsize, matsize,
+  int row, column, i, a, rowsize, columnsize, matsize,
     index, smooth, count, rdim, cdim, maxpower, maxres;
   float smin, smax, ds, r, mid, percent;
   BMP Image;
@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
       // Define the size of the matrix
       matsize = (((float)smax-smin)/ds) - fmod((smax-smin)/ds,1);
       rowsize = columnsize = matsize;
-      mid = (matsize/2.0);// - (fmod(matsize,2.0));
+      mid = (matsize/2.0); // - (fmod(matsize,2.0));
       maxres = 1;
       for (i = 0; i < maxpower; i++) {
 	maxres = maxres * 3; }
@@ -195,8 +195,10 @@ int main(int argc, char* argv[]) {
   
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
-  
-  if (argc < 7) // For the numerical case
+
+  // For the numerical case,
+  // fill the intial matrix using the input image
+  if (argc < 7)
     {
       // Generate matrix from image file
       if (silence == 0) {
@@ -253,11 +255,14 @@ int main(int argc, char* argv[]) {
 	    }
 	  
 	}
+
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
     }
-  
-  else if (argc > 6) // For the analytical case
+
+  // For the analytical case,
+  // fill the initial matrix according to the input parameters
+  else if (argc > 6)
     {  
       // Generate initial matrix from definite values
       if (silence == 0) {
@@ -283,9 +288,9 @@ int main(int argc, char* argv[]) {
 		    vals[row][column][1] =
 		    vals[row][column][2] = -1;
 		}
-	      else if ( (pow( (cf(row,smin,ds,1) - cf(mid,smin,ds,1)), 2.0 )
-			 + pow( (cf(column,smin,ds,1) - cf(mid,smin,ds,1)), 2.0 ) )
-			< pow(r, 2.0) ) // Within the circle
+	      else if ((pow((cf(row,smin,ds,1) - cf(mid,smin,ds,1)), 2.0)
+			+ pow((cf(column,smin,ds,1) - cf(mid,smin,ds,1)), 2.0))
+		       < pow(r, 2.0)) // Within the circle
 		{
 		  vals[row][column][0] =
 		    vals[row][column][1] =
@@ -308,6 +313,7 @@ int main(int argc, char* argv[]) {
 	      count++;
 	    }
 	}
+
       if (silence == 0) {
 	cout << "done. (" << timerend(time) << "s)" << endl; }
       
@@ -316,38 +322,44 @@ int main(int argc, char* argv[]) {
     }
   
   // Run the algorithms which calculate the potential at each point
-  //
+  // Set algType to 5 for the 5-Point Difference Method, and to 9
+  // for the 9-Point Difference Method
   int algType = 5;
 
   //
   // FIVE_POINT DIFFERENCE METHOD ALGORITHM
   //
-
-if (algType == 5) {
-  if (silence == 0) {
-    time = timerstart();
-    cout << "Running five-point difference method algorithm... " << flush; }
   
-  i = algFivePointDM(vals,columnsize,rowsize,errtol,silence);
-
-  if (silence == 0) {
-    cout << "done. (" << timerend(time) << "s, "
-	 << i-1 << " iterations)" << endl; }
-}
+  if (algType == 5)
+    {
+      if (silence == 0) {
+	time = timerstart();
+	cout << "Running five-point difference method algorithm... " << flush; }
+      
+      i = algFivePointDM(vals,columnsize,rowsize,errtol,silence);
+      
+      if (silence == 0) {
+	cout << "done. (" << timerend(time) << "s, "
+	     << i-1 << " iterations)" << endl; }
+    }
+  
   //
   //NINE-POINT DIFFERENCE METHOD ALGORITHM
   //
-if (algType == 9){
-  if (silence == 0) {
-    time = timerstart();
-    cout << "Running nine-point difference method algorithm... " << flush; }
-  
-  i = algNinePointDM(vals,columnsize,rowsize,errtol,silence);
 
-  if (silence == 0) {
-    cout << "done. (" << timerend(time) << "s, "
-	 << i-1 << " iterations)" << endl; }
-}
+  if (algType == 9)
+    {
+      if (silence == 0) {
+	time = timerstart();
+	cout << "Running nine-point difference method algorithm... " << flush; }
+      
+      i = algNinePointDM(vals,columnsize,rowsize,errtol,silence);
+      
+      if (silence == 0) {
+	cout << "done. (" << timerend(time) << "s, "
+	   << i-1 << " iterations)" << endl; }
+    }
+  
   // Determine the gradient at each point
   if (silence == 0) {
     time = timerstart();
@@ -357,7 +369,7 @@ if (algType == 9){
   
   if (silence == 0) {
     cout << "done. (" << timerend(time) << "s)" << endl; }
-
+  
   // Create a matrix of sublayers
   // Use meshtype = 0 for gradient-dependent meshing and
   // meshtype = 1 for second-derivative based meshing
@@ -380,7 +392,7 @@ if (algType == 9){
     time = timerstart();
     cout << "Refining output matrix... " << flush; }
   
-  // Refine the output matrix (if meshing was used)
+  // Refine the output matrix to reduce blockiness (if meshing was used)
   if (maxres > 0)
     {
       if (algType == 5) {
@@ -673,16 +685,17 @@ if (algType == 9){
   // Output runtime and cpu time to text file
   datafile.open("stats.dat");
   datafile << "Input arguments: ";
-  for (i = 1; i < argc; i++) {
-    datafile << argv[i] << " "; }
-  datafile << "\n" << "Runtime: " << runtime << "s"
-	   << "\n" << "CPU time: " << cputime << "s\n" << endl;
+  for (a = 1; a < argc; a++) {
+    datafile << argv[a] << " "; }
+  datafile << "\n" << "Iterations: " << i-1 << "\n"
+	   << "Runtime: " << runtime << "s\n"
+	   << "CPU time: " << cputime << "s\n" << endl;
   datafile.close();
-  
   
   return 0;
 }
 
+// Function to calculate the physical co-ordinate from the matrix index
 float cf(int matind, float min, float ds, int maxres)
 {
   return min + ((ds/(float)maxres)*matind);
