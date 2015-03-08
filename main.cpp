@@ -298,7 +298,7 @@ int main(int argc, char* argv[]) {
 		}
 	      else // not source/sink, free to change
 		{
-		  vals[row][column][0] = vals[row][column][1] = 0;
+		  vals[row][column][0] = vals[row][column][1] =0;// 1-((2*ds*column)/(smax-smin));
 		  vals[row][column][2] = 2;
 		}	
 	    }
@@ -393,7 +393,7 @@ int main(int argc, char* argv[]) {
     cout << "Refining output matrix... " << flush; }
   
   // Refine the output matrix to reduce blockiness (if meshing was used)
-  if (maxres > 0)
+  /* if (maxres > 0)
     {
       if (algType == 5) {
 	refine5point(output, rdim, cdim, maxres, silence); }
@@ -403,7 +403,7 @@ int main(int argc, char* argv[]) {
   
   if (silence == 0) {
     cout << "done (" << timerend(time) << "s)." << endl; }
-  
+  */
   // Create a high-res matrix with values taken entriely from the top-level
   // matrix without any sublayers
   // double** comparison = nomeshing(vals, rowsize, columnsize, maxpower);
