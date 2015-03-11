@@ -120,7 +120,11 @@ S(s) = C_0 \ln{s} + D_0~,
 \label{eq:s2}
 \end{equation}
 
+<<<<<<< HEAD
 \noindent where $C_0$ and $D_0$ are, again, arbitrary constants. This formula is known as the potential of a long line of charge. \par
+=======
+\noindent where $C_0$ and $D_0$ are, again, arbitrary constants. This formula is known as the potential of an infinitely long line or cylinder of uniform charge density. \par
+>>>>>>> 0cf6929e07175e7fe09e6f8d2777a7e92946810c
 %Furthermore, when $k = 0$ Eq.(\ref{eq:4.2}) has solution $\Phi(\phi) = B_0 \phi + A_0$, where $B_0$ and $A_0$ are arbitrary constants. However, the term $B_0 \phi$ is unacceptable because it does not return to its initial value when $\phi$ is increased by $2 \pi$. \par
 
 %However, the general solution for the angular equation, Eq.(\ref{eq:4.2}), requires Legendre Polynomials in the variable $\cos \theta$. These are special functions usually encountered in physical problems involving Laplace's equation \cite{RHB-MathematicalMethods}. The solution has the form
@@ -216,7 +220,7 @@ V_{i,j} = \frac{1}{20}(4V_{i+1,j} + 4V_{i-1,j} + 4V_{i,j+1} + 4V_{i,j-1} + V_{i+
 
 \noindent This formula provides an approximation with an error of $\mathcal{O}(h^4)$ when applied to Laplace's equation \cite{AI-numericalAna}. 
 
-The boundary conditions are then specified in the mesh and the interior points of the region desired are assigned to an arbitrary values. The chosen values will not influence the final solution but they may affect the rate of convergence of the scheme. \par
+The boundary conditions are then specified in the mesh and the interior points of the region desired are assigned to arbitrary values. The chosen values will not influence the final solution but they may affect the rate of convergence of the scheme. \par
 
 The iterative method to solve Laplace's equation re-evaluates each $V_{i,j}$ to the average of the four or eight nearest points. The process is repeated until the change between successive iterations is too small according to a specified error tolerance, and an approximate solution is obtained. 
 %The iterative method to solve Laplace's equation starts by guessing a solution and then sweeps across the grid updating the value at each point. On each interation $V_{i,j}$ is set to the average of the four or eight nearest points. 

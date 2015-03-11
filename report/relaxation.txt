@@ -1,0 +1,8 @@
+- relaxation method is way of solving elliptic PDEs
+
+- an elliptic PDE is discretized using a finite difference method,
+  giving a system of simultaneous linear equations.
+
+- these are solved by applying a relaxation method.
+
+- jacobi, gauss-seidel and SOR are examples of relaxation methods
