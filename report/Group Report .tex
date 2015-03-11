@@ -54,7 +54,7 @@ can be described by
 \end{equation} 
 
 \noindent This is Laplace's equation \cite{RHB-MathematicalMethods}.\\ \par
-In this work, the electrostatic potential and the electric field are evaluated at all points in two different systems. The systems consist of different geometric configurations of conductors held at constant potentials. This study shows how the $V$ is modified in the presence of these conductors. 
+In this work, the electrostatic potential and the electric field are evaluated at all points in two different systems. The systems consist of different geometric configurations of conductors held at constant potentials. This study shows how $V$ is modified in the presence of these conductors. 
 
 \section*{Methods}
 In general, there are two methods to analyse the electric potential in all space: analytical and numerical techniques. Often there is no analytical solution, even for a simple electrostatic system, and thus numerical methods are useful tools in obtaining approximate solutions. 
@@ -72,7 +72,8 @@ For systems with certain symmetries Laplace's equation can be expressed in cylin
 
 %For round objects $\Phi$ can be independent of $\phi$ given an appropriate choice of coordinate orientation. Multiplying through by $r^2$ the equation is simplified to
 
-\noindent For an axisymmetrical system the electrostatic potential will not depend on $z$. This implies that $\sfrac{\partial^2 V}{\partial z^2} = 0~.$ Multiplying through by $s^2$ the equation is simplified to
+\noindent For an axisymmetrical system the electrostatic potential will not depend on $z$ \cite{griffiths-introElec}. This implies that $\sfrac{\partial^2 V}{\partial z^2} = 0~.$ Multiplying through by $s^2$ the equation is simplified to
+
 
 \begin{equation}
 s \frac{\partial}{\partial s}\bigg(s \frac{\partial V}{\partial s}\bigg) + \frac{\partial^2 V}{\partial \phi^2} = 0~.
@@ -90,13 +91,13 @@ Separation of variables is used to solve the equation above. Let $V(s,\phi) = S(
 
 \begin{subequations}
 \begin{align}
-&s\frac{d}{ds}\bigg(s \frac{dS}{ds}\bigg) = k^2 S, \label{eq:4.1}\\ 
-&\frac{d^2 \Phi}{d \phi^2} = - k^2 \Phi ~. \label{eq:4.2}
+&\frac{d^2 \Phi}{d \phi^2} = - k^2 \Phi ~. \label{eq:4.1}\\
+&s\frac{d}{ds}\bigg(s \frac{dS}{ds}\bigg) = k^2 S, \label{eq:4.2}
 \end{align}
 \label{eq:4}
 \end{subequations} 
 
-\noindent The partial differential equation, Eq.(\ref{eq:2}), has been converted into two independent ordinary differential equations. The general solution for the angular part, Eq.(\ref{eq:4.2}), is
+\noindent The partial differential equation, Eq.(\ref{eq:2}), has been converted into two independent ordinary differential equations. The general solution for the angular part, Eq.(\ref{eq:4.1}), is
 
 \begin{equation}
 \Phi(\phi) = A_k cos(k \phi) + B_k sin(k \phi)~,
@@ -104,22 +105,22 @@ Separation of variables is used to solve the equation above. Let $V(s,\phi) = S(
 \end{equation}
 
 \noindent where $A_k$ and $B_k$ are arbitrary constants \cite{RHB-MathematicalMethods}. The condition $\Phi(\phi) = \Phi(\phi + 2 \pi)$ is required so that the potential is single valued, this implies that $k$ must be an integer. %APPENDIX??
-When $k = 0$ Eq.(\ref{eq:4.2}) has solution $\Phi(\phi) = B_0 \phi + A_0$, where $B_0 = 0$ in order to satisfy this condition and $A_0$ is an arbitrary constant. \\ \\ \par 
-Eq.(\ref{eq:4.1}) has solutions $s^k$ and $s^{-k}$ by inspection \cite{griffiths-introElec}. The general solution has the form
+When $k = 0$ Eq.(\ref{eq:4.1}) has solution $\Phi(\phi) = B_0 \phi + A_0$, where $B_0 = 0$ in order to satisfy this condition and $A_0$ is an arbitrary constant. \\ \\ \\ \par 
+Eq.(\ref{eq:4.2}) has solutions $s^k$ and $s^{-k}$ by inspection \cite{griffiths-introElec}. The general solution has the form
 
 \begin{equation}
 S(s) = C_k s^k + D_k s^{-k}
 \label{eq:s}
 \end{equation} 
 
-\noindent where $C_k$ and $D_k$ are arbitrary constants. For $k = 0$, Eq.(\ref{eq:4.1}) takes the form
+\noindent where $C_k$ and $D_k$ are arbitrary constants. For $k = 0$, Eq.(\ref{eq:4.2}) takes the form
 
 \begin{equation}
 S(s) = C_0 \ln{s} + D_0~,
 \label{eq:s2}
 \end{equation}
 
-\noindent where $C_0$ and $D_0$ are, again, arbitrary constants. This formula is known as the potential of an infinitly long line or cylinder of uniform charge density. \par
+\noindent where $C_0$ and $D_0$ are, again, arbitrary constants. This formula is known as the potential of a long line of charge. \par
 %Furthermore, when $k = 0$ Eq.(\ref{eq:4.2}) has solution $\Phi(\phi) = B_0 \phi + A_0$, where $B_0$ and $A_0$ are arbitrary constants. However, the term $B_0 \phi$ is unacceptable because it does not return to its initial value when $\phi$ is increased by $2 \pi$. \par
 
 %However, the general solution for the angular equation, Eq.(\ref{eq:4.2}), requires Legendre Polynomials in the variable $\cos \theta$. These are special functions usually encountered in physical problems involving Laplace's equation \cite{RHB-MathematicalMethods}. The solution has the form
@@ -148,7 +149,7 @@ Since Laplace's equation is a linear PDE, the general solution is a superpositio
 V(s, \phi) = A_0 (C_0 \ln{s} + D_0) + \sum_{k=1}^{\infty} \big[(A_k \cos{(k\phi)} + B_k \sin{(k\phi)}) (C_k s^k + D_k s^{-k})\big]
 \label{eq:gs1}
 \end{equation}
-\noindent and simplified to
+\noindent and also expressed as
 \begin{equation}
 V(s, \phi) = c_0 \ln{s} + d_0 + \sum_{k=1}^{\infty} \big[ s^k (a_k \cos{(k\phi)} + b_k \sin{(k\phi)}) + s^{-k}(c_k \cos{(k\phi)} + d_k \sin{(k\phi)})\big]
 \label{eq:gs2}
@@ -175,7 +176,7 @@ The first step of the numerical technique is to discretize the problem by defini
 \end{subequations} 
 
 \noindent where $h$ is the distance between the grid points and $i,j$ is a pair of indices describing each grid point. The differential operator $\nabla^2$ is then approximated 
-to a discrete form through the use of finite differences. The standard approximation for the second derivative is \cite{Cheney.Kincai-NumericalMethods} 
+to a discrete form through the use of finite differences. The standard approximation for the second derivatives is \cite{Cheney.Kincai-NumericalMethods} 
 
 \begin{equation}
 f''(x) \approx \frac{1}{h^2}[f(x+h) - 2f(x) + f(x-h)].
@@ -234,6 +235,7 @@ The accuracy of the numerical approximation improves as the number of points in 
 
 
 \section*{Solving a physical system}
+%CONTINUE HERE
 There are simple electrostatic systems for which an analytical solution can be derived. These systems can be extremely helpful when developing a numerical solution. They are used to ensure the correctness and the accuracy of the numerical approximation. In this work, a system consisting of two infinitely long plates and a conducting cylinder was used to serve this purpose. Due to symmetry this 3D system can be approximated to a 2D 
 
 
@@ -241,17 +243,17 @@ There are simple electrostatic systems for which an analytical solution can be d
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=6cm]{GPdiagram11} 
-	\caption{Illustration of system $A$. A perfectly uniform field is defined between plates $+V$ and $-V$. An uncharged conducting cylinder of radius $R$ is placed in the middle of the system (cross-section view).}
+	\includegraphics[width=6cm]{GPdiagram31} 
+	\caption{Illustration of physical system $A$. A perfectly uniform field is defined between plates $+V$ and $-V$. An uncharged conducting cylinder of radius $R$ is placed in the middle of the system (cross-section view).}
 	\label{fig:systemA}
 \end{figure}
 
 
 When an uncharged cylindrical conductor is placed between two parallel charged plates, the electric field is altered. The field pushes free positive charges to the right and the negative ones to the left. The charges accumulate in the edges of the conductor distorting the field in the surroundings of the cylinder. The potential outside the conductor can be described mathematically using principles of electrostatics, namely Laplace's Equation Eq.(\ref{eq:intro3}). %This PDE describes the electrostatic potential for a given charge distribution, and consequently the corresponding field. 
-A particular solution defining System $A$ is obtained using Eq.(\ref{eq:gs2}) and the required boundary conditions. \\ \\ 
+A particular solution defining System $A$ was obtained using Eq.(\ref{eq:gs2}) and the required boundary conditions. \\ \\ 
 
 
-The potential at the surface of a grounded conductor is zero \cite{griffiths-introElec}. Also, far from the cylinder the field is perpendicular to the plates, so at infinity $\bf{E}$ = $E_0$$\bf{\hat{x}}$, hence $V = -E_0 x + C$, where C is an arbitrary constant and $E_0$ is the initial electric field. Due to the symmetry of the system, $V$ is known to be zero at the same distance from the plates. In cylindrical coordinates, this becomes $V(s,\phi) = -E_0 s \cos{\phi}$. Therefore, the boundary conditions can be expressed as
+The potential at the surface of a grounded conductor is zero \cite{griffiths-introElec}. Also, far from the cylinder the field is perpendicular to the plates, so at infinity $\bf{E}$ = $E_0$$\bf{\hat{x}}$, hence $V = -E_0 x + C$, where C is an arbitrary constant and $E_0$ is the uniform electric field. Due to the symmetry of the system, $V$ is known to be zero at the same distance from the plates. In cylindrical coordinates, this becomes $V(s,\phi) = -E_0 s \cos{\phi}$. Therefore, the boundary conditions can be expressed as
 
 \begin{subequations}
 \begin{align}
@@ -260,7 +262,7 @@ The potential at the surface of a grounded conductor is zero \cite{griffiths-int
 \end{align}
 \end{subequations}
 
-\noindent where $R$ is the radius of the sphere as shown in Fig.\ref{fig:systemA}. In order to have the right boundaries at infinity $C_0 = D_0 = b_k = d_k=0$, and $a_k = b_k=0$ except for $k=1$. Therefore,
+\noindent where $R$ is the radius of the sphere as shown in Fig.\ref{fig:systemA}. For these conditions to hold $C_0 = D_0 = b_k = d_k=0$, and $a_k = b_k=0$ except for $k=1$. Therefore,
 
 \begin{equation}
 V(s,\phi) = \bigg( a_1 s + \frac{c_1}{s}\bigg) \cos{\phi}~.
@@ -342,7 +344,7 @@ V(x,y) = \left\{
 %In order to compare numerical and analytical solutions the latter had to be implemented in a computer program. The boundaries were specified to 1V and -1V at the plates and 0V inside the cylinder. The electric field $E_0$ was defined as ratio of the voltage difference between the plates and the plate separation. Then using Eq.(\ref{eq:cartesian}) the potential was calculated at all points on a discretized grid. \\
 %
 
-Values of the analytical solution of system A were calculated using Eq.(\ref{eq:cartesian}) for discrete values of $x$ and $y$ to allow for comparison with the numerical. The initial electric field, $E_0$, was defined as
+Values of the analytical solution of system A were calculated using Eq.(\ref{eq:cartesian}) for discrete values of $x$ and $y$ to allow for comparison with the numerical. The uniform electric field, $E_0$, was defined as
 
 \begin{equation}
 	E_0 = \frac{\Delta V}{d},
@@ -355,7 +357,7 @@ Values of the analytical solution of system A were calculated using Eq.(\ref{eq:
 %The plates and the grounded cylinder were defined in a matrix to hold the required values, just as in the analytical case. They remained constant throughout the program and the rest of the elements in the matrix were allowed to vary. The numerical algorithm described, Nine-point formula, was run updating the elements in the matrix until the change in all values between two iterations was considered sufficiently small. This small change was determined using the requested error tolerance. Upon each iteration, the previous iterations values were stored in a temporary array.  When the system was considered stable, the elements in the matrix were further granulated depending on the steepness of their gradients.
 %When the scheme finished, the resulting matrix was then plotted using a plotting package where a heat-map functionality was used to depict the potential. For the fieldlines, a further calculation was required: the gradient between each pixel is calculated and used to plot the electric field. The program flow can be seen in Fig.\ref{fig:prog}. 
 
-The Gauss-Seidel method described was implemented in C++. Initial values pertaining to system A were imposed, and with a starting matrix containing only the boundary values, the algorithm was run until no point on the matrix changed by more than a user-defined percentage between two iterations. A method of adaptive meshing was then applied, the level of granulation depending on the gradient of the potential and the maximum granulation being user-defined. This meshed system was refined further by applying the Gauss-Seidel method again for several more iterations, and finally plotted as a heatmap showing potential. (See Fig.(\ref{fig:prog}) for a more detailed programme flow.)
+The Gauss-Seidel method described was implemented in C++. Initial values pertaining to system A were imposed, and with a starting matrix containing only the boundary values, the algorithm was run until no point on the matrix changed by more than a user-defined percentage between two iterations. A method of adaptive meshing was then applied, the level of granulation depending on the gradient of the potential and the maximum granulation being user-defined. This meshed system was refined further by applying the Gauss-Seidel method again for several more iterations, and finally plotted as a heatmap showing potential. (See Fig.(\ref{fig:prog}) for a more detailed programme flow.) \\ \\ \\ \\ \\ \\
 
 %ALGORITHM (not completed)
 %\subsection*{Pseudocode}
@@ -407,24 +409,52 @@ The Gauss-Seidel method described was implemented in C++. Initial values pertain
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=13cm]{progflow} 
+	\includegraphics[width=12cm]{progflow} 
 	\caption{Program Flow}
 	\label{fig:prog}
 \end{figure}
 
 \section*{Results and Discussion}
+%PLOT THE POTENTIAL AS A FUNCTION OF A GRID OF X AND Y COORDINATES FOR ANALYTICAL AND NUMERICAL SOLUTIONS SEPARATELY
+%
+%EQUIPOTENTIAL LINES FOR NUMERICAL SOLUTION
+%
+%ELECTRIC FIELD LINES FOR NUMERICAL SOLUTION
 
-\section*{System E}
-% BITMAP %TALK WITH NEIL
-%A pixelated drawing describing the components of the system, a bitmap, was passed to the program. Each pixel was then mapped to a matrix holding values between -1 and 1, to represent the voltages of the initial system. The matrix elements related to components, that is, conductors or charges, were not changed during the numerical procedure while the rest varied as the program run.
+\subsection*{Error Analysis}
+%QUANTIFY THE ACCURACY OF THE NUMERICAL METHOD AS THE ABSOLUTE OR PERCENTAGE DIFFERENCE BETWEEN THE TWO SOLUTIONS FOR THE POTENTIAL ON THE GRID OF X AND Y COORDINATES
+%
+%STUDY HOW THE PRECISION OF YOUR NUMERICAL METHOD INCREASES WITH MORE ITERATIVE STEPS. 
+%
+%QUANTIFY THE DIFFERENCE IN POTENTIAL BETWEEN TWO CONSECUTIVE STEPS
+%%CPU CONSUPTION
+%%TIME VARY WITH NUMBER OF ITERATIONS 
 
+\section*{Complex systems}
+Most electrostatic systems can only be solved numerically due to their complex geometry. These systems are extremely important as they have many applications in physics.
+The code developed was modular and generic enabling different geometric configurations of conductors. This was achieved using a pixelated drawing describing the components of the system desired, known as bitmap. When this was passed to the program each pixel was mapped to a matrix holding values between -1 and 1. \\ %DAVID 
+
+Silicon detectors are commonly used in high energy physics because of their outstanding performance.  They are essential to the disentanglement of decay events and for the discovery of new particles due to their precise tracking. The detectors consist of silicon wafers with segmented doped implants on one side and a uniform implant on the other \cite{kohlerPH}. This design is known as planar strip detectors and is used in many particle physics experiments. \par
+An alternative set up are 3D detectors which are able to operate under extreme radiation environments \cite{kohlerPH}.
+Columnar implants penetrate perpendicularly the silicon wafer and extend into the depth of the sensor instead of being limited by the surface as planar detectors. Ionising radiation produces electron-hole pairs and under the influence of an electric field these pairs will drift inducing a signal on the implants \cite{GK-radiationDetection}. 
+A top view of this geometry can be seen in Fig.\ref{fig:systemE}. Using the generic computer program designed a numerical approximation was obtained for the electrostatic potential.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=8cm]{GPdiagram21} 
-	\caption{systemB}
-	\label{fig:systemB}
+	\includegraphics[width=6cm]{GPdiagram21} 
+	\caption{Illustration of physical system $E$. Shows a grid of cylindrical implants where in the middle they are held at potential $+V$ and in the outside at ground potential.}
+	\label{fig:systemE}
 \end{figure}
+
+
+%EQUIPOTENTIAL LINES FOR NUMERICAL SOLUTION
+
+%ELECTRIC FIELD LINES FOR NUMERICAL SOLUTION
+
+%QUANTIFY THE DIFFERENCE IN POTENTIAL BETWEEN TWO CONSECUTIVE STEPS
+%%CPU CONSUPTION
+%%TIME VARY WITH NUMBER OF ITERATIONS 
+
 
 \section*{Conclusion}
 
