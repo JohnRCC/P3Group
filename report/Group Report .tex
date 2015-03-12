@@ -166,7 +166,17 @@ V(s, \phi) = c_0 \ln{s} + d_0 + \sum_{k=1}^{\infty} \big[ s^k (a_k \cos{(k\phi)}
 %Laplace?s equation is mathematically described as an elliptic PDE due to its characteristics. To find a particular solution for this differential equation additional conditions must be imposed. These conditions are boundary values that describe all or part of the perimeter of the region in which a solution is desired. The nature of these boundary conditions usually determines the numerical method required to obtain an approximate solution [4]. This is called a Boundary value problem, specifically an Elliptic boundary value problem which does not involve a time variable.
 
 To find a particular solution for a differential equation, boundary conditions must be imposed that describe all or part of the region in which the solution is desired. The nature of these boundary conditions determines the numerical method required to obtain an approximate solution \cite{Cheney.Kincai-NumericalMethods}. \par
-Laplace's equation is an elliptic PDE due to its mathematical characteristics and these are fundamental to its physical significance \cite{RHB-MathematicalMethods}. Problems that are governed by elliptic PDEs and subjected to boundary conditions are called Boundary value problems.
+Many numerical methods for solving PDEs require the equation being studied to be elliptic. An elliptic PDE is an equation of the form
+
+\begin{equation}
+	AV_{xx}+2BV_{xy}+CV_{yy}+DV_x+EV_y+F = 0,
+	\label{eq:ellipticPDE}
+\end{equation}
+\noindent where
+\begin{equation}
+	B^2-AC < 0.
+\end{equation}
+\noindent Laplace's equation is a simple elliptic PDE in which the only non-zero coefficients are $A$ and $C$, and these are both equal to 1 \cite{RHB-MathematicalMethods}. Problems that are governed by elliptic PDEs and subjected to boundary conditions are called Boundary value problems.
 These problems can be solved by Finite-difference and Relaxation methods. \par
 
 The first step of the numerical technique is to discretize the problem by defining a mesh; a grid of  spatial points that cover the domain of interest. The points that lie on the mesh can be written in cartesian coordinates as 
@@ -180,7 +190,12 @@ The first step of the numerical technique is to discretize the problem by defini
 \end{subequations} 
 
 \noindent where $h$ is the distance between the grid points and $i,j$ is a pair of indices describing each grid point. The differential operator $\nabla^2$ is then approximated 
-to a discrete form through the use of finite differences. The standard approximation for the second derivatives is \cite{Cheney.Kincai-NumericalMethods} 
+to a discrete form through the use of finite differences. The standard approximation for the second derivative is obtained from the Taylor expansion of a smooth function \cite{Cheney.Kincai-NumericalMethods} 
+
+\begin{equation}
+f(x) = f(a) + \frac{f'(a)}{1!}(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \frac{f''(a)}{3!}(x-a)^3 + ...
+\end{equation}
+if $a = x+h$ and $h$ is sufficiently small, high-order terms can be ignored, and the expression rearranged to obtain an approximation for the second derivative:
 
 \begin{equation}
 f''(x) \approx \frac{1}{h^2}[f(x+h) - 2f(x) + f(x-h)].
