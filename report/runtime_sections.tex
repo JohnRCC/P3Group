@@ -1,0 +1,69 @@
+\documentclass[a4paper]{jpconf}
+%\usepackage{amsmath} % for subequations
+\usepackage{xfrac} %to write fractions in different ways
+\usepackage{graphicx} %for figures
+\usepackage{caption} %for figures
+%\usepackage{algpseudocode} % to write pseudocode
+
+
+
+\begin{document}
+
+\noindent {\Large \bf CPU- and Runtime analysis} \\
+
+\textbf{Introduction/Justification}
+
+It is of interest to the user to know, not only the accuracy of a given program but also the calculation cost of using a given method, be it difference schemes, relaxation methods or adaptive meshing. \\
+A way of quantifying the calculation cost of an algorithm is by measuring the time it takes to run it. There are at least two ways in which this can be done: the runtime and CPU-time both give the required estimate. The runtime is the time as if calculated by a person timing the run of the algorithm while the CPU-time is the time that is allocated in the processor for the task in mind. The CPU-time will always be less than or equal to the runtime, as the runtime will be affected by other processes that might be using the same processor.\cite{cpu_time}
+
+\textbf{Method} \\
+The different numercal methods were thus applied on a test matrix; a simple matrix composed of two small rods inside a parallel-plate capacitor. 25 runs, call it a bundle of runs, of a given algorithm were clocked to diminish any fluctuations in current processes being handled. From this, the average CPU- and runtime (henceforth referred to as "time" unless otherwise specified) was calculated for each run. Each bundle was run ten times from where the mean and variance were calculated, call this one trial. Trials were run for iteration values ranging from 130 to 600 with increases of ten iterations. For each trial, dividing by the number of iterations gave us a mean time per iteration, $\mu^{t/n}$, where $t$ is the time and $n$ denotes that this is per iteration. For the variance, the median, rather than the mean, was used as this quantifies the uncertainty in the time measurement. The timing functions used were: chrono::high_resolution_clock for runtime and std::clock() for CPU-time \\
+
+\textbf{Results} \\
+Below follows a table holding the results of the trials:
+
+\begin{table}[h!]
+	\caption{Mean runtime per iteration for three different methods}
+	\begin{center}
+		\begin{tabular}{l c c c }
+			\br 
+			& \textbf{5 point - Jacobi} & \textbf{9 point - Jacobi} & \textbf{9 point -  Gauss-Seidel} \\ 
+			\mr
+			\textbf{CPU-time(ms):} 	& 0.11853 	& 0.192614 & 0.19257 \\
+			\textbf{Runtime(ms):} 	& 0.512 		& 0.9164 & 0.9167 \\
+			\br
+		\end{tabular}
+	\end{center}
+	\label{table:cpu}
+\end{table}
+
+\noindent \textbf{Conclusions and discussion} \\
+The results are as expected: there is a difference between the 5- and 9-point difference schemes while there is no percieved difference between the tested relaxation methods. The 9-point difference method involves more points to calculate the potential in an element than the 5-point does, hence the longer time per iteration. Meanwhile, the difference between the Jacobi and the Gauss-Seidel methods is from where information is retrieved; the Gauss-Seidel retrieves some data from the current iteration while the Jacobi method uses all information from the previous iteration. As neither involve more calculations than the other, the results show what is expected; that the time per iteration is the same within their variance.
+
+
+
+\textbf{References:}
+
+CPU-time:\\
+https://software.intel.com/en-us/articles/intel-performance-counter-monitor-a-better-way-to-measure-cpu-utilization \\
+R. Dementiev et al \\
+12 - Mar - 2105 \\
+Intel Performance Counter Monitor - A better way to measure CPU time \\
+
+
+clock() function \\
+https://www.gnu.org/software/libc/manual/html_node/Processor-And-CPU-Time.html#Processor-And-CPU-Time \\
+R. McGrath et al \\
+12 - Mar - 2015 \\
+The GNU C Library Reference Manual \\
+
+CAN THIS BE USED????
+chrono::high_resolution_clock \\
+http://www.cplusplus.com/reference/chrono/high_resolution_clock/ \\
+N/A \\
+12 - Mar - 2015 \\
+ ~\\
+
+
+
+\end{document}
