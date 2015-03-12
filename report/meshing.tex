@@ -1,0 +1,27 @@
+The Meshing System
+
+The meshing system is intended to improve the accuracy of the program more efficinently than simply increasing the number of iterations or decreasing the step size. It identifies points of interest and breaks them down into smaller grids to examine them in more detail. These grids have side lengths which are powers of three (3x3, 9x9 etc.), and the highest power of three used can be specified by an input argument, referred to as maxpower. The default value is 2, causing the meshing system to use 3x3 and 9x9 grids. If this argument is set to zero, the meshing system is disabled.
+
+The system is made up of one class (the sublayer class) and three functions (getgrad, meshing, and printmesh). These functions are run sequentially after the main algorithm is complete.
+
+The sublayer class is used to store the high-resolution grids and their associated data. Specifically, each object contains the x/y coordinates of the matrix point it represents, the size of the sublayer grid, an array containing the grid itself, and an index value representing whether it is an actual sublayer or an array placeholder.
+
+The class has two constructor functions. The first creates an actual sublayer of a specified size, using data from a defined position in the matrix. The function sets the sublayer's edge values to the average of the value of matrix point the sublayer is based on and the point directly adjacent to it; corner points are set to the average of the two adjacent values; and the inner points are set to the matrix point's own value. Finally, a five-point Jacobi method is used, for a specified number of iterations with the edges held constant, to produce a continuous matrix. Figure 1 shows the original matrix on the right-hand side, and a 3x3 sublayer created from the central point on the left.
+
+The second constructor function is used when generating arrays of sublayers. It creates sublayers with a different index value and containing the minimum possible amount of data. These exist only as placeholders.
+
+The first function, getgrad(), calculates the gradient at each point in the matrix. In this case, the gradient function is
+\begin{equation}Gradient = \sqrt{(E - W)^2 + (S - N)^2} \end{equation}
+where N, S, E, W are the values of the points directly above, below, right and left of the point we are looking at. These gradients are stored in the fourth layer of the vals array.
+
+The second function, meshing(), begins by finding the highest gradient in the matrix and storing it as maxgrad. It then creates an array called limit, and stores in it fractions of the form \frac{n*maxgrad}{maxpower}, where n is an integer in the range 0 < n < maxpower. These numbers are used to determine what level of meshing to apply to each point: the number of entries in the array is equal to the number of possible grid sizes.
+
+Having done this the function creates an array of pointers to sublayers, with dimensions equal to the input matrix. This allows the same coordinates to acces both the original point and the sublayer. Initially these sublayers are placeholders; after the array is created, the function loops through the input matrix, and for each point checks the gradient against the entries in limit, highest to lowest. If the gradient of the point is greater than a limit, a full sublayer of the appropriate size is created. If the gradient is smaller than all the limits, the sublayer remains a placeholder. When every point has been checked, the function returns the array of pointers to sublayers.
+
+The third function, printmesh(), creates an output matrix which combines the original matrix and the sublayers. It does this by creating a matrix with dimensions equivalent to those of the input matrix multiplied by the highest level of meshing (so that a 100x100 input matrix with 9x9 meshing would have a 900x900 output matrix). Each point in the input matrix corresponds to a set of points in the output matrix. The function then loops through the input matrix, and at each point checks if there is a full sublayer for that point.
+
+If there is a sublayer, and it is at the highest level of meshing used, then the sublayer can be transcribed directly onto the output matrix, one-to-one. If the sublayer is at a lower level of meshing, then the fact that each meshing grade is a power of three means that each point in the sublayer corresponds to a set of points in the output matrix - each point in a 3x3 sublayer would correspond to a 3x3 grid if the highest level of meshing was 9x9, for example. The value for the sublayer point is written to all the corresponding points in the output matrix. Finally, if there is only a placeholder sublayer at the point, then the value from the original matrix is used for every corresponding point in the output matrix.
+
+Figure 2 shows an example of a 2x2 input matrix being combined with two 3x3 sublayers into a 6x6 output matrix.
+
+The final product of the meshing system is a higher-resolution look at the input matrix, where areas of rapid change in potential are examined in detail, without needing to apply that same level of rigour to every part of the matrix, saving CPU time.
