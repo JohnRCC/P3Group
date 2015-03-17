@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 float SphericalPotential(float x, float y, float r,float Plate_separation);
 float CylindricalPotential(float x, float y, float r,float Plate_separation);
 
@@ -14,7 +13,9 @@ int analytic(float smin,float ds,float smax,float r,int maxres,int silence)
 {
  
 int row,column,i;
+// Choice of solution derived from cylindrical [true] or sphericsal [false] coordinates
 bool bCylindricalCoords = true;
+
 /*
  *	GENERATE MATRIX
  *
@@ -23,14 +24,8 @@ bool bCylindricalCoords = true;
  *		 	- Plates of opposite polarities at either side
  *                         vrom the vertical (think y-axis)
  *		 	- Ground, circular plate positioned at middle
+ *
  */
- 
- 	// Matrix size separation in terms of r-d relation
- // 	Plate separation: 1.5 is the minimum. larger values of d should be tested 
-// float d = pow(r,2);
-// int matsize = d/ds - (fmod(d,ds));
-// smin = -d/2.0;
-// smax = d/2.0;
 
 
 // Initalise matrix
@@ -69,47 +64,28 @@ for(row=0;row<matsize;row++) {
     y=cf(row,smin,ds,1);
     x=cf(column,smin,ds,1);
 
-      if (column == 0) {
-	analyticfile << row << " " << column << " " << 1 << "\n";
-      }
-      else if (column == matsize-1) {
+    if (column == 0) {	
+    	analyticfile << row << " " << column << " " << 1 << "\n";
+    }
+    else if (column == matsize-1) {
 	analyticfile << row << " " << column << " " << -1 << "\n";
-      }
-      else if( (pow((cf(row,smin,ds,1)-cf(mid,smin,ds,1)),2.0) + pow((cf(column,smin,ds,1)-cf(mid,smin,ds,1)),2.0)) < pow(r,2.0) ) {
+    }
+    else if( (pow((cf(row,smin,ds,1)-cf(mid,smin,ds,1)),2.0) + pow((cf(column,smin,ds,1)-cf(mid,smin,ds,1)),2.0)) < pow(r,2.0) ) {
 	analyticfile << row << " " << column << " " << -0 << "\n";
-      }
-      else {
-      	// Only values that differ from main
+    }
+    else {
+     	// Only values that differ from main
         if (bCylindricalCoords) {
           analyticfile << row << " " << column << " " << CylindricalPotential(x,y,r,d) << "\n";
         }
         else {
           analyticfile << row << " " << column << " " << SphericalPotential(x,y,r,d) << "\n";
-          
         }
-      }
-	
+     }
   }
   analyticfile << "\n";
 }
 
-/*
- *	Writing data to file
- */
-/*
-ofstream analyticfile;
-analyticfile.open("analytical.dat");
-
-for (row = 0; row < matsize; row++)
-  {
-  for (column = 0; column < matsize; column++)
-    {
-      analyticfile << row << " " << column << " " 
-                   << valsA[column][row] << "\n";
-    }
-    analyticfile<<"\n";
-  }
-*/
  analyticfile.close();
  
  if (silence == 0) {
@@ -123,7 +99,8 @@ for (row = 0; row < matsize; row++)
 /*
  *	FUNCTIONS
  */
-
+ 
+// Function holding solution of the potential derived with cylindrical coordinates
 float CylindricalPotential(float x, float y, float r,float Plate_separation) {
   float v=0, Plate_Vdiff=2; //Plate_separation=r*pow(10,2);
 
@@ -134,7 +111,7 @@ float CylindricalPotential(float x, float y, float r,float Plate_separation) {
   return v;
 }
 
-
+// Function holding solution of the potential derived with spherical coordinates
 float SphericalPotential(float x, float y, float r,float Plate_separation) {
   float v=0, Plate_Vdiff=2; //Plate_separation=r*pow(10,2);
 
