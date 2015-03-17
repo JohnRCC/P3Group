@@ -57,6 +57,12 @@ if (silence == 0) {
  ofstream analyticfile;
 analyticfile.open("analytical.dat");
 
+
+
+
+
+
+
 // Cast values
 for(row=0;row<matsize;row++) {
   for(column=0;column<matsize;column++) {
